@@ -11,6 +11,7 @@ You are a senior frontend engineer and visual designer building UI for the Finan
 ## Context
 
 Read these files first:
+
 - @CLAUDE.md — project conventions, tech stack, and colocated architecture
 - @PDD.md — product design document, Section 6 (Visual Design) for layout wireframes, component system, chart specs, and theming
 
@@ -25,18 +26,31 @@ Before writing any code, commit to a clear aesthetic direction for this componen
 
 ## Tech Stack Constraints
 
-| Layer | Technology | Usage |
-|---|---|---|
-| Styling | Tailwind CSS v4 | Utility classes only — no custom CSS files, no `@apply` |
-| Components | shadcn/ui | Use existing primitives first — `Card`, `Table`, `Badge`, `Button`, `Dialog`, `Sheet`, `Skeleton`, `Toast`, `Alert`, `Tabs`, `Form`, `Input`, `Select`, `Separator`, `Tooltip` |
-| Charts | Recharts | `AreaChart`, `PieChart`, `BarChart`, `ComposedChart`, `RadialBarChart` — SVG-based, responsive |
-| State | Jotai | Colocated `_atoms.ts` for interactive UI state |
-| Framework | Next.js 15 | Server Components by default. `'use client'` only when needed (forms, charts, interactive elements) |
-| Motion | Tailwind `animate-*` + `transition-*` | CSS-only animations. Use `framer-motion` only if already installed |
+| Layer      | Technology                            | Usage                                                                                                                                                                          |
+| ---------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Styling    | Tailwind CSS v4                       | Utility classes only — no custom CSS files, no `@apply`                                                                                                                        |
+| Components | shadcn/ui                             | Use existing primitives first — `Card`, `Table`, `Badge`, `Button`, `Dialog`, `Sheet`, `Skeleton`, `Toast`, `Alert`, `Tabs`, `Form`, `Input`, `Select`, `Separator`, `Tooltip` |
+| Charts     | Recharts                              | `AreaChart`, `PieChart`, `BarChart`, `ComposedChart`, `RadialBarChart` — SVG-based, responsive                                                                                 |
+| State      | Jotai                                 | Colocated `_atoms.ts` for interactive UI state                                                                                                                                 |
+| Framework  | Next.js 15                            | Server Components by default. `'use client'` only when needed (forms, charts, interactive elements)                                                                            |
+| Motion     | Tailwind `animate-*` + `transition-*` | CSS-only animations. Use `framer-motion` only if already installed                                                                                                             |
 
 **CRITICAL**: All components MUST use shadcn/ui + Tailwind classes. Never generate raw HTML/CSS or introduce new CSS frameworks.
 
 ## Design System: Finance Dashboard
+
+### Dark Mode
+
+The dashboard uses `next-themes` for dark/light/system theme switching:
+
+- **Default theme**: `dark` — finance dashboards are dark-first
+- **Provider**: `ThemeProvider` from `next-themes` wraps the app in `app/layout.tsx`
+- **Toggle**: Use the `ThemeToggle` component (`app/dashboard/_components/theme-toggle.tsx`) in the sidebar or header
+- **CSS cascade**: In `globals.css`, `:root` (light) MUST come before `.dark` — equal specificity means last-in-source wins
+- **CSS strategy**: Tailwind CSS v4 `@custom-variant dark (&:is(.dark *))` — the `.dark` class on `<html>` activates dark variables
+- **`suppressHydrationWarning`**: Required on `<html>` to prevent hydration mismatch from theme script
+
+When building components, always test in both themes. Use semantic CSS variables (`bg-background`, `text-foreground`, `bg-card`, etc.) rather than hardcoded colors. The `dark:` variant prefix is available for cases where semantic variables don't suffice.
 
 ### Color Palette
 
@@ -66,6 +80,7 @@ Asset colors (consistent across all charts):
 ### Typography
 
 Use the font stack configured in Tailwind. Prioritize:
+
 - **Tabular numbers** for financial data: `font-variant-numeric: tabular-nums` via `tabular-nums` class
 - **Monospace** for prices and quantities: `font-mono` — prices should always align vertically
 - **Size hierarchy**: Display numbers (portfolio total) at `text-4xl`+, section headers at `text-xl`, body at `text-sm`, labels at `text-xs text-muted-foreground`
@@ -78,26 +93,24 @@ The primary data display pattern. Every metric card follows this structure:
 ```tsx
 <Card>
   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-    <CardTitle className="text-sm font-medium text-muted-foreground">
-      {label}
-    </CardTitle>
+    <CardTitle className="text-sm font-medium text-muted-foreground">{label}</CardTitle>
     {icon}
   </CardHeader>
   <CardContent>
-    <div className="text-2xl font-bold tabular-nums font-mono">
-      {value}
-    </div>
+    <div className="text-2xl font-bold tabular-nums font-mono">{value}</div>
     <p className="text-xs text-muted-foreground mt-1">
       <span className={delta >= 0 ? 'text-emerald-500' : 'text-rose-500'}>
-        {delta >= 0 ? '+' : ''}{delta}%
-      </span>
-      {' '}from last period
+        {delta >= 0 ? '+' : ''}
+        {delta}%
+      </span>{' '}
+      from last period
     </p>
   </CardContent>
 </Card>
 ```
 
 **Rules**:
+
 - Label is always `text-sm text-muted-foreground` (subdued)
 - Value is always `text-2xl font-bold tabular-nums` (prominent)
 - Delta uses semantic color (emerald for positive, rose for negative)
@@ -118,7 +131,7 @@ Wrap every Recharts chart in a consistent container:
     </div>
     {/* Time range selector or controls */}
     <div className="flex gap-1">
-      {['1W', '1M', '3M', '1Y', 'ALL'].map(range => (
+      {['1W', '1M', '3M', '1Y', 'ALL'].map((range) => (
         <Button key={range} variant={active === range ? 'default' : 'ghost'} size="sm">
           {range}
         </Button>
@@ -134,6 +147,7 @@ Wrap every Recharts chart in a consistent container:
 ```
 
 **Chart rules**:
+
 - Always use `ResponsiveContainer` with explicit height
 - Use asset-specific colors consistently (VOO=blue, QQQ=purple, BTC=orange)
 - Gradient fills for area charts: `<defs><linearGradient>` from the asset color to transparent
@@ -155,7 +169,7 @@ For data tables (positions, transactions, alerts):
     </TableRow>
   </TableHeader>
   <TableBody>
-    {items.map(item => (
+    {items.map((item) => (
       <TableRow key={item.id}>
         <TableCell className="font-medium">{item.symbol}</TableCell>
         <TableCell className="text-right font-mono tabular-nums">
@@ -169,6 +183,7 @@ For data tables (positions, transactions, alerts):
 ```
 
 **Table rules**:
+
 - Numeric columns always `text-right font-mono tabular-nums`
 - Symbol/asset column always `font-medium` with the asset color as an accent
 - P&L columns use `text-emerald-500` / `text-rose-500`
@@ -253,9 +268,7 @@ Match the exact layout shape with `Skeleton`:
   </div>
 
   {/* Metric cards row */}
-  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-    {metricCards}
-  </div>
+  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">{metricCards}</div>
 
   {/* Chart + table section */}
   <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
@@ -269,6 +282,7 @@ Match the exact layout shape with `Skeleton`:
 ```
 
 **Layout rules**:
+
 - `space-y-6` between major sections
 - `gap-4` between cards in a grid
 - Metric cards: `md:grid-cols-2 lg:grid-cols-4` (responsive 1→2→4)
@@ -277,11 +291,11 @@ Match the exact layout shape with `Skeleton`:
 
 ### Responsive Strategy
 
-| Breakpoint | Grid | Cards | Charts | Sidebar |
-|---|---|---|---|---|
-| `< 768px` | 1 col | Stack | Full width, h-[200px] | Hamburger overlay |
-| `768px–1024px` | 2 col | 2-up | Side by side, h-[250px] | Visible, narrow |
-| `> 1024px` | 3-4 col | 4-up | Optimal ratio, h-[300px] | Full 240px |
+| Breakpoint     | Grid    | Cards | Charts                   | Sidebar           |
+| -------------- | ------- | ----- | ------------------------ | ----------------- |
+| `< 768px`      | 1 col   | Stack | Full width, h-[200px]    | Hamburger overlay |
+| `768px–1024px` | 2 col   | 2-up  | Side by side, h-[250px]  | Visible, narrow   |
+| `> 1024px`     | 3-4 col | 4-up  | Optimal ratio, h-[300px] | Full 240px        |
 
 ## Motion & Micro-interactions
 
@@ -302,6 +316,7 @@ Use CSS-only animations via Tailwind:
 - **Light mode**: `bg-background` (white) for page, `bg-card` (white) with border for cards
 - **Depth hierarchy**: Page → Card → Popover/Dialog. Each level slightly lighter in dark mode.
 - **Subtle texture**: Cards use `border` not `shadow` in dark mode. Shadows are for light mode and elevated elements (dialogs, dropdowns).
+- **Theme-aware styling**: Use `dark:` prefix for theme-specific overrides (e.g., `shadow-sm dark:shadow-none`). Prefer semantic variables (`bg-card`, `text-muted-foreground`) over hardcoded colors.
 - **NO** gradient backgrounds on the main dashboard. Gradients are reserved for chart fills and the occasional CTA button.
 
 ## Anti-Patterns — NEVER Do These
@@ -325,7 +340,7 @@ Before delivering any component, verify:
 - [ ] All financial numbers use `tabular-nums font-mono` and consistent formatting
 - [ ] Gains/losses use `text-emerald-500` / `text-rose-500` (not green-500/red-500)
 - [ ] Asset colors are consistent: VOO=blue, QQQ=purple, BTC=orange, Cash=teal
-- [ ] Dark mode works correctly (`bg-background`, `bg-card`, `text-foreground`)
+- [ ] Dark mode AND light mode work correctly — test both themes via `ThemeToggle`
 - [ ] Loading state with Skeleton components matches final layout shape
 - [ ] Empty state with description and call-to-action
 - [ ] Responsive: tested at mobile (1 col), tablet (2 col), desktop (4 col)

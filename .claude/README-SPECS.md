@@ -30,6 +30,8 @@ Each user story maps to a route segment with its colocated files:
 | **US-1.1**: Init Next.js           | `app/`                                    | `page.tsx`, `dashboard/page.tsx`, config files                 |
 | **US-1.2**: Core Dependencies      | `lib/supabase/`                           | `client.ts`, `server.ts`                                       |
 | **US-1.3**: DB Schema & Testing    | `supabase/migrations/`                    | Migration files, `lib/supabase/database.types.ts`              |
+| **US-1.4**: Portfolio Schema       | `app/portfolio/`                          | `_schema.ts`, `__tests__/_schema.test.ts`                      |
+| **US-1.5**: Dark Theme Mode        | `app/`, `app/dashboard/_components/`      | `globals.css`, `layout.tsx`, `theme-toggle.tsx`                |
 | **US-2.1**: Email/Password Auth    | `app/(auth)/login/`, `app/(auth)/signup/` | `page.tsx`, `_actions.ts`, `_schema.ts`, `_components/`        |
 | **US-2.2**: Auth State Management  | `app/(auth)/`                             | `layout.tsx`, `proxy.ts`                                       |
 | **US-2.3**: User Profile           | `app/profile/`                            | `page.tsx`, `_actions.ts`, `_schema.ts`, `_components/`        |

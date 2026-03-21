@@ -76,10 +76,15 @@ Consistent across all charts and badges:
 
 ## Dark Mode First
 
-- Default theme is dark (`bg-background` = zinc-950)
+- Default theme is dark (`bg-background` = zinc-950), managed by `next-themes` with `ThemeProvider`
+- **CSS cascade**: In `globals.css`, `:root` (light) MUST come before `.dark` — equal specificity means last-in-source wins
+- Theme options: `dark`, `light`, `system` — toggled via `ThemeToggle` component
+- Use semantic CSS variables (`bg-background`, `bg-card`, `text-foreground`) — they adapt automatically
+- Use `dark:` prefix only when semantic variables don't cover the case (e.g., `shadow-sm dark:shadow-none`)
 - Cards use `border` in dark mode, subtle `shadow` in light mode
 - Never apply gradient backgrounds to dashboard pages
 - Depth: Page → Card → Popover/Dialog (each slightly lighter in dark)
+- Always test components in both dark and light themes
 
 ## Required States
 

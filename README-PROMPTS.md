@@ -322,3 +322,42 @@ Fix the "A component is changing the default value state of an uncontrolled Fiel
 - Confirm form inputs in login, signup, onboarding modal, and settings page still function correctly
 
 ---
+
+## Prompt 16 — `frontend`
+
+**Intent**: Implement dark theme as default and update skills/specs.
+
+**Prompt**
+
+Update the frontend-design skill to document dark mode conventions, add a new user story (US-1.5) to SPECS.md for dark theme mode, then implement the dark/light/system theme toggle using `next-themes` with `ThemeProvider` in the root layout, a `ThemeToggle` dropdown component, and integration into the dashboard sidebar.
+
+**Derived Tasks**
+
+- Add Dark Mode section to `.claude/skills/frontend-design/SKILL.md` documenting `next-themes`, `ThemeProvider`, and `ThemeToggle` conventions
+- Expand "Dark Mode First" section in `.claude/rules/design.md` with `next-themes` details
+- Add US-1.5 (Dark Theme Mode) to SPECS.md with 5 Gherkin scenarios and 4 tasks
+- Configure `ThemeProvider` in `app/layout.tsx` with `attribute="class"`, `defaultTheme="dark"`, and `enableSystem`
+- Create `ThemeToggle` component in `app/dashboard/_components/theme-toggle.tsx` with dark/light/system options
+- Add `ThemeToggle` to the dashboard sidebar header
+- Verify TypeScript compilation and all tests pass
+
+---
+
+## Prompt 17 — `frontend`
+
+**Intent**: Fix CSS cascade order so dark mode renders as default on all pages.
+
+**Prompt**
+
+Make the homepage and internal pages render dark as default. The `.dark` CSS variable block in `globals.css` was declared before `:root`, causing light values to win due to equal specificity and later source order. Swap the declaration order so `:root` (light) comes first and `.dark` comes second. Update skills and SPECS with the CSS cascade rule.
+
+**Derived Tasks**
+
+- Swap `:root` and `.dark` declaration order in `app/globals.css` — `:root` first, `.dark` second
+- Add CSS cascade rule to `.claude/rules/design.md` Dark Mode First section
+- Add CSS cascade note to `.claude/skills/frontend-design/SKILL.md` Dark Mode section
+- Add T-1.5.5 to SPECS.md for the CSS cascade fix
+- Add missing US-1.4 and US-1.5 entries to `.claude/README-SPECS.md`
+- Verify no TypeScript errors and all tests pass
+
+---

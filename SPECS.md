@@ -18,7 +18,7 @@
 
 | Epic                              | Stories | Todo | In Progress | Completed | Blocked |
 | --------------------------------- | ------- | ---- | ----------- | --------- | ------- |
-| E1: Project Setup                 | 4       | 0    | 0           | 4         | 0       |
+| E1: Project Setup                 | 5       | 0    | 0           | 5         | 0       |
 | E2: Authentication & User Profile | 3       | 0    | 0           | 3         | 0       |
 | E3: Market Data Engine            | 4       | 4    | 0           | 0         | 0       |
 | E4: Portfolio Tracker             | 4       | 4    | 0           | 0         | 0       |
@@ -199,6 +199,58 @@ Feature: Git Hooks & Commit Quality
 - [x] T-1.4.4: Configure `.husky/commit-msg` to execute `npx --no -- commitlint --edit "$1"`
 - [x] T-1.4.5: Create `commitlint.config.js` with `scope-enum` restricted to project domains (`setup`, `auth`, `portfolio`, `market`, `dca`, `alerts`, `insights`, `bitcoin`, `analytics`, `settings`)
 - [x] T-1.4.6: Configure `.husky/pre-push` to execute `npx tsc --noEmit && npm test`
+
+---
+
+### US-1.5: Dark Theme Mode [x] 🎨
+
+**As a** user
+**I want** to toggle between dark, light, and system theme modes
+**So that** the dashboard adapts to my visual preference and environment
+
+```gherkin
+Feature: Dark Theme Mode
+  As a user
+  I want to toggle between dark, light, and system themes
+  So that the dashboard adapts to my visual preference
+
+  Scenario: Default theme is dark
+    Given the user visits the dashboard for the first time
+    Then the UI renders in dark mode
+    And the html element has class "dark"
+
+  Scenario: Toggle to light mode
+    Given the user is on the dashboard in dark mode
+    When the user clicks the theme toggle and selects "Light"
+    Then the UI switches to light mode
+    And the html element class changes to "light"
+    And the preference is persisted in localStorage
+
+  Scenario: Toggle to system mode
+    Given the user selects "System" in the theme toggle
+    When the OS preference is dark mode
+    Then the UI renders in dark mode
+    When the OS preference changes to light mode
+    Then the UI updates to light mode automatically
+
+  Scenario: Theme persists across page reloads
+    Given the user previously selected "Light" mode
+    When the user reloads the page
+    Then the UI renders in light mode without a flash of dark content
+
+  Scenario: No hydration mismatch
+    Given next-themes injects a script to set the theme before React hydrates
+    When the page loads
+    Then no hydration mismatch warning appears in the console
+```
+
+#### Tasks
+
+- [x] T-1.5.1: Configure `next-themes` `ThemeProvider` in `app/layout.tsx` with `attribute="class"`, `defaultTheme="dark"`, and `enableSystem`
+- [x] T-1.5.2: Create `ThemeToggle` component in `app/dashboard/_components/theme-toggle.tsx` with dark/light/system options
+- [x] T-1.5.3: Add `ThemeToggle` to the dashboard sidebar header
+- [x] T-1.5.4: Verify both dark and light themes render correctly across all existing pages
+- [x] T-1.5.5: Fix CSS cascade order — `:root` (light) before `.dark` in `globals.css` so dark default takes effect
 
 ---
 

@@ -8,22 +8,28 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 import { NAV_ITEMS } from '@/app/dashboard/_constants'
 import { UserMenu } from './user-menu'
+import { ThemeToggle } from './theme-toggle'
 
 export const SidebarNav = () => {
   const pathname = usePathname()
 
   return (
     <Sidebar>
+      <SidebarHeader className="flex flex-row items-center justify-between px-4 py-2">
+        <span className="text-sm font-semibold">Finance Dashboard</span>
+        <ThemeToggle />
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Finance Dashboard
+            Navigation
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>

@@ -1,0 +1,20 @@
+{
+  "chat.instructionFiles": [
+    { "path": "CLAUDE.md" },
+    { "path": ".claude/rules/code-style.md", "applyTo": "app/**/*.{ts,tsx},lib/**/*.{ts,tsx}" },
+    { "path": ".claude/rules/database.md", "applyTo": "supabase/**,lib/supabase/**,app/**/_schema.ts" },
+    { "path": ".claude/rules/design.md", "applyTo": "app/**/*.tsx,app/**/_components/**" },
+    { "path": ".claude/rules/security.md", "applyTo": "lib/supabase/**,app/**/_actions.ts,app/api/**,middleware.ts" },
+    { "path": ".claude/rules/specs-workflow.md", "applyTo": "SPECS.md,CLAUDE.md" },
+    { "path": ".claude/rules/testing.md", "applyTo": "**/__tests__/**,**/*.test.ts" }
+  ],
+  "github.copilot.chat.context.include": {
+    ".claude/README-ARCHITECTURE.md": true,
+    ".claude/README-SPECS.md": true,
+    ".claude/README-SKILLS.md": true,
+    ".claude/agents/**": true,
+    ".claude/skills/**": true
+  },
+  "chat.tools.autoApprove": true,
+  "chat.commandCenter.enabled": true
+}

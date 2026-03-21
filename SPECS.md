@@ -20,7 +20,7 @@
 | --------------------------------- | ------- | ---- | ----------- | --------- | ------- |
 | E1: Project Setup                 | 5       | 0    | 0           | 5         | 0       |
 | E2: Authentication & User Profile | 3       | 0    | 0           | 3         | 0       |
-| E3: Market Data Engine            | 4       | 4    | 0           | 0         | 0       |
+| E3: Market Data Engine            | 4       | 0    | 0           | 4         | 0       |
 | E4: Portfolio Tracker             | 4       | 4    | 0           | 0         | 0       |
 | E5: DCA Automation                | 3       | 3    | 0           | 0         | 0       |
 | E6: AI-Powered Insights           | 3       | 3    | 0           | 0         | 0       |
@@ -69,7 +69,7 @@ Feature: Project Initialization
 - [x] T-1.1.2: Configure `tsconfig.json` with strict mode, no `any`, path aliases (`@/`)
 - [x] T-1.1.3: Set up ESLint + Prettier with 2-space indentation
 - [x] T-1.1.4: Create `app/page.tsx` (landing page), `app/dashboard/page.tsx` (main dashboard placeholder)
-- [x] T-1.1.5: Configure environment variables structure (`.env.local.example`) for API keys and Supabase
+- [x] T-1.1.5: Configure environment variables structure (`.env.local`) for API keys and Supabase
 
 ---
 
@@ -402,7 +402,7 @@ Feature: Dashboard Layout
 
 ## E3: Market Data Engine
 
-### US-3.1: Stock & ETF Price Fetching [ ]
+### US-3.1: Stock & ETF Price Fetching [x]
 
 **As a** system
 **I want** to fetch real-time and historical prices for VOO and QQQ
@@ -441,16 +441,16 @@ Feature: Stock & ETF Price Fetching
 
 #### Tasks
 
-- [ ] T-3.1.1: Create `lib/market/stocks.ts` with `fetchPrice(symbol)` and `fetchHistory(symbol, interval, outputsize)` functions
-- [ ] T-3.1.2: Integrate Twelve Data API with proper error handling and type safety
-- [ ] T-3.1.3: Implement in-memory + Supabase cache layer with TTL (5 min for real-time, 24h for daily history)
-- [ ] T-3.1.4: Create Next.js API routes: `app/api/market/price/[symbol]/route.ts` and `app/api/market/history/[symbol]/route.ts`
-- [ ] T-3.1.5: Add request counting to stay within free tier limits
-- [ ] T-3.1.6: Write unit tests for price fetching, caching, and error handling
+- [x] T-3.1.1: Create `lib/market/stocks.ts` with `fetchPrice(symbol)` and `fetchHistory(symbol, interval, outputsize)` functions
+- [x] T-3.1.2: Integrate Twelve Data API with proper error handling and type safety
+- [x] T-3.1.3: Implement in-memory + Supabase cache layer with TTL (5 min for real-time, 24h for daily history)
+- [x] T-3.1.4: Create Next.js API routes: `app/api/market/price/[symbol]/route.ts` and `app/api/market/history/[symbol]/route.ts`
+- [x] T-3.1.5: Add request counting to stay within free tier limits
+- [x] T-3.1.6: Write unit tests for price fetching, caching, and error handling
 
 ---
 
-### US-3.2: Bitcoin Price & Market Data [ ]
+### US-3.2: Bitcoin Price & Market Data [x]
 
 **As a** system
 **I want** to fetch Bitcoin price, market cap, volume, and 24h change from CoinGecko
@@ -489,16 +489,16 @@ Feature: Bitcoin Price & Market Data
 
 #### Tasks
 
-- [ ] T-3.2.1: Create `lib/market/crypto.ts` with `fetchBitcoinPrice()` and `fetchBitcoinHistory(days)` functions
-- [ ] T-3.2.2: Integrate CoinGecko API (`/api/v3/coins/markets` and `/api/v3/coins/bitcoin/market_chart`)
-- [ ] T-3.2.3: Add CRC exchange rate fetching for dual-currency display
-- [ ] T-3.2.4: Implement cache layer matching stock data pattern
-- [ ] T-3.2.5: Create API routes: `app/api/market/crypto/[coinId]/route.ts`
-- [ ] T-3.2.6: Write unit tests for Bitcoin data fetching, currency conversion, and caching
+- [x] T-3.2.1: Create `lib/market/crypto.ts` with `fetchBitcoinPrice()` and `fetchBitcoinHistory(days)` functions
+- [x] T-3.2.2: Integrate CoinGecko API (`/api/v3/coins/markets` and `/api/v3/coins/bitcoin/market_chart`)
+- [x] T-3.2.3: Add CRC exchange rate fetching for dual-currency display
+- [x] T-3.2.4: Implement cache layer matching stock data pattern
+- [x] T-3.2.5: Create API routes: `app/api/market/crypto/[coinId]/route.ts`
+- [x] T-3.2.6: Write unit tests for Bitcoin data fetching, currency conversion, and caching
 
 ---
 
-### US-3.3: Fear & Greed Indices [ ] 🎨
+### US-3.3: Fear & Greed Indices [x] 🎨
 
 **As a** user
 **I want** to see the Fear & Greed Index for both stocks and crypto
@@ -532,15 +532,15 @@ Feature: Fear & Greed Indices
 
 #### Tasks
 
-- [ ] T-3.3.1: Create `lib/market/sentiment.ts` with `fetchCryptoFearGreed()` and `fetchCryptoFearGreedHistory(days)`
-- [ ] T-3.3.2: Integrate Alternative.me Fear & Greed API
-- [ ] T-3.3.3: Create visual sentiment gauge component in `app/market/_components/fear-greed-gauge.tsx` (radial gauge with color gradient)
-- [ ] T-3.3.4: Create API route: `app/api/market/sentiment/route.ts`
-- [ ] T-3.3.5: Write unit tests for sentiment data fetching and classification mapping
+- [x] T-3.3.1: Create `lib/market/sentiment.ts` with `fetchCryptoFearGreed()` and `fetchCryptoFearGreedHistory(days)`
+- [x] T-3.3.2: Integrate Alternative.me Fear & Greed API
+- [x] T-3.3.3: Create visual sentiment gauge component in `app/dashboard/market/_components/fear-greed-gauge.tsx` (radial gauge with color gradient)
+- [x] T-3.3.4: Create API route: `app/api/market/sentiment/route.ts`
+- [x] T-3.3.5: Write unit tests for sentiment data fetching and classification mapping
 
 ---
 
-### US-3.4: Macro Economic Indicators [ ] 🎨
+### US-3.4: Macro Economic Indicators [x] 🎨
 
 **As a** user
 **I want** to see key macro indicators (Fed rate, 10Y yield, DXY, CPI)
@@ -576,12 +576,12 @@ Feature: Macro Economic Indicators
 
 #### Tasks
 
-- [ ] T-3.4.1: Create `lib/market/macro.ts` with `fetchFredSeries(seriesId)` function
-- [ ] T-3.4.2: Integrate FRED API for series: FEDFUNDS, DGS10, CPIAUCSL, UNRATE
-- [ ] T-3.4.3: Add DXY fetching via Twelve Data API
-- [ ] T-3.4.4: Create macro indicators card component in `app/market/_components/macro-indicators.tsx`
-- [ ] T-3.4.5: Create API route: `app/api/market/macro/[seriesId]/route.ts`
-- [ ] T-3.4.6: Write unit tests for FRED data parsing and inflation rate calculation
+- [x] T-3.4.1: Create `lib/market/macro.ts` with `fetchFredSeries(seriesId)` function
+- [x] T-3.4.2: Integrate FRED API for series: FEDFUNDS, DGS10, CPIAUCSL, UNRATE
+- [x] T-3.4.3: Add DXY fetching via Twelve Data API
+- [x] T-3.4.4: Create macro indicators card component in `app/dashboard/market/_components/macro-indicators.tsx`
+- [x] T-3.4.5: Create API route: `app/api/market/macro/[seriesId]/route.ts`
+- [x] T-3.4.6: Write unit tests for FRED data parsing and inflation rate calculation
 
 ---
 

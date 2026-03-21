@@ -361,3 +361,160 @@ Make the homepage and internal pages render dark as default. The `.dark` CSS var
 - Verify no TypeScript errors and all tests pass
 
 ---
+
+## Prompt 18 — `market`
+
+**Intent**: Plan Epic E3 (Market Data Engine) before implementation.
+
+**Prompt**
+
+Run `/plan-item E3` to analyze the Market Data Engine epic. Break down all user stories (US-3.1 through US-3.4) into atomic implementation tasks, identify dependencies on E1 infrastructure and E2 auth, estimate complexity, and produce an ordered implementation plan covering stock/ETF price fetching (Twelve Data), Bitcoin data (CoinGecko), Fear & Greed sentiment (Alternative.me), and macroeconomic indicators (FRED + DXY).
+
+**Derived Tasks**
+
+- Read SPECS.md to extract all E3 user stories (US-3.1, US-3.2, US-3.3, US-3.4) and their Gherkin acceptance criteria
+- Identify dependencies on E1 (Supabase client, database schema) and E2 (auth middleware, protected routes)
+- Break down US-3.1 (Stock/ETF Prices) into tasks: Twelve Data API client, rate limiting, caching layer, price cards UI
+- Break down US-3.2 (Bitcoin Data) into tasks: CoinGecko API client, CRC conversion, Bitcoin price card
+- Break down US-3.3 (Fear & Greed) into tasks: Alternative.me client, gauge component, sentiment classification
+- Break down US-3.4 (Macro Indicators) into tasks: FRED API client, DXY via Twelve Data, inflation calculation, macro dashboard
+- Design the shared two-tier caching layer (in-memory + Supabase `market_cache` table)
+- Map each task to specific files following the colocated architecture
+- Order tasks by dependency chain and estimate implementation complexity
+- Produce the final implementation plan with file-level detail and key decisions
+
+---
+
+## Prompt 19 — `market`
+
+**Intent**: Implement Epic E3 (Market Data Engine) end-to-end with all key decisions approved.
+
+**Prompt**
+
+Implement Epic E3 — Market Data Engine. Approve all key decisions upfront. Execute all user stories (US-3.1 through US-3.4) end-to-end: create the `lib/market/` shared modules (cache, stocks, crypto, sentiment, macro) with a two-tier caching layer (in-memory Map + Supabase JSONB); build 5 API route handlers under `app/api/market/`; create the market dashboard page at `app/dashboard/market/` with price cards, Fear & Greed gauge (Recharts RadialBarChart), and macro indicators grid; write Zod schemas with full Vitest test coverage for all modules; and update SPECS.md status markers.
+
+**Derived Tasks**
+
+- Create `supabase/migrations/20260321000000_market_cache.sql` with `market_cache` and `api_request_counts` tables
+- Create `lib/market/cache.ts` with two-tier cache (in-memory Map + Supabase), rate limiting, TTL management
+- Create `lib/market/stocks.ts` with Twelve Data API client, Zod schemas, rate limit threshold (750/800)
+- Create `lib/market/crypto.ts` with CoinGecko API client, Bitcoin price + history, USD/CRC conversion
+- Create `lib/market/sentiment.ts` with Alternative.me Fear & Greed API client, classification helpers
+- Create `lib/market/macro.ts` with FRED API client, DXY via Twelve Data, YoY inflation calculation
+- Create `lib/market/index.ts` barrel export for all modules
+- Create 5 API route handlers: `price/[symbol]`, `history/[symbol]`, `crypto/[coinId]`, `sentiment`, `macro/[seriesId]`
+- Create `app/dashboard/market/_components/price-cards.tsx` with VOO, QQQ, BTC cards
+- Create `app/dashboard/market/_components/fear-greed-gauge.tsx` with Recharts RadialBarChart gauge
+- Create `app/dashboard/market/_components/macro-indicators.tsx` with indicator grid
+- Create `app/dashboard/market/loading.tsx` with skeleton loading state
+- Create `app/dashboard/market/page.tsx` as Server Component orchestrating all data fetches
+- Write test files: `cache.test.ts`, `stocks.test.ts`, `crypto.test.ts`, `sentiment.test.ts`, `macro.test.ts`
+- Update SPECS.md to mark all E3 tasks and stories as complete
+
+---
+
+## Prompt 20 — `market`
+
+**Intent**: Fix server-only import pulled into client bundle via sentiment module.
+
+**Prompt**
+
+Fix the `next/headers` server-only import error in the market page. The `fear-greed-gauge.tsx` client component imports `getSentimentColor` from `lib/market/sentiment.ts`, which transitively imports `cache.ts` → `lib/supabase/server.ts` → `next/headers`. Replace the runtime import with a `type`-only import and inline the `getSentimentColor` function directly in the gauge component to break the server dependency chain.
+
+**Derived Tasks**
+
+- Change the import in `fear-greed-gauge.tsx` from runtime import to `import type { FearGreed }` from sentiment
+- Inline the `getSentimentColor` function directly in `fear-greed-gauge.tsx`
+- Verify the market page renders without "next/headers" or server-only import errors in the browser
+
+---
+
+## Prompt 21 — `frontend`
+
+**Intent**: Match market page padding to portfolio page padding.
+
+**Prompt**
+
+Add `px-4 py-8` padding to the market page wrapper div in `app/dashboard/market/page.tsx` to match the portfolio page's padding, ensuring consistent spacing across all dashboard route segments.
+
+**Derived Tasks**
+
+- Add `px-4 py-8` classes to the root `<div>` in `app/dashboard/market/page.tsx`
+- Verify the market page spacing matches the portfolio page visually
+
+---
+
+## Prompt 22 — `market`
+
+**Intent**: Code review E3 implementation against conventions and acceptance criteria.
+
+**Prompt**
+
+Run `/review-item E3` to audit the entire Epic E3 (Market Data Engine) implementation. Check all `lib/market/` modules, API route handlers, dashboard market page, UI components (price cards, Fear & Greed gauge, macro indicators), Supabase migration, and test files against CLAUDE.md conventions, SPECS.md Gherkin acceptance criteria, security rules (RLS policies, auth on API routes, no exposed secrets), design system rules (asset colors, semantic colors, tabular numbers), TypeScript strict compliance, and test coverage. Report a verdict with file-level findings grouped by severity.
+
+**Derived Tasks**
+
+- Read all E3-related files: `lib/market/` modules, `app/api/market/` routes, `app/dashboard/market/` page and components, migration, tests
+- Verify security: auth checks on API routes, RLS policies scoped correctly, no secret exposure, validated inputs
+- Verify design compliance: VOO = blue, QQQ = purple, BTC = orange; emerald/rose for gains/losses; tabular-nums on prices
+- Verify correctness: cross-reference implementation against all Gherkin scenarios in SPECS.md (US-3.1 through US-3.4)
+- Verify type safety: no unnecessary `as` casts, proper return types, Zod validation on API responses
+- Verify architecture: shared code in `lib/market/`, client-safe imports in `_components/`, no server leaks into client
+- Verify test coverage: all pure logic tested (schemas, calculations, classifications, parsers), edge cases covered
+- Produce verdict (PASS / PASS WITH NOTES / NEEDS CHANGES) with specific file and line references
+
+---
+
+## Prompt 23 — `market`
+
+**Intent**: Apply all E3 code review fixes and add missing test coverage.
+
+**Prompt**
+
+Apply all 13 fixes identified in the `/review-item E3` code review, plus add missing test coverage:
+
+1. Extract `classifySentiment`, `getSentimentColor`, `getSentimentBgColor` into `lib/market/sentiment-shared.ts` (client-safe module) and update imports in `sentiment.ts` and `fear-greed-gauge.tsx`.
+2. Remove `as StockPrice | null` / `as BitcoinPrice | null` / `as FearGreed | null` casts in `app/dashboard/market/page.tsx` — add a typed `MarketData` interface with explicit return type annotation on `fetchMarketData()`.
+3. Fix VOO color from `text-sky-500` / `bg-sky-500/10` to `text-blue-500` / `bg-blue-500/10` in `price-cards.tsx` per the design system (VOO = blue).
+4. Add a justification comment for the `as unknown as Record<string, unknown>` cast in `lib/market/cache.ts`.
+5. Add `px-4 py-8` padding to `app/dashboard/market/loading.tsx` to match `page.tsx`.
+6. Add `supabase.auth.getUser()` auth guards to all 5 API routes under `app/api/market/`.
+7. Export `parseObservations` from `lib/market/macro.ts` and add 4 unit tests.
+8. Export `formatCompact` from `price-cards.tsx` and add 8 unit tests.
+9. Update `lib/market/index.ts` barrel with `parseObservations` and `SentimentClassification` exports from `sentiment-shared`.
+10. Create RLS migration `20260321100000_restrict_cache_rls.sql` restricting `market_cache` and `api_request_counts` write policies from `authenticated` to `service_role`.
+
+**Derived Tasks**
+
+- Create `lib/market/sentiment-shared.ts` with `classifySentiment`, `getSentimentColor`, `getSentimentBgColor`, and `SentimentClassification`
+- Refactor `lib/market/sentiment.ts` to import from `sentiment-shared` and re-export for backward compatibility
+- Replace inlined `getSentimentColor` in `fear-greed-gauge.tsx` with import from `sentiment-shared`
+- Add `MarketData` interface to `page.tsx` and annotate `fetchMarketData()` return type, remove all `as` casts
+- Change VOO accent color from `sky-500` to `blue-500` in `price-cards.tsx`
+- Export `formatCompact` from `price-cards.tsx`
+- Add justification comment above `as unknown as Record<string, unknown>` in `cache.ts`
+- Add `px-4 py-8` to `loading.tsx` wrapper div
+- Add `createClient` import and `supabase.auth.getUser()` guard to all 5 API route handlers
+- Export `parseObservations` from `macro.ts`
+- Update `lib/market/index.ts` barrel with new exports
+- Create `supabase/migrations/20260321100000_restrict_cache_rls.sql` restricting write policies to `service_role`
+- Add `parseObservations` tests to `lib/market/__tests__/macro.test.ts`
+- Create `app/dashboard/market/__tests__/format-compact.test.ts` with 8 tests
+- Run Vitest (111 pass), ESLint (0 warnings), and TypeScript check (0 errors)
+
+---
+
+## Prompt 24 — `frontend`
+
+**Intent**: Fix Recharts ResponsiveContainer rendering with zero dimensions during SSR.
+
+**Prompt**
+
+Fix the Recharts `ResponsiveContainer` warning "The width(-1) and height(-1) of chart should be greater than 0" in `app/dashboard/market/_components/fear-greed-gauge.tsx`. The container uses `width="100%"` and `height="100%"` which resolve to `-1` during SSR hydration before layout measurement. Switch to explicit pixel values (`width={180} height={180} minWidth={0}`) matching the parent's fixed `h-[180px] w-[180px]` dimensions.
+
+**Derived Tasks**
+
+- Replace `width="100%" height="100%"` with `width={180} height={180} minWidth={0}` on the `ResponsiveContainer` in `fear-greed-gauge.tsx`
+- Verify the Fear & Greed gauge renders without console warnings in the browser
+
+---

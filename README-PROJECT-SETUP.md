@@ -72,7 +72,7 @@ Created files:
 
 ### T-1.1.5: Configure environment variables
 
-Created `.env.local.example` with all required API keys:
+Created `.env.local` with all required API keys:
 
 ```dotenv
 # Supabase
@@ -464,7 +464,7 @@ npm run format:check
 
 ```
 finance/
-├── .env.local.example
+├── .env.local
 ├── .husky/
 │   ├── commit-msg              # commitlint validation
 │   ├── pre-commit              # lint-staged

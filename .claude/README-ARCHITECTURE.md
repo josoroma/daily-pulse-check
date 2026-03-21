@@ -36,41 +36,41 @@ app/<route>/
 
 ### Required Files
 
-| File | Purpose | Convention |
-|---|---|---|
-| `page.tsx` | Server Component entry point | `export default` allowed |
-| `_actions.ts` | Server Actions (mutations & queries) | `export async function verbNoun(...)` |
-| `_schema.ts` | Zod schemas + inferred types | `export const XSchema = z.object({...})` + `export type X = z.infer<typeof XSchema>` |
-| `_components/` | Route UI components | Folder with kebab-case files, PascalCase exports |
-| `__tests__/` | Unit tests | Mirror `_` files: `_schema.test.ts`, `_actions.test.ts` |
+| File           | Purpose                              | Convention                                                                           |
+| -------------- | ------------------------------------ | ------------------------------------------------------------------------------------ |
+| `page.tsx`     | Server Component entry point         | `export default` allowed                                                             |
+| `_actions.ts`  | Server Actions (mutations & queries) | `export async function verbNoun(...)`                                                |
+| `_schema.ts`   | Zod schemas + inferred types         | `export const XSchema = z.object({...})` + `export type X = z.infer<typeof XSchema>` |
+| `_components/` | Route UI components                  | Folder with kebab-case files, PascalCase exports                                     |
+| `__tests__/`   | Unit tests                           | Mirror `_` files: `_schema.test.ts`, `_actions.test.ts`                              |
 
 ### Optional Files
 
-| File | When to Add |
-|---|---|
-| `layout.tsx` | Route needs persistent UI wrapper |
-| `loading.tsx` | Route has async data loading |
-| `error.tsx` | Route needs custom error boundary |
-| `_types.ts` | 3+ files in this route share types |
-| `_hooks.ts` | Client-side hooks (form logic, event handlers) |
-| `_atoms.ts` | Route needs Jotai atoms for client state |
-| `_constants.ts` | Static values, enums, config options |
-| `_utils.ts` | Pure helper functions for this route |
+| File            | When to Add                                    |
+| --------------- | ---------------------------------------------- |
+| `layout.tsx`    | Route needs persistent UI wrapper              |
+| `loading.tsx`   | Route has async data loading                   |
+| `error.tsx`     | Route needs custom error boundary              |
+| `_types.ts`     | 3+ files in this route share types             |
+| `_hooks.ts`     | Client-side hooks (form logic, event handlers) |
+| `_atoms.ts`     | Route needs Jotai atoms for client state       |
+| `_constants.ts` | Static values, enums, config options           |
+| `_utils.ts`     | Pure helper functions for this route           |
 
 ---
 
 ## Naming Rules
 
-| Element | Convention | Example |
-|---|---|---|
-| Route module files | Underscore prefix | `_actions.ts`, `_schema.ts`, `_hooks.ts` |
-| Component folder | Underscore prefix | `_components/` |
-| Component files | kebab-case | `positions-table.tsx`, `fear-greed-gauge.tsx` |
-| Component names | PascalCase | `PositionsTable`, `FearGreedGauge` |
-| Test folder | Double underscore | `__tests__/` |
-| Test files | Mirror source prefix | `_schema.test.ts`, `_utils.test.ts` |
-| Schema exports | `<Name>Schema` + `<Name>` type | `export const PositionSchema = ...` |
-| Action exports | `verbNoun` async function | `createPosition`, `updateProfile` |
+| Element            | Convention                     | Example                                       |
+| ------------------ | ------------------------------ | --------------------------------------------- |
+| Route module files | Underscore prefix              | `_actions.ts`, `_schema.ts`, `_hooks.ts`      |
+| Component folder   | Underscore prefix              | `_components/`                                |
+| Component files    | kebab-case                     | `positions-table.tsx`, `fear-greed-gauge.tsx` |
+| Component names    | PascalCase                     | `PositionsTable`, `FearGreedGauge`            |
+| Test folder        | Double underscore              | `__tests__/`                                  |
+| Test files         | Mirror source prefix           | `_schema.test.ts`, `_utils.test.ts`           |
+| Schema exports     | `<Name>Schema` + `<Name>` type | `export const PositionSchema = ...`           |
+| Action exports     | `verbNoun` async function      | `createPosition`, `updateProfile`             |
 
 ---
 
@@ -83,7 +83,7 @@ lib/
 ├── supabase/             # DB client, server helpers, middleware, types
 │   ├── client.ts
 │   ├── server.ts
-│   ├── middleware.ts
+│   ├── proxy.ts
 │   └── database.types.ts
 ├── market/               # External API clients (Twelve Data, CoinGecko, FRED, Alternative.me)
 │   ├── stocks.ts
@@ -124,15 +124,15 @@ Is this code used by ONLY this route?
 
 ## Server / Client Boundary
 
-| Layer | Runs on | Convention |
-|---|---|---|
-| `page.tsx` | Server | Async data fetching, pass props to client components |
-| `_actions.ts` | Server | `'use server'` — mutations, Zod validation, Supabase calls |
-| `_schema.ts` | Shared | Importable on both server and client |
+| Layer               | Runs on                 | Convention                                                  |
+| ------------------- | ----------------------- | ----------------------------------------------------------- |
+| `page.tsx`          | Server                  | Async data fetching, pass props to client components        |
+| `_actions.ts`       | Server                  | `'use server'` — mutations, Zod validation, Supabase calls  |
+| `_schema.ts`        | Shared                  | Importable on both server and client                        |
 | `_components/*.tsx` | Client (if interactive) | `'use client'` only if needed (hooks, events, browser APIs) |
-| `_hooks.ts` | Client | `'use client'` — form logic, event handlers |
-| `_atoms.ts` | Client | Jotai atoms — client state management |
-| `lib/**` | Server | External API calls, DB helpers — never imported by client |
+| `_hooks.ts`         | Client                  | `'use client'` — form logic, event handlers                 |
+| `_atoms.ts`         | Client                  | Jotai atoms — client state management                       |
+| `lib/**`            | Server                  | External API calls, DB helpers — never imported by client   |
 
 ---
 

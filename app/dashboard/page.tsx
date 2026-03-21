@@ -1,6 +1,6 @@
 export default function DashboardPage() {
   return (
-    <div className="mx-auto max-w-screen-xl space-y-6 px-4 py-8">
+    <div className="space-y-6 px-4 py-8">
       {/* Page header */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>

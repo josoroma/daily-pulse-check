@@ -19,7 +19,7 @@
 | Epic                              | Stories | Todo | In Progress | Completed | Blocked |
 | --------------------------------- | ------- | ---- | ----------- | --------- | ------- |
 | E1: Project Setup                 | 4       | 0    | 0           | 4         | 0       |
-| E2: Authentication & User Profile | 3       | 3    | 0           | 0         | 0       |
+| E2: Authentication & User Profile | 3       | 0    | 0           | 3         | 0       |
 | E3: Market Data Engine            | 4       | 4    | 0           | 0         | 0       |
 | E4: Portfolio Tracker             | 4       | 4    | 0           | 0         | 0       |
 | E5: DCA Automation                | 3       | 3    | 0           | 0         | 0       |
@@ -204,7 +204,7 @@ Feature: Git Hooks & Commit Quality
 
 ## E2: Authentication & User Profile
 
-### US-2.1: Supabase Authentication [ ] 🎨
+### US-2.1: Supabase Authentication [x] 🎨
 
 **As a** user
 **I want** to sign up and log in with email/password or OAuth
@@ -251,16 +251,16 @@ Feature: Authentication
 
 #### Tasks
 
-- [ ] T-2.1.1: Configure Supabase Auth with email/password and Google OAuth provider
-- [ ] T-2.1.2: Create `app/auth/login/page.tsx` with login form (React Hook Form + Zod validation)
-- [ ] T-2.1.3: Create `app/auth/signup/page.tsx` with sign-up form
-- [ ] T-2.1.4: Implement Supabase auth middleware in `middleware.ts` for route protection
-- [ ] T-2.1.5: Create auth callback route `app/auth/callback/route.ts` for OAuth
-- [ ] T-2.1.6: Add `AuthProvider` wrapper with Jotai atom for session state
+- [x] T-2.1.1: Configure Supabase Auth with email/password and Google OAuth provider
+- [x] T-2.1.2: Create `app/auth/login/page.tsx` with login form (React Hook Form + Zod validation)
+- [x] T-2.1.3: Create `app/auth/signup/page.tsx` with sign-up form
+- [x] T-2.1.4: Implement Supabase auth proxy in `proxy.ts` for route protection
+- [x] T-2.1.5: Create auth callback route `app/auth/callback/route.ts` for OAuth
+- [x] T-2.1.6: Add `AuthProvider` wrapper with Jotai atom for session state
 
 ---
 
-### US-2.2: User Profile Setup [ ] 🎨
+### US-2.2: User Profile Setup [x] 🎨
 
 **As a** user
 **I want** to set my base currency, country, and risk tolerance
@@ -299,15 +299,15 @@ Feature: User Profile
 
 #### Tasks
 
-- [ ] T-2.2.1: Create `profiles` table RLS policies (users can only read/update their own profile)
-- [ ] T-2.2.2: Create onboarding modal component in `app/profile/_components/onboarding-modal.tsx`
-- [ ] T-2.2.3: Build profile form with fields: display name, base currency (USD/CRC), country, risk tolerance (Conservative/Medium/Medium-High/Aggressive)
-- [ ] T-2.2.4: Implement profile Zod schema with validation
-- [ ] T-2.2.5: Wire form submission to Supabase upsert with optimistic UI update
+- [x] T-2.2.1: Create `profiles` table RLS policies (users can only read/update their own profile)
+- [x] T-2.2.2: Create onboarding modal component in `app/profile/_components/onboarding-modal.tsx`
+- [x] T-2.2.3: Build profile form with fields: display name, base currency (USD/CRC), country, risk tolerance (Conservative/Medium/Medium-High/Aggressive)
+- [x] T-2.2.4: Implement profile Zod schema with validation
+- [x] T-2.2.5: Wire form submission to Supabase upsert with optimistic UI update
 
 ---
 
-### US-2.3: Protected Dashboard Layout [ ] 🎨
+### US-2.3: Protected Dashboard Layout [x] 🎨
 
 **As a** user
 **I want** a sidebar navigation layout for the dashboard
@@ -340,11 +340,11 @@ Feature: Dashboard Layout
 
 #### Tasks
 
-- [ ] T-2.3.1: Create `app/dashboard/layout.tsx` with sidebar navigation using shadcn/ui
-- [ ] T-2.3.2: Implement sidebar items: Dashboard, Portfolio, Markets, DCA, Alerts, Insights, Settings
-- [ ] T-2.3.3: Add responsive behavior — collapsible sidebar on mobile
-- [ ] T-2.3.4: Display user avatar and name in sidebar footer with logout button
-- [ ] T-2.3.5: Create placeholder pages for each sidebar route under `app/dashboard/`
+- [x] T-2.3.1: Create `app/dashboard/layout.tsx` with sidebar navigation using shadcn/ui
+- [x] T-2.3.2: Implement sidebar items: Dashboard, Portfolio, Markets, DCA, Alerts, Insights, Settings
+- [x] T-2.3.3: Add responsive behavior — collapsible sidebar on mobile
+- [x] T-2.3.4: Display user avatar and name in sidebar footer with logout button
+- [x] T-2.3.5: Create placeholder pages for each sidebar route under `app/dashboard/`
 
 ---
 
@@ -1669,7 +1669,7 @@ lib/
 ├── supabase/
 │   ├── client.ts                       # Browser Supabase client
 │   ├── server.ts                       # Server Supabase client
-│   ├── middleware.ts                   # Auth middleware helper
+│   ├── proxy.ts                   # Auth proxy helper
 │   └── database.types.ts              # Generated types
 ├── market/
 │   ├── stocks.ts                       # Twelve Data integration

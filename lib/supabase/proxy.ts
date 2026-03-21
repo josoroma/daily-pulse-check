@@ -1,6 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+const PUBLIC_ROUTES = ['/', '/auth/login', '/auth/signup', '/auth/callback']
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -28,7 +30,28 @@ export async function updateSession(request: NextRequest) {
   )
 
   // Refresh the session — this is critical for Server Components
-  await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  const pathname = request.nextUrl.pathname
+  const isPublicRoute = PUBLIC_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith('/auth/'),
+  )
+
+  // Redirect unauthenticated users away from protected routes
+  if (!user && !isPublicRoute) {
+    const loginUrl = request.nextUrl.clone()
+    loginUrl.pathname = '/auth/login'
+    return NextResponse.redirect(loginUrl)
+  }
+
+  // Redirect authenticated users away from auth pages to dashboard
+  if (user && pathname.startsWith('/auth/')) {
+    const dashboardUrl = request.nextUrl.clone()
+    dashboardUrl.pathname = '/dashboard'
+    return NextResponse.redirect(dashboardUrl)
+  }
 
   return supabaseResponse
 }

@@ -139,8 +139,8 @@ Created files:
 
 - `lib/supabase/client.ts` — browser client using `createBrowserClient` from `@supabase/ssr`
 - `lib/supabase/server.ts` — server client using `createServerClient` with Next.js async `cookies()` adapter
-- `lib/supabase/middleware.ts` — `updateSession()` helper for session refresh
-- `middleware.ts` — Next.js middleware calling `updateSession()`, matcher excludes static files
+- `lib/supabase/proxy.ts` — `updateSession()` helper for session refresh
+- `proxy.ts` — Next.js proxy calling `updateSession()`, matcher excludes static files
 
 ---
 
@@ -493,9 +493,9 @@ finance/
 │   └── supabase/
 │       ├── client.ts           # Browser Supabase client
 │       ├── server.ts           # Server Supabase client
-│       ├── middleware.ts        # Session refresh helper
+│       ├── proxy.ts        # Session refresh helper
 │       └── database.types.ts   # Auto-generated types
-├── middleware.ts                # Next.js middleware (auth)
+├── proxy.ts                # Next.js proxy (auth)
 ├── next.config.ts
 ├── package.json
 ├── postcss.config.mjs

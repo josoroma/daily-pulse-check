@@ -1,9 +1,9 @@
 ---
 paths:
-  - "lib/supabase/**"
-  - "app/**/_actions.ts"
-  - "app/api/**"
-  - "middleware.ts"
+  - 'lib/supabase/**'
+  - 'app/**/_actions.ts'
+  - 'app/api/**'
+  - 'proxy.ts'
 ---
 
 # Security Rules

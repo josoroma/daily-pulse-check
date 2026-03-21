@@ -51,15 +51,15 @@ app/<route>/
 
 ### Naming Rules
 
-| Convention | Rule |
-|---|---|
-| Route files | Underscore prefix: `_actions.ts`, `_schema.ts`, `_hooks.ts`, `_atoms.ts`, `_types.ts`, `_utils.ts`, `_constants.ts` |
-| Component folder | `_components/` (underscore prefix, not a route segment) |
-| Component files | kebab-case: `positions-table.tsx`, `fear-greed-gauge.tsx` |
-| Component names | PascalCase: `PositionsTable`, `FearGreedGauge` |
-| Test folder | `__tests__/` — mirrors the `_` file it tests |
-| Schema exports | `export const <Name>Schema = z.object({...})` + `export type <Name> = z.infer<typeof <Name>Schema>` |
-| Action exports | `export async function <verbNoun>(...)` — e.g., `createPosition`, `updateProfile` |
+| Convention       | Rule                                                                                                                |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Route files      | Underscore prefix: `_actions.ts`, `_schema.ts`, `_hooks.ts`, `_atoms.ts`, `_types.ts`, `_utils.ts`, `_constants.ts` |
+| Component folder | `_components/` (underscore prefix, not a route segment)                                                             |
+| Component files  | kebab-case: `positions-table.tsx`, `fear-greed-gauge.tsx`                                                           |
+| Component names  | PascalCase: `PositionsTable`, `FearGreedGauge`                                                                      |
+| Test folder      | `__tests__/` — mirrors the `_` file it tests                                                                        |
+| Schema exports   | `export const <Name>Schema = z.object({...})` + `export type <Name> = z.infer<typeof <Name>Schema>`                 |
+| Action exports   | `export async function <verbNoun>(...)` — e.g., `createPosition`, `updateProfile`                                   |
 
 ### Shared Code (`lib/`)
 
@@ -70,7 +70,7 @@ lib/
 ├── supabase/             # Supabase client, server, middleware helpers
 │   ├── client.ts
 │   ├── server.ts
-│   ├── middleware.ts
+│   ├── proxy.ts
 │   └── database.types.ts
 ├── market/               # External API integrations (reused across routes)
 │   ├── stocks.ts         # Twelve Data

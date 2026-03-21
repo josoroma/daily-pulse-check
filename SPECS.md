@@ -16,24 +16,24 @@
 
 ## Progress Summary
 
-| Epic | Stories | Todo | In Progress | Completed | Blocked |
-| --- | --- | --- | --- | --- | --- |
-| E1: Project Setup | 4 | 4 | 0 | 0 | 0 |
-| E2: Authentication & User Profile | 3 | 3 | 0 | 0 | 0 |
-| E3: Market Data Engine | 4 | 4 | 0 | 0 | 0 |
-| E4: Portfolio Tracker | 4 | 4 | 0 | 0 | 0 |
-| E5: DCA Automation | 3 | 3 | 0 | 0 | 0 |
-| E6: AI-Powered Insights | 3 | 3 | 0 | 0 | 0 |
-| E7: Alerts & Notifications | 3 | 3 | 0 | 0 | 0 |
-| E8: Bitcoin On-Chain Analytics | 3 | 3 | 0 | 0 | 0 |
-| E9: Analytics & Reporting | 3 | 3 | 0 | 0 | 0 |
-| E10: Settings & Data Management | 2 | 2 | 0 | 0 | 0 |
+| Epic                              | Stories | Todo | In Progress | Completed | Blocked |
+| --------------------------------- | ------- | ---- | ----------- | --------- | ------- |
+| E1: Project Setup                 | 4       | 0    | 0           | 4         | 0       |
+| E2: Authentication & User Profile | 3       | 3    | 0           | 0         | 0       |
+| E3: Market Data Engine            | 4       | 4    | 0           | 0         | 0       |
+| E4: Portfolio Tracker             | 4       | 4    | 0           | 0         | 0       |
+| E5: DCA Automation                | 3       | 3    | 0           | 0         | 0       |
+| E6: AI-Powered Insights           | 3       | 3    | 0           | 0         | 0       |
+| E7: Alerts & Notifications        | 3       | 3    | 0           | 0         | 0       |
+| E8: Bitcoin On-Chain Analytics    | 3       | 3    | 0           | 0         | 0       |
+| E9: Analytics & Reporting         | 3       | 3    | 0           | 0         | 0       |
+| E10: Settings & Data Management   | 2       | 2    | 0           | 0         | 0       |
 
 ---
 
 ## E1: Project Setup
 
-### US-1.1: Initialize Next.js Project with TypeScript [ ] 🎨
+### US-1.1: Initialize Next.js Project with TypeScript [x] 🎨
 
 **As a** developer
 **I want** a Next.js App Router project with TypeScript strict mode
@@ -65,15 +65,15 @@ Feature: Project Initialization
 
 #### Tasks
 
-- [ ] T-1.1.1: Initialize Next.js project with `create-next-app` (App Router, TypeScript, Tailwind CSS v4)
-- [ ] T-1.1.2: Configure `tsconfig.json` with strict mode, no `any`, path aliases (`@/`)
-- [ ] T-1.1.3: Set up ESLint + Prettier with 2-space indentation
-- [ ] T-1.1.4: Create `app/page.tsx` (landing page), `app/dashboard/page.tsx` (main dashboard placeholder)
-- [ ] T-1.1.5: Configure environment variables structure (`.env.local.example`) for API keys and Supabase
+- [x] T-1.1.1: Initialize Next.js project with `create-next-app` (App Router, TypeScript, Tailwind CSS v4)
+- [x] T-1.1.2: Configure `tsconfig.json` with strict mode, no `any`, path aliases (`@/`)
+- [x] T-1.1.3: Set up ESLint + Prettier with 2-space indentation
+- [x] T-1.1.4: Create `app/page.tsx` (landing page), `app/dashboard/page.tsx` (main dashboard placeholder)
+- [x] T-1.1.5: Configure environment variables structure (`.env.local.example`) for API keys and Supabase
 
 ---
 
-### US-1.2: Install Core Dependencies [ ]
+### US-1.2: Install Core Dependencies [x]
 
 **As a** developer
 **I want** shadcn/ui, Jotai, React Hook Form, Zod, and Supabase client installed
@@ -103,16 +103,16 @@ Feature: Core Dependencies
 
 #### Tasks
 
-- [ ] T-1.2.1: Install and initialize `shadcn/ui` with default theme configuration
-- [ ] T-1.2.2: Install `jotai` for global state management
-- [ ] T-1.2.3: Install `react-hook-form` + `@hookform/resolvers` + `zod` for form handling
-- [ ] T-1.2.4: Install `@supabase/supabase-js` and `@supabase/ssr` for auth and database
-- [ ] T-1.2.5: Install `ai` (Vercel AI SDK) and `@ai-sdk/openai` for AI features
-- [ ] T-1.2.6: Create `lib/supabase/client.ts` and `lib/supabase/server.ts` helpers
+- [x] T-1.2.1: Install and initialize `shadcn/ui` with default theme configuration
+- [x] T-1.2.2: Install `jotai` for global state management
+- [x] T-1.2.3: Install `react-hook-form` + `@hookform/resolvers` + `zod` for form handling
+- [x] T-1.2.4: Install `@supabase/supabase-js` and `@supabase/ssr` for auth and database
+- [x] T-1.2.5: Install `ai` (Vercel AI SDK) and `@ai-sdk/openai` for AI features
+- [x] T-1.2.6: Create `lib/supabase/client.ts` and `lib/supabase/server.ts` helpers
 
 ---
 
-### US-1.3: Database Schema & Testing Infrastructure [ ]
+### US-1.3: Database Schema & Testing Infrastructure [x]
 
 **As a** developer
 **I want** a Supabase database schema and test runner configured
@@ -146,16 +146,16 @@ Feature: Database Schema & Testing
 
 #### Tasks
 
-- [ ] T-1.3.1: Install and configure Supabase CLI for local development
-- [ ] T-1.3.2: Create initial migration with tables: `profiles`, `portfolios`, `positions`, `transactions`, `dca_schedules`, `alerts`
-- [ ] T-1.3.3: Define Zod schemas in colocated `_schema.ts` files per route segment (e.g., `app/portfolio/_schema.ts`)
-- [ ] T-1.3.4: Generate TypeScript types from Supabase schema (`supabase gen types`)
-- [ ] T-1.3.5: Configure Vitest with TypeScript support and path aliases
-- [ ] T-1.3.6: Create sample unit tests for Zod schema validation
+- [x] T-1.3.1: Install and configure Supabase CLI for local development
+- [x] T-1.3.2: Create initial migration with tables: `profiles`, `portfolios`, `positions`, `transactions`, `dca_schedules`, `alerts`
+- [x] T-1.3.3: Define Zod schemas in colocated `_schema.ts` files per route segment (e.g., `app/portfolio/_schema.ts`)
+- [x] T-1.3.4: Generate TypeScript types from Supabase schema (`supabase gen types`)
+- [x] T-1.3.5: Configure Vitest with TypeScript support and path aliases
+- [x] T-1.3.6: Create sample unit tests for Zod schema validation
 
 ---
 
-### US-1.4: Git Hooks & Commit Quality [ ]
+### US-1.4: Git Hooks & Commit Quality [x]
 
 **As a** developer
 **I want** automated pre-commit linting, commit message validation, and pre-push type checking
@@ -193,12 +193,12 @@ Feature: Git Hooks & Commit Quality
 
 #### Tasks
 
-- [ ] T-1.4.1: Install `husky`, `lint-staged`, `@commitlint/cli`, `@commitlint/config-conventional`
-- [ ] T-1.4.2: Run `npx husky init` and configure `.husky/pre-commit` to execute `npx lint-staged`
-- [ ] T-1.4.3: Create `.lintstagedrc.js` with ESLint + Prettier for `*.{ts,tsx}` and Prettier for `*.{json,md}`
-- [ ] T-1.4.4: Configure `.husky/commit-msg` to execute `npx --no -- commitlint --edit "$1"`
-- [ ] T-1.4.5: Create `commitlint.config.js` with `scope-enum` restricted to project domains (`setup`, `auth`, `portfolio`, `market`, `dca`, `alerts`, `insights`, `bitcoin`, `analytics`, `settings`)
-- [ ] T-1.4.6: Configure `.husky/pre-push` to execute `npx tsc --noEmit && npm test`
+- [x] T-1.4.1: Install `husky`, `lint-staged`, `@commitlint/cli`, `@commitlint/config-conventional`
+- [x] T-1.4.2: Run `npx husky init` and configure `.husky/pre-commit` to execute `npx lint-staged`
+- [x] T-1.4.3: Create `.lintstagedrc.js` with ESLint + Prettier for `*.{ts,tsx}` and Prettier for `*.{json,md}`
+- [x] T-1.4.4: Configure `.husky/commit-msg` to execute `npx --no -- commitlint --edit "$1"`
+- [x] T-1.4.5: Create `commitlint.config.js` with `scope-enum` restricted to project domains (`setup`, `auth`, `portfolio`, `market`, `dca`, `alerts`, `insights`, `bitcoin`, `analytics`, `settings`)
+- [x] T-1.4.6: Configure `.husky/pre-push` to execute `npx tsc --noEmit && npm test`
 
 ---
 
@@ -1698,39 +1698,39 @@ lib/
 
 ## Tech Stack
 
-| Layer | Technology | Purpose |
-|---|---|---|
-| Framework | Next.js 15 (App Router) | Full-stack React framework |
-| Language | TypeScript (strict) | Type safety |
-| Styling | Tailwind CSS v4 | Utility-first CSS |
-| UI Components | shadcn/ui | Accessible, composable components |
-| State Management | Jotai | Atomic state for client-side reactivity |
-| Forms | React Hook Form + Zod | Form handling + validation |
-| Database & Auth | Supabase (Postgres + Auth + RLS) | Backend-as-a-Service |
-| AI | Vercel AI SDK + OpenAI | Streaming AI responses |
-| Charts | Recharts | Data visualization |
-| Hosting | Vercel | Deployment + Cron Jobs + Edge Functions |
-| Email | Resend | Transactional email notifications |
-| Notifications | Telegram Bot API | Real-time push notifications |
-| Testing | Vitest | Unit and integration tests |
+| Layer            | Technology                       | Purpose                                 |
+| ---------------- | -------------------------------- | --------------------------------------- |
+| Framework        | Next.js 15 (App Router)          | Full-stack React framework              |
+| Language         | TypeScript (strict)              | Type safety                             |
+| Styling          | Tailwind CSS v4                  | Utility-first CSS                       |
+| UI Components    | shadcn/ui                        | Accessible, composable components       |
+| State Management | Jotai                            | Atomic state for client-side reactivity |
+| Forms            | React Hook Form + Zod            | Form handling + validation              |
+| Database & Auth  | Supabase (Postgres + Auth + RLS) | Backend-as-a-Service                    |
+| AI               | Vercel AI SDK + OpenAI           | Streaming AI responses                  |
+| Charts           | Recharts                         | Data visualization                      |
+| Hosting          | Vercel                           | Deployment + Cron Jobs + Edge Functions |
+| Email            | Resend                           | Transactional email notifications       |
+| Notifications    | Telegram Bot API                 | Real-time push notifications            |
+| Testing          | Vitest                           | Unit and integration tests              |
 
 ---
 
 ## External APIs
 
-| API | Purpose | Free Tier |
-|---|---|---|
-| Twelve Data | Stock/ETF prices, DXY | 800 req/day |
-| CoinGecko | Crypto prices, market data | Generous free tier |
-| FRED | Macro economic data (rates, CPI) | Unlimited |
-| Alternative.me | Crypto Fear & Greed Index | Unlimited |
-| Mempool.space | Bitcoin on-chain data | Unlimited |
-| LookIntoBitcoin | MVRV Z-Score, S2F data | Web scraping / API |
+| API             | Purpose                          | Free Tier          |
+| --------------- | -------------------------------- | ------------------ |
+| Twelve Data     | Stock/ETF prices, DXY            | 800 req/day        |
+| CoinGecko       | Crypto prices, market data       | Generous free tier |
+| FRED            | Macro economic data (rates, CPI) | Unlimited          |
+| Alternative.me  | Crypto Fear & Greed Index        | Unlimited          |
+| Mempool.space   | Bitcoin on-chain data            | Unlimited          |
+| LookIntoBitcoin | MVRV Z-Score, S2F data           | Web scraping / API |
 
 ---
 
 ## Changelog
 
-| Date | Change | Author |
-| --- | --- | --- |
-| 2026-03-17 | Initial SPECS: 10 epics, 31 user stories, full Gherkin acceptance criteria, architecture overview | @dev |
+| Date       | Change                                                                                            | Author |
+| ---------- | ------------------------------------------------------------------------------------------------- | ------ |
+| 2026-03-17 | Initial SPECS: 10 epics, 31 user stories, full Gherkin acceptance criteria, architecture overview | @dev   |

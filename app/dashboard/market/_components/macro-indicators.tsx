@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Skeleton } from '@/components/ui/skeleton'
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import type { MacroIndicator } from '@/lib/market/macro'
+import { formatMonthYear } from '@/lib/date'
 
 interface MacroIndicatorsProps {
   indicators: MacroIndicator[]
@@ -77,9 +78,7 @@ const IndicatorItem = ({
         ? indicator.value.toFixed(2)
         : indicator.value.toLocaleString()
 
-  const formattedDate = indicator.date
-    ? new Date(indicator.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-    : ''
+  const formattedDate = indicator.date ? formatMonthYear(indicator.date) : ''
 
   return (
     <div

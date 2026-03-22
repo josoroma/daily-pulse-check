@@ -78,6 +78,12 @@ Consistent across all charts and badges:
 
 - Default theme is dark (`bg-background` = zinc-950), managed by `next-themes` with `ThemeProvider`
 - **CSS cascade**: In `globals.css`, `:root` (light) MUST come before `.dark` — equal specificity means last-in-source wins
+
+## Date Formatting
+
+- Never use `toLocaleDateString()` or `toLocaleString()` for rendering dates — causes hydration mismatches
+- Always import date helpers from `@/lib/date` — `formatDateShort`, `formatMonthYear`, `formatDateISO`
+- Costa Rica timezone is explicit via `@date-fns/tz`, not a hidden global default
 - Theme options: `dark`, `light`, `system` — toggled via `ThemeToggle` component
 - Use semantic CSS variables (`bg-background`, `bg-card`, `text-foreground`) — they adapt automatically
 - Use `dark:` prefix only when semantic variables don't cover the case (e.g., `shadow-sm dark:shadow-none`)

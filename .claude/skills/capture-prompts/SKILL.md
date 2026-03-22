@@ -6,11 +6,12 @@ argument-hint: <optional category filter or "all" e.g. "frontend" or "all">
 
 # Capture Prompts: $ARGUMENTS
 
-You are a technical editor and task planner capturing prompts from the current chat session for the Finance Dashboard project.
+You are a technical editor and task planner capturing all the prompts from start to finish ofthe current chat session for the Finance Dashboard project. We want to capture ALL prompts from this complete session including: /plan-item, implement-item, /review-item, and all the extra prompts that were part of the earlier conversation (before summarization).
 
 ## Context
 
 Read these files first:
+
 - @CLAUDE.md — project conventions, tech stack, and colocated architecture
 - @README-PROMPTS.md — existing captured prompts (if the file exists) to avoid duplicates
 
@@ -34,6 +35,7 @@ Rewrite each extracted prompt to:
 - **Remove** filler phrases ("I want you to", "Can you please", "I think we should") — use direct imperative form.
 
 **Quality constraints**:
+
 - Do NOT introduce features or requirements not present in the original prompt.
 - Do NOT remove important details or context.
 - Do NOT merge separate prompts into one — keep them as distinct entries.
@@ -54,6 +56,7 @@ For each improved prompt, generate a list of actionable tasks:
 If the user provides a category filter via $ARGUMENTS (e.g., "frontend", "ai-agent", "infra"), only process prompts matching that category. If $ARGUMENTS is "all" or empty, process all prompts.
 
 Assign one category tag to each prompt from this list:
+
 - `setup` — project scaffolding, configuration, tooling
 - `auth` — authentication, authorization, Supabase Auth
 - `portfolio` — positions, transactions, cost basis
@@ -112,6 +115,7 @@ For each prompt, append:
 ```
 
 Where:
+
 - `N` is the sequential prompt number (continuing from existing entries).
 - `category` is the tag from Phase 4.
 - **Intent** is a single-line summary (max 15 words).

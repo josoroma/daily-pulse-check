@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { todayCR } from '@/lib/date'
 
 interface CacheEntry<T> {
   data: T
@@ -120,7 +121,7 @@ export async function getStaleFromSupabaseCache<T>(
 // Request counting for rate-limited APIs
 export async function incrementRequestCount(provider: string): Promise<number> {
   const supabase = await createClient()
-  const today = new Date().toISOString().split('T')[0]
+  const today = todayCR()
 
   // Try to get existing count
   const { data: existing } = await supabase
@@ -146,7 +147,7 @@ export async function incrementRequestCount(provider: string): Promise<number> {
 
 export async function getRequestCount(provider: string): Promise<number> {
   const supabase = await createClient()
-  const today = new Date().toISOString().split('T')[0]
+  const today = todayCR()
 
   const { data } = await supabase
     .from('api_request_counts')

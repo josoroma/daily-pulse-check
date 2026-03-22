@@ -21,7 +21,7 @@
 | E1: Project Setup                 | 5       | 0    | 0           | 5         | 0       |
 | E2: Authentication & User Profile | 3       | 0    | 0           | 3         | 0       |
 | E3: Market Data Engine            | 4       | 0    | 0           | 4         | 0       |
-| E4: Portfolio Tracker             | 4       | 4    | 0           | 0         | 0       |
+| E4: Portfolio Tracker             | 4       | 0    | 0           | 4         | 0       |
 | E5: DCA Automation                | 3       | 3    | 0           | 0         | 0       |
 | E6: AI-Powered Insights           | 3       | 3    | 0           | 0         | 0       |
 | E7: Alerts & Notifications        | 3       | 3    | 0           | 0         | 0       |
@@ -109,6 +109,7 @@ Feature: Core Dependencies
 - [x] T-1.2.4: Install `@supabase/supabase-js` and `@supabase/ssr` for auth and database
 - [x] T-1.2.5: Install `ai` (Vercel AI SDK) and `@ai-sdk/openai` for AI features
 - [x] T-1.2.6: Create `lib/supabase/client.ts` and `lib/supabase/server.ts` helpers
+- [x] T-1.2.7: Install `date-fns` + `@date-fns/tz`, create centralized date layer in `lib/date/`
 
 ---
 
@@ -587,7 +588,7 @@ Feature: Macro Economic Indicators
 
 ## E4: Portfolio Tracker
 
-### US-4.1: Manual Position Entry [ ] 🎨
+### US-4.1: Manual Position Entry [x] 🎨
 
 **As a** user
 **I want** to manually add my investment positions (asset, quantity, buy price, date)
@@ -643,16 +644,16 @@ Feature: Manual Position Entry
 
 #### Tasks
 
-- [ ] T-4.1.1: Create `positions` table RLS policies (users CRUD their own positions only)
-- [ ] T-4.1.2: Build "Add Position" modal with React Hook Form + Zod: fields for asset type (ETF/Crypto), symbol, quantity, buy price (USD), date, optional notes
-- [ ] T-4.1.3: Implement position CRUD Server Actions in `app/portfolio/_actions.ts`
-- [ ] T-4.1.4: Create positions table component in `app/portfolio/_components/positions-table.tsx` with sort/filter
-- [ ] T-4.1.5: Calculate unrealized P&L by fetching current price vs buy price
-- [ ] T-4.1.6: Write unit tests for P&L calculations and form validation
+- [x] T-4.1.1: Create `positions` table RLS policies (users CRUD their own positions only)
+- [x] T-4.1.2: Build "Add Position" modal with React Hook Form + Zod: fields for asset type (ETF/Crypto), symbol, quantity, buy price (USD), date, optional notes
+- [x] T-4.1.3: Implement position CRUD Server Actions in `app/portfolio/_actions.ts`
+- [x] T-4.1.4: Create positions table component in `app/portfolio/_components/positions-table.tsx` with sort/filter
+- [x] T-4.1.5: Calculate unrealized P&L by fetching current price vs buy price
+- [x] T-4.1.6: Write unit tests for P&L calculations and form validation
 
 ---
 
-### US-4.2: Portfolio Overview Dashboard [ ] 🎨
+### US-4.2: Portfolio Overview Dashboard [x] 🎨
 
 **As a** user
 **I want** a visual overview of my portfolio value, allocation, and performance
@@ -692,16 +693,16 @@ Feature: Portfolio Overview
 
 #### Tasks
 
-- [ ] T-4.2.1: Create portfolio overview page at `app/dashboard/portfolio/page.tsx`
-- [ ] T-4.2.2: Build total value card with 24h change indicator (green/red)
-- [ ] T-4.2.3: Build allocation donut chart using a charting library (Recharts or Chart.js)
-- [ ] T-4.2.4: Build performance line chart with time range selector (1W/1M/3M/6M/1Y/ALL)
-- [ ] T-4.2.5: Calculate portfolio snapshots and store daily snapshots in `portfolio_snapshots` table
-- [ ] T-4.2.6: Implement empty state and loading skeleton components
+- [x] T-4.2.1: Create portfolio overview page at `app/dashboard/portfolio/page.tsx`
+- [x] T-4.2.2: Build total value card with 24h change indicator (green/red)
+- [x] T-4.2.3: Build allocation donut chart using a charting library (Recharts or Chart.js)
+- [x] T-4.2.4: Build performance line chart with time range selector (1W/1M/3M/6M/1Y/ALL)
+- [x] T-4.2.5: Calculate portfolio snapshots and store daily snapshots in `portfolio_snapshots` table
+- [x] T-4.2.6: Implement empty state and loading skeleton components
 
 ---
 
-### US-4.3: Transaction History [ ] 🎨
+### US-4.3: Transaction History [x] 🎨
 
 **As a** user
 **I want** to log buy/sell transactions
@@ -747,16 +748,16 @@ Feature: Transaction History
 
 #### Tasks
 
-- [ ] T-4.3.1: Create `transactions` table with RLS policies
-- [ ] T-4.3.2: Build transaction log form with React Hook Form + Zod: type (Buy/Sell/DCA), symbol, quantity, price, fee, date, notes
-- [ ] T-4.3.3: Implement average cost basis calculation (weighted average method)
-- [ ] T-4.3.4: Implement realized P&L calculation on sell transactions
-- [ ] T-4.3.5: Build transactions table component with filtering by symbol, type, and date range
-- [ ] T-4.3.6: Write unit tests for cost basis, realized P&L, and oversell prevention
+- [x] T-4.3.1: Create `transactions` table with RLS policies
+- [x] T-4.3.2: Build transaction log form with React Hook Form + Zod: type (Buy/Sell/DCA), symbol, quantity, price, fee, date, notes
+- [x] T-4.3.3: Implement average cost basis calculation (weighted average method)
+- [x] T-4.3.4: Implement realized P&L calculation on sell transactions
+- [x] T-4.3.5: Build transactions table component with filtering by symbol, type, and date range
+- [x] T-4.3.6: Write unit tests for cost basis, realized P&L, and oversell prevention
 
 ---
 
-### US-4.4: Target Allocation & Rebalancing Alerts [ ] 🎨
+### US-4.4: Target Allocation & Rebalancing Alerts [x] 🎨
 
 **As a** user
 **I want** to set target allocation percentages and get alerts when my portfolio drifts
@@ -796,12 +797,12 @@ Feature: Target Allocation & Rebalancing
 
 #### Tasks
 
-- [ ] T-4.4.1: Add `target_allocations` column (JSONB) to `portfolios` table
-- [ ] T-4.4.2: Build target allocation form with percentage inputs and live total validation
-- [ ] T-4.4.3: Implement drift calculation: `(actual_pct - target_pct)` for each asset
-- [ ] T-4.4.4: Build rebalancing suggestion engine: calculate buy/sell amounts to restore targets
-- [ ] T-4.4.5: Create visual drift indicator (bar chart comparing actual vs target)
-- [ ] T-4.4.6: Write unit tests for drift calculation and rebalancing suggestions
+- [x] T-4.4.1: Add `target_allocations` column (JSONB) to `portfolios` table
+- [x] T-4.4.2: Build target allocation form with percentage inputs and live total validation
+- [x] T-4.4.3: Implement drift calculation: `(actual_pct - target_pct)` for each asset
+- [x] T-4.4.4: Build rebalancing suggestion engine: calculate buy/sell amounts to restore targets
+- [x] T-4.4.5: Create visual drift indicator (bar chart comparing actual vs target)
+- [x] T-4.4.6: Write unit tests for drift calculation and rebalancing suggestions
 
 ---
 

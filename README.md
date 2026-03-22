@@ -38,12 +38,14 @@ A purpose-built dashboard for a Costa Rica-based software developer managing a f
 ## Features
 
 ### Market Data Engine
+
 - Real-time prices for VOO, QQQ, and Bitcoin from Twelve Data and CoinGecko
 - Crypto Fear & Greed Index with radial gauge visualization
 - Macro indicators: Fed Funds Rate, 10Y Treasury Yield, DXY, CPI from FRED
 - Two-layer caching (in-memory TTL + Supabase) with graceful API fallback
 
 ### Portfolio Tracker
+
 - Manual position entry — no exchange API keys required
 - Transaction history with buy/sell/DCA logging
 - Unrealized P&L, realized P&L (FIFO), and weighted average cost basis
@@ -51,29 +53,34 @@ A purpose-built dashboard for a Costa Rica-based software developer managing a f
 - Portfolio value over time with daily snapshots
 
 ### DCA Automation
+
 - Recurring schedule configuration (daily, weekly, biweekly, monthly)
 - Execution reminders via in-app, email (Resend), and Telegram
 - "Mark as Done" flow that auto-logs transactions
 - DCA vs lump-sum performance comparison
 
 ### AI-Powered Insights
+
 - Daily market summary — auto-generated morning briefing with streaming UI
 - Portfolio analysis — personalized risk assessment and rebalancing advice
 - Learning assistant — financial Q&A scoped to investing topics with guardrails
 - Vercel AI SDK with OpenAI (`generateText`, `streamText`, `useChat`)
 
 ### Alerts & Notifications
+
 - Price alerts: above/below target for any tracked asset
 - Technical indicator alerts: RSI, 200-day MA crossover, MVRV Z-Score
 - Multi-channel delivery: in-app bell, email (Resend), Telegram bot
 - Cron-based evaluation every 5 minutes with deduplication
 
 ### Bitcoin On-Chain Analytics
+
 - Network metrics from Mempool.space: block height, hashrate, mempool size, difficulty
 - Valuation models: MVRV Z-Score (color-coded zones), Stock-to-Flow, Rainbow Price Band
 - Halving countdown with block estimation and historical timeline
 
 ### Analytics & Reporting
+
 - Time-weighted rate of return (TWRR) eliminating cash flow distortion
 - Per-asset performance table with benchmark comparison (vs VOO)
 - Monthly and yearly reports with DCA adherence scores
@@ -81,6 +88,7 @@ A purpose-built dashboard for a Costa Rica-based software developer managing a f
 - PDF report export
 
 ### Settings & Data Management
+
 - Dark/light/system theme toggle
 - Encrypted API key storage
 - Full data export (JSON) and CSV position import
@@ -90,21 +98,22 @@ A purpose-built dashboard for a Costa Rica-based software developer managing a f
 
 ## Tech Stack
 
-| Layer | Technology | Purpose |
-|---|---|---|
-| Framework | Next.js 15 (App Router) | Server Components, Server Actions, API routes, Cron |
-| Language | TypeScript (strict) | Zero `any`, zero `@ts-ignore` |
-| Styling | Tailwind CSS v4 | Utility-first, no custom CSS files |
-| UI Components | shadcn/ui | Accessible, composable primitives |
-| State | Jotai | Atomic client-side state per route segment |
-| Forms | React Hook Form + Zod | Client hints + server-side validation |
-| Database & Auth | Supabase (Postgres + Auth + RLS) | Backend-as-a-Service with row-level security |
-| AI | Vercel AI SDK + OpenAI | Streaming AI responses |
-| Charts | Recharts | SVG-based responsive data visualization |
-| Testing | Vitest | Unit tests for pure logic |
-| Hosting | Vercel | Deployment, edge functions, cron jobs |
-| Email | Resend | Transactional notification emails |
-| Notifications | Telegram Bot API | Real-time push alerts |
+| Layer           | Technology                       | Purpose                                             |
+| --------------- | -------------------------------- | --------------------------------------------------- |
+| Framework       | Next.js 15 (App Router)          | Server Components, Server Actions, API routes, Cron |
+| Language        | TypeScript (strict)              | Zero `any`, zero `@ts-ignore`                       |
+| Styling         | Tailwind CSS v4                  | Utility-first, no custom CSS files                  |
+| UI Components   | shadcn/ui                        | Accessible, composable primitives                   |
+| State           | Jotai                            | Atomic client-side state per route segment          |
+| Forms           | React Hook Form + Zod            | Client hints + server-side validation               |
+| Database & Auth | Supabase (Postgres + Auth + RLS) | Backend-as-a-Service with row-level security        |
+| AI              | Vercel AI SDK + OpenAI           | Streaming AI responses                              |
+| Charts          | Recharts                         | SVG-based responsive data visualization             |
+| Dates           | date-fns + @date-fns/tz          | Timezone-safe formatting, Costa Rica locale         |
+| Testing         | Vitest                           | Unit tests for pure logic                           |
+| Hosting         | Vercel                           | Deployment, edge functions, cron jobs               |
+| Email           | Resend                           | Transactional notification emails                   |
+| Notifications   | Telegram Bot API                 | Real-time push alerts                               |
 
 ---
 
@@ -128,14 +137,14 @@ app/<route>/
 
 ### External APIs
 
-| API | Data | Free Tier |
-|---|---|---|
-| Twelve Data | Stock/ETF prices (VOO, QQQ), DXY | 800 req/day |
-| CoinGecko | Bitcoin price, market cap, volume | Generous free tier |
-| FRED | Macro data (Fed rate, 10Y yield, CPI) | Unlimited |
-| Alternative.me | Crypto Fear & Greed Index | Unlimited |
-| Mempool.space | Bitcoin on-chain data | Unlimited |
-| LookIntoBitcoin | MVRV Z-Score, Stock-to-Flow | Web scraping / API |
+| API             | Data                                  | Free Tier          |
+| --------------- | ------------------------------------- | ------------------ |
+| Twelve Data     | Stock/ETF prices (VOO, QQQ), DXY      | 800 req/day        |
+| CoinGecko       | Bitcoin price, market cap, volume     | Generous free tier |
+| FRED            | Macro data (Fed rate, 10Y yield, CPI) | Unlimited          |
+| Alternative.me  | Crypto Fear & Greed Index             | Unlimited          |
+| Mempool.space   | Bitcoin on-chain data                 | Unlimited          |
+| LookIntoBitcoin | MVRV Z-Score, Stock-to-Flow           | Web scraping / API |
 
 ---
 
@@ -180,25 +189,25 @@ supabase/
 
 ## Scripts
 
-| Command | Description |
-|---|---|
-| `npm run dev` | Start development server |
-| `npm run build` | Production build |
-| `npm run lint` | ESLint check |
-| `npm test` | Run Vitest |
-| `supabase start` | Start local Supabase |
-| `supabase db push` | Apply migrations |
-| `supabase gen types typescript --local > lib/supabase/database.types.ts` | Regenerate types |
+| Command                                                                  | Description              |
+| ------------------------------------------------------------------------ | ------------------------ |
+| `npm run dev`                                                            | Start development server |
+| `npm run build`                                                          | Production build         |
+| `npm run lint`                                                           | ESLint check             |
+| `npm test`                                                               | Run Vitest               |
+| `supabase start`                                                         | Start local Supabase     |
+| `supabase db push`                                                       | Apply migrations         |
+| `supabase gen types typescript --local > lib/supabase/database.types.ts` | Regenerate types         |
 
 ---
 
 ## Documentation
 
-| Document | Purpose |
-|---|---|
-| [PDD.md](PDD.md) | Product Design Document — vision, domain model, features, workflows, visual design |
-| [SPECS.md](SPECS.md) | Epics, user stories, tasks, and Gherkin acceptance criteria |
-| [CLAUDE.md](CLAUDE.md) | AI agent instructions — code conventions, architecture rules, commands |
+| Document               | Purpose                                                                            |
+| ---------------------- | ---------------------------------------------------------------------------------- |
+| [PDD.md](PDD.md)       | Product Design Document — vision, domain model, features, workflows, visual design |
+| [SPECS.md](SPECS.md)   | Epics, user stories, tasks, and Gherkin acceptance criteria                        |
+| [CLAUDE.md](CLAUDE.md) | AI agent instructions — code conventions, architecture rules, commands             |
 
 ---
 

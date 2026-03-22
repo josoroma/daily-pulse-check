@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { UpdateProfileSchema } from './_schema'
+import { toISO } from '@/lib/date'
 
 export async function updateProfile(formData: FormData) {
   const raw = {
@@ -30,7 +31,7 @@ export async function updateProfile(formData: FormData) {
     .from('profiles')
     .update({
       ...parsed.data,
-      updated_at: new Date().toISOString(),
+      updated_at: toISO(new Date()),
     })
     .eq('id', user.id)
 

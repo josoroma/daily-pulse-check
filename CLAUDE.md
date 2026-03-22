@@ -19,6 +19,7 @@ Personal finance dashboard for a Costa Rica-based software developer tracking VO
 - **Database & Auth**: Supabase (Postgres + Auth + RLS)
 - **AI**: Vercel AI SDK (`ai` + `@ai-sdk/openai`) — use `generateText`/`streamText` for AI features
 - **Charts**: Recharts for data visualization
+- **Dates**: date-fns + @date-fns/tz — centralized in `lib/date/`, Costa Rica timezone explicit
 - **Testing**: Vitest — colocated `__tests__/` directories within each route or lib module
 
 ## Architecture: Colocated Feature-Based
@@ -72,6 +73,9 @@ lib/
 │   ├── server.ts
 │   ├── proxy.ts
 │   └── database.types.ts
+├── date/                 # Centralized date utilities (date-fns + @date-fns/tz)
+│   ├── config.ts         # setDefaultOptions (locale, calendar) + CR_TIMEZONE
+│   └── index.ts          # nowCR, todayCR, formatDateISO, daysAgoCR, etc.
 ├── market/               # External API integrations (reused across routes)
 │   ├── stocks.ts         # Twelve Data
 │   ├── crypto.ts         # CoinGecko

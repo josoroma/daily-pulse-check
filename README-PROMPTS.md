@@ -518,3 +518,171 @@ Fix the Recharts `ResponsiveContainer` warning "The width(-1) and height(-1) of 
 - Verify the Fear & Greed gauge renders without console warnings in the browser
 
 ---
+
+## Prompt 25 — `portfolio`
+
+**Intent**: Plan Epic E4 (Portfolio Tracker) implementation strategy.
+
+**Prompt**
+
+Run `/plan-item E4` to analyze Epic E4 (Portfolio Tracker). Break down US-4.1 (Position Management), US-4.2 (Transaction Logging), and US-4.3 (Portfolio Analytics) into atomic implementation tasks. Identify dependencies on E1–E3 (project setup, auth, market data). Map each user story to its route segment, colocated files, and Supabase tables. Produce a sequenced implementation plan with file paths, component names, and migration order.
+
+**Derived Tasks**
+
+- Read SPECS.md Gherkin scenarios for US-4.1, US-4.2, US-4.3 to extract acceptance criteria
+- Map US-4.1 → `app/dashboard/portfolio/` with positions table, summary cards, add-position form
+- Map US-4.2 → transaction form, transactions table, Server Actions for CRUD
+- Map US-4.3 → performance chart, target allocation form, drift indicator, portfolio snapshots
+- Identify E1–E3 dependencies: auth guard, Supabase client, market price API, RLS policies
+- Plan migration order: positions → transactions → portfolio_snapshots
+- Define component tree: 7+ components under `_components/`, shared schema in `app/portfolio/_schema.ts`
+- Sequence tasks: schema → migration → actions → components → tests → integration
+
+---
+
+## Prompt 26 — `portfolio`
+
+**Intent**: Implement Epic E4 (Portfolio Tracker) end-to-end.
+
+**Prompt**
+
+Run `/implement-item E4` to execute all user stories for Epic E4 (Portfolio Tracker). Create `app/dashboard/portfolio/` route with `page.tsx`, `_actions.ts`, `_utils.ts`, `_constants.ts`. Build 8 components under `_components/`: `summary-cards.tsx`, `positions-table.tsx`, `add-position-form.tsx`, `transaction-form.tsx`, `transactions-table.tsx`, `performance-chart.tsx`, `target-allocation-form.tsx`, `drift-indicator.tsx`. Create `app/portfolio/_schema.ts` with Zod schemas for positions, transactions, targets, and snapshots. Create `supabase/migrations/` for portfolio_snapshots table. Write unit tests for schemas and utility functions. Wire all components into the portfolio page with auth guard, real-time data from Supabase, and Recharts visualizations.
+
+**Derived Tasks**
+
+- Create `app/portfolio/_schema.ts` with `PositionSchema`, `TransactionSchema`, `TargetAllocationSchema`, `SnapshotSchema` and inferred types
+- Create `supabase/migrations/` for `portfolio_snapshots` table with RLS policies
+- Create `app/dashboard/portfolio/_constants.ts` with asset colors, time ranges, and allocation defaults
+- Create `app/dashboard/portfolio/_utils.ts` with `formatCurrency`, `formatPercent`, `formatQuantity`, `calculateDrift`
+- Create `app/dashboard/portfolio/_actions.ts` with Server Actions: `getPositions`, `getTransactions`, `addTransaction`, `deleteTransaction`, `getPerformanceHistory`, `getTargetAllocations`, `upsertTargetAllocation`
+- Build `summary-cards.tsx` — total value, daily P&L, allocation breakdown
+- Build `positions-table.tsx` — asset positions with current price, quantity, value, P&L
+- Build `add-position-form.tsx` — React Hook Form + Zod for adding new positions
+- Build `transaction-form.tsx` — buy/sell transaction entry with asset selector
+- Build `transactions-table.tsx` — paginated transaction history with date, type, amount
+- Build `performance-chart.tsx` — Recharts line chart with time range selector (1W/1M/3M/1Y/ALL)
+- Build `target-allocation-form.tsx` — set target percentages per asset
+- Build `drift-indicator.tsx` — visual comparison of actual vs target allocation
+- Create `app/dashboard/portfolio/page.tsx` composing all components with Suspense boundaries
+- Write `app/portfolio/__tests__/_schema.test.ts` for schema validation
+- Write `app/dashboard/portfolio/__tests__/_utils.test.ts` for utility functions
+- Run all tests and lint to validate
+
+---
+
+## Prompt 27 — `frontend`
+
+**Intent**: Fix four hydration mismatch sources in the portfolio tracker.
+
+**Prompt**
+
+Identify and fix all sources of React hydration mismatches in the portfolio tracker (E4). Investigate `transactions-table.tsx`, `_utils.ts`, `performance-chart.tsx`, and `components/ui/dialog.tsx`. Replace `new Date().toLocaleDateString()` with deterministic server-safe alternatives, replace `toLocaleString()` with `toFixed()` + trailing-zero stripping for quantities, change the default time range from `'1M'` (which invokes `new Date()` during initial render) to `'ALL'`, and fix the Base UI `Dialog` `render` prop from JSX element form to function form.
+
+**Derived Tasks**
+
+- In `transactions-table.tsx`, replace `new Date(tx.executed_at).toLocaleDateString()` with `tx.executed_at.split('T')[0]` to avoid locale-dependent hydration mismatch
+- In `_utils.ts`, replace `toLocaleString()` in `formatQuantity` with `toFixed()` + regex trailing-zero stripping for deterministic output
+- In `performance-chart.tsx`, change `useState<TimeRange>('1M')` default to `'ALL'` to avoid `new Date()` during initial server render
+- In `components/ui/dialog.tsx`, change `render={<Button />}` to `render={(props) => <Button {...props} />}` function form
+- Run all 139 tests and verify 0 lint errors
+
+---
+
+## Prompt 28 — `portfolio`
+
+**Intent**: Code review E4 (Portfolio Tracker) against conventions and acceptance criteria.
+
+**Prompt**
+
+Run `/review-item E4` to audit the entire Epic E4 (Portfolio Tracker) implementation. Check all files under `app/dashboard/portfolio/` (page, actions, utils, constants, schema, components) and `app/portfolio/_schema.ts` against CLAUDE.md conventions, SPECS.md Gherkin acceptance criteria, security rules, design system rules, TypeScript strict compliance, and test coverage. Report a verdict with file-level findings grouped by severity.
+
+**Derived Tasks**
+
+- Read all E4-related files: `app/dashboard/portfolio/page.tsx`, `_actions.ts`, `_utils.ts`, `_constants.ts`, `_components/` (7 components), `app/portfolio/_schema.ts`, `__tests__/` directories
+- Verify security: auth checks in all Server Actions, RLS enforcement, Zod validation on mutations
+- Verify design compliance: asset colors (VOO blue, QQQ purple, BTC orange), emerald/rose for P&L, tabular-nums
+- Verify correctness: cross-reference against Gherkin scenarios for US-4.1, US-4.2, US-4.3
+- Verify type safety: identify `as unknown as number` casts, ensure no `any` types
+- Verify architecture: schema colocation correctness, shared vs route-specific code placement
+- Verify test coverage: `_utils.test.ts` and `_schema.test.ts` cover all pure logic
+- Produce verdict with severity-ranked findings and specific file/line references
+
+---
+
+## Prompt 29 — `setup`
+
+**Intent**: Build a centralized date utility layer with Costa Rica timezone support.
+
+**Prompt**
+
+Use `date-fns` and `@date-fns/tz` to build a centralized date utility layer in `lib/date/` and make Costa Rica timezone explicit in all wrappers. Use `setDefaultOptions` only for locale (`es`) and calendar defaults (`weekStartsOn: 1`, `firstWeekContainsDate: 4`) — timezone must be handled explicitly with `@date-fns/tz`, not as a hidden global default.
+
+Create `lib/date/config.ts` with `CR_TIMEZONE` constant and `setDefaultOptions` call. Create `lib/date/index.ts` with utility functions: `nowCR`, `todayCR`, `parseCR`, `formatDateISO`, `formatDateShort`, `formatMonthYear`, `toISO`, `daysAgoCR`, `startOfTodayCR`, `isValidDate`. Write comprehensive unit tests in `lib/date/__tests__/index.test.ts`.
+
+Update all current raw `Date` usage across the codebase: `cache.ts` (request counting), `portfolio/_actions.ts` (snapshot filtering), `performance-chart.tsx` (range filtering), `transactions-table.tsx` (date display), `transaction-form.tsx` (ISO conversion), `profile/_actions.ts` (timestamp), `macro-indicators.tsx` (date formatting).
+
+Create `.claude/rules/dates.md` documenting forbidden patterns (raw `new Date()` for display, `toLocaleDateString`, manual date arithmetic) and allowed exceptions (RHF `defaultValues`, cache TTL `Date.now()`).
+
+Update documentation: add Dates to CLAUDE.md tech stack and `lib/` tree, add date-fns row to README.md tech stack table, add Date Formatting section to `.claude/rules/design.md`, add `T-1.2.7` to SPECS.md.
+
+**Derived Tasks**
+
+- Install `date-fns` and `@date-fns/tz` packages
+- Create `lib/date/config.ts` with `CR_TIMEZONE = 'America/Costa_Rica'` and `setDefaultOptions({ locale: es, weekStartsOn: 1, firstWeekContainsDate: 4 })`
+- Create `lib/date/index.ts` with 10 utility functions using `TZDate` from `@date-fns/tz`
+- Create `lib/date/__tests__/index.test.ts` with 10 unit tests covering all utilities
+- Create `.claude/rules/dates.md` with forbidden/allowed raw Date patterns
+- Replace `new Date().toISOString().split('T')[0]` with `todayCR()` in `lib/market/cache.ts` (2 occurrences)
+- Replace manual date arithmetic with `daysAgoCR(days)` in `app/dashboard/portfolio/_actions.ts`
+- Replace `new Date()` + `setDate` pattern with `daysAgoCR()` in `performance-chart.tsx`
+- Replace `.split('T')[0]` with `formatDateISO()` in `transactions-table.tsx`
+- Replace `.toISOString()` with `toISO()` in `transaction-form.tsx`
+- Replace `new Date().toISOString()` with `toISO(new Date())` in `app/profile/_actions.ts`
+- Replace `toLocaleDateString('en-US', ...)` with `formatMonthYear()` in `macro-indicators.tsx`
+- Add Dates entry to CLAUDE.md tech stack and `lib/date/` to the `lib/` directory tree
+- Add date-fns row to README.md tech stack table
+- Append Date Formatting section to `.claude/rules/design.md`
+- Add `T-1.2.7` task to SPECS.md under US-1.2
+- Run all tests (149 pass) and ESLint (0 warnings) to validate changes
+
+---
+
+## Prompt 30 — `setup`
+
+**Intent**: Execute the planned date-fns centralization without further discussion.
+
+**Prompt**
+
+Apply all planned date-fns changes directly. Install dependencies, create `lib/date/config.ts` and `lib/date/index.ts`, write tests, create `.claude/rules/dates.md`, update all 7 source files replacing raw `Date` patterns with centralized wrappers, update all 4 documentation files, and run tests and lint to validate.
+
+**Derived Tasks**
+
+- Run `npm install date-fns @date-fns/tz` to add dependencies
+- Create `lib/date/config.ts` with `CR_TIMEZONE` and `setDefaultOptions`
+- Create `lib/date/index.ts` with all 10 utility functions
+- Create `lib/date/__tests__/index.test.ts` with 10 unit tests
+- Create `.claude/rules/dates.md` with forbidden/allowed date patterns
+- Apply replacements in `cache.ts`, `portfolio/_actions.ts`, `performance-chart.tsx`, `transactions-table.tsx`, `transaction-form.tsx`, `profile/_actions.ts`, `macro-indicators.tsx`
+- Update `CLAUDE.md`, `README.md`, `.claude/rules/design.md`, `SPECS.md`
+- Run `npx vitest run` (149 pass) and `npx eslint` (0 warnings) to validate
+
+---
+
+## Prompt 31 — `docs`
+
+**Intent**: Capture all session prompts to README-PROMPTS.md.
+
+**Prompt**
+
+Run `/capture-prompts all` to extract, improve, and persist every user prompt from the current chat session into `README-PROMPTS.md`. Include prompts covering hydration fixes, E4 code review, date-fns centralization planning and execution. Derive actionable tasks for each, categorize by domain, and append in the established entry format.
+
+**Derived Tasks**
+
+- Review the full chat session and extract all distinct user prompts
+- Improve wording, normalize terminology, and rewrite in imperative form
+- Derive atomic, implementation-ready tasks for each prompt
+- Assign category tags (`frontend`, `portfolio`, `setup`, `docs`)
+- Deduplicate against existing entries (Prompts 1–24) before appending
+- Append new entries (Prompts 25–31) to `README-PROMPTS.md`
+
+---

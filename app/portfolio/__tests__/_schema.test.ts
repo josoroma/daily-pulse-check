@@ -6,7 +6,6 @@ import {
   CreateAlertSchema,
   CreateProfileSchema,
   CreatePortfolioSchema,
-  CreateDcaScheduleSchema,
 } from '../_schema'
 
 describe('CreatePositionSchema', () => {
@@ -231,41 +230,6 @@ describe('CreatePortfolioSchema', () => {
   it('rejects empty name', () => {
     const result = CreatePortfolioSchema.safeParse({
       name: '',
-    })
-    expect(result.success).toBe(false)
-  })
-})
-
-describe('CreateDcaScheduleSchema', () => {
-  it('accepts valid DCA schedule', () => {
-    const result = CreateDcaScheduleSchema.safeParse({
-      portfolio_id: '550e8400-e29b-41d4-a716-446655440000',
-      symbol: 'VOO',
-      asset_type: 'ETF',
-      amount: 500,
-      frequency: 'Monthly',
-    })
-    expect(result.success).toBe(true)
-  })
-
-  it('rejects invalid frequency', () => {
-    const result = CreateDcaScheduleSchema.safeParse({
-      portfolio_id: '550e8400-e29b-41d4-a716-446655440000',
-      symbol: 'BTC',
-      asset_type: 'Crypto',
-      amount: 100,
-      frequency: 'Yearly',
-    })
-    expect(result.success).toBe(false)
-  })
-
-  it('rejects zero amount', () => {
-    const result = CreateDcaScheduleSchema.safeParse({
-      portfolio_id: '550e8400-e29b-41d4-a716-446655440000',
-      symbol: 'QQQ',
-      asset_type: 'ETF',
-      amount: 0,
-      frequency: 'Weekly',
     })
     expect(result.success).toBe(false)
   })

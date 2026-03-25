@@ -27,7 +27,7 @@ A personal finance dashboard purpose-built for a self-directed investor operatin
 
 A software developer living in Costa Rica who:
 
-- **Invests internationally** through Interactive Brokers (stocks/ETFs) and Kraken (Bitcoin)
+- **Invests internationally** through Interactive Brokers (stocks/ETFs) and a crypto exchange (Bitcoin)
 - **Follows a DCA discipline** — weekly or monthly recurring buys regardless of price
 - **Has a 10+ year time horizon** with medium-high risk tolerance
 - **Wants signal, not noise** — 15 minutes per day maximum for market review
@@ -48,14 +48,14 @@ The allocation is intentionally simple — three liquid, globally accessible ass
 
 ### Design Principles
 
-| Principle | Meaning |
-|---|---|
-| **Data-first** | Every screen starts with real numbers. No empty marketing states — meaningful defaults and realistic examples. |
-| **Opinionated defaults** | Tuned for a VOO/QQQ/BTC investor. Not a generic portfolio tracker — specialized for this asset mix. |
-| **DCA over timing** | The dashboard rewards consistency. DCA adherence scores, execution reminders, and historical proof that discipline compounds. |
-| **AI as copilot** | AI summarizes, explains, and alerts — never auto-trades. The investor stays in control. |
-| **Own your data** | Supabase with RLS. Full data export. Account deletion. No vendor lock-in. |
-| **Costa Rica context** | CRC/USD dual currency display, territorial tax notes, time-zone-aware scheduling, IBKR/Kraken platform awareness. |
+| Principle                | Meaning                                                                                                                       |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| **Data-first**           | Every screen starts with real numbers. No empty marketing states — meaningful defaults and realistic examples.                |
+| **Opinionated defaults** | Tuned for a VOO/QQQ/BTC investor. Not a generic portfolio tracker — specialized for this asset mix.                           |
+| **DCA over timing**      | The dashboard rewards consistency. DCA adherence scores, execution reminders, and historical proof that discipline compounds. |
+| **AI as copilot**        | AI summarizes, explains, and alerts — never auto-trades. The investor stays in control.                                       |
+| **Own your data**        | Supabase with RLS. Full data export. Account deletion. No vendor lock-in.                                                     |
+| **Costa Rica context**   | CRC/USD dual currency display, territorial tax notes, time-zone-aware scheduling, IBKR platform awareness.                    |
 
 ---
 
@@ -131,18 +131,18 @@ The allocation is intentionally simple — three liquid, globally accessible ass
 
 ### Entity Definitions
 
-| Entity | Purpose | Key Fields | Ownership |
-|---|---|---|---|
-| **User** | Supabase Auth identity | id, email, created_at | Auth-managed |
-| **Profile** | Investor context — drives personalization | display_name, base_currency (USD/CRC), country, risk_tolerance | 1:1 with User, RLS-protected |
-| **Portfolio** | Container for positions + target allocation | user_id, target_allocations (JSONB: `{VOO: 50, QQQ: 20, BTC: 20, CASH: 10}`) | 1:1 with User |
-| **Position** | A holding in a specific asset | symbol, asset_type (ETF/Crypto), quantity, avg_cost_basis, first_buy_date | N per Portfolio |
-| **Transaction** | A buy, sell, or DCA execution record | type, symbol, quantity, price_usd, fee_usd, executed_at, notes | N per Position |
-| **DCA Schedule** | Recurring buy plan | symbol, amount_usd, frequency, day_of_week/month, status (active/paused) | N per User |
-| **Alert** | Price or indicator trigger | symbol, condition_type, operator, target_value, status (active/triggered/paused), triggered_at | N per User |
-| **Notification** | Delivered message (any channel) | type (dca_reminder/alert_fired/system), title, body, read, channel, created_at | N per User |
-| **AI Summary** | Cached daily AI briefing | date, content (markdown), market_snapshot (JSONB), model_version | 1 per day |
-| **Portfolio Snapshot** | Daily portfolio state for charting | date, total_value_usd, positions_snapshot (JSONB), allocations (JSONB) | 1 per day per User |
+| Entity                 | Purpose                                     | Key Fields                                                                                     | Ownership                    |
+| ---------------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------- |
+| **User**               | Supabase Auth identity                      | id, email, created_at                                                                          | Auth-managed                 |
+| **Profile**            | Investor context — drives personalization   | display_name, base_currency (USD/CRC), country, risk_tolerance                                 | 1:1 with User, RLS-protected |
+| **Portfolio**          | Container for positions + target allocation | user_id, target_allocations (JSONB: `{VOO: 50, QQQ: 20, BTC: 20, CASH: 10}`)                   | 1:1 with User                |
+| **Position**           | A holding in a specific asset               | symbol, asset_type (ETF/Crypto), quantity, avg_cost_basis, first_buy_date                      | N per Portfolio              |
+| **Transaction**        | A buy, sell, or DCA execution record        | type, symbol, quantity, price_usd, fee_usd, executed_at, notes                                 | N per Position               |
+| **DCA Schedule**       | Recurring buy plan                          | symbol, amount_usd, frequency, day_of_week/month, status (active/paused)                       | N per User                   |
+| **Alert**              | Price or indicator trigger                  | symbol, condition_type, operator, target_value, status (active/triggered/paused), triggered_at | N per User                   |
+| **Notification**       | Delivered message (any channel)             | type (dca_reminder/alert_fired/system), title, body, read, channel, created_at                 | N per User                   |
+| **AI Summary**         | Cached daily AI briefing                    | date, content (markdown), market_snapshot (JSONB), model_version                               | 1 per day                    |
+| **Portfolio Snapshot** | Daily portfolio state for charting          | date, total_value_usd, positions_snapshot (JSONB), allocations (JSONB)                         | 1 per day per User           |
 
 ### Data Integrity Rules
 
@@ -159,18 +159,18 @@ The allocation is intentionally simple — three liquid, globally accessible ass
 
 ### Feature Map by Epic
 
-| # | Feature Area | Description | Route |
-|---|---|---|---|
-| **E1** | Project Foundation | Next.js 15 + TypeScript strict + Tailwind v4 + shadcn/ui + Supabase + Vitest | — (infrastructure) |
-| **E2** | Authentication & Profile | Email/password + Google OAuth, profile onboarding, sidebar layout | `(auth)/`, `profile/`, `dashboard/` |
-| **E3** | Market Data Engine | Real-time + historical prices for VOO, QQQ, BTC. Sentiment indices. Macro indicators. | `market/`, `api/market/` |
-| **E4** | Portfolio Tracker | Manual position entry, overview dashboard, transaction history, target allocation + drift alerts | `portfolio/` |
-| **E5** | DCA Automation | Schedule configuration, execution reminders, DCA vs lump-sum performance analysis | `dca/` |
-| **E6** | AI-Powered Insights | Daily market summary, portfolio AI analysis, learning assistant chat | `insights/`, `api/ai/` |
-| **E7** | Alerts & Notifications | Price alerts, technical indicator alerts (RSI, MA, MVRV), multi-channel delivery | `alerts/` |
-| **E8** | Bitcoin On-Chain Analytics | Network metrics (hashrate, mempool, difficulty), valuation models (MVRV, S2F, Rainbow), halving countdown | `bitcoin/` |
-| **E9** | Analytics & Reporting | Performance metrics (TWRR, per-asset), monthly/yearly reports, tax-relevant CSV export (FIFO) | `analytics/` |
-| **E10** | Settings & Data Management | Theme, API keys, notification prefs, full data export (JSON), CSV import, account deletion | `settings/` |
+| #       | Feature Area               | Description                                                                                               | Route                               |
+| ------- | -------------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| **E1**  | Project Foundation         | Next.js 15 + TypeScript strict + Tailwind v4 + shadcn/ui + Supabase + Vitest                              | — (infrastructure)                  |
+| **E2**  | Authentication & Profile   | Email/password + Google OAuth, profile onboarding, sidebar layout                                         | `(auth)/`, `profile/`, `dashboard/` |
+| **E3**  | Market Data Engine         | Real-time + historical prices for VOO, QQQ, BTC. Sentiment indices. Macro indicators.                     | `market/`, `api/market/`            |
+| **E4**  | Portfolio Tracker          | Manual position entry, overview dashboard, transaction history, target allocation + drift alerts          | `portfolio/`                        |
+| **E5**  | DCA Automation             | Schedule configuration, execution reminders, DCA vs lump-sum performance analysis                         | `dca/`                              |
+| **E6**  | AI-Powered Insights        | Daily market summary, portfolio AI analysis, learning assistant chat                                      | `insights/`, `api/ai/`              |
+| **E7**  | Alerts & Notifications     | Price alerts, technical indicator alerts (RSI, MA, MVRV), multi-channel delivery                          | `alerts/`                           |
+| **E8**  | Bitcoin On-Chain Analytics | Network metrics (hashrate, mempool, difficulty), valuation models (MVRV, S2F, Rainbow), halving countdown | `bitcoin/`                          |
+| **E9**  | Analytics & Reporting      | Performance metrics (TWRR, per-asset), monthly/yearly reports, tax-relevant CSV export (FIFO)             | `analytics/`                        |
+| **E10** | Settings & Data Management | Theme, API keys, notification prefs, full data export (JSON), CSV import, account deletion                | `settings/`                         |
 
 ### Feature Detail
 
@@ -180,31 +180,31 @@ The engine aggregates six external APIs into a unified data layer consumed by ev
 
 **Data points tracked:**
 
-| Category | Specific Data | Source | Refresh Rate |
-|---|---|---|---|
-| Stock/ETF prices | VOO, QQQ — current price, OHLCV history | Twelve Data | 5 min (real-time), 24h (history) |
-| Crypto prices | BTC — price, market cap, volume, 24h change | CoinGecko | 5 min |
-| Crypto sentiment | Fear & Greed Index (0-100) + classification | Alternative.me | 24h |
-| Macro indicators | Fed Funds Rate, 10Y Treasury, CPI, DXY | FRED + Twelve Data | 24h |
-| Bitcoin on-chain | Block height, hashrate, mempool, difficulty | Mempool.space | 60 sec |
-| Bitcoin valuation | MVRV Z-Score, Stock-to-Flow, Rainbow bands | LookIntoBitcoin | 24h |
+| Category          | Specific Data                               | Source             | Refresh Rate                     |
+| ----------------- | ------------------------------------------- | ------------------ | -------------------------------- |
+| Stock/ETF prices  | VOO, QQQ — current price, OHLCV history     | Twelve Data        | 5 min (real-time), 24h (history) |
+| Crypto prices     | BTC — price, market cap, volume, 24h change | CoinGecko          | 5 min                            |
+| Crypto sentiment  | Fear & Greed Index (0-100) + classification | Alternative.me     | 24h                              |
+| Macro indicators  | Fed Funds Rate, 10Y Treasury, CPI, DXY      | FRED + Twelve Data | 24h                              |
+| Bitcoin on-chain  | Block height, hashrate, mempool, difficulty | Mempool.space      | 60 sec                           |
+| Bitcoin valuation | MVRV Z-Score, Stock-to-Flow, Rainbow bands  | LookIntoBitcoin    | 24h                              |
 
 **Caching strategy:** In-memory TTL cache (5 min for prices, 24h for macro/historical data) backed by Supabase rows for persistence across deploys. When an API returns an error or rate-limit response, the system falls back to the most recent cached value and displays a "Using cached data" indicator.
 
 #### Portfolio Tracker (E4)
 
-The portfolio tracker is the core transactional feature. It does not connect to exchange APIs — all position data is manually entered. This is a deliberate design choice: the user trades on IBKR and Kraken, then logs transactions in the dashboard. This avoids OAuth token management, API key rotation, and exchange-specific quirks.
+The portfolio tracker is the core transactional feature. It does not connect to exchange APIs — all position data is manually entered. This is a deliberate design choice: the user trades on IBKR and a crypto exchange, then logs transactions in the dashboard. This avoids OAuth token management, API key rotation, and exchange-specific quirks.
 
 **Key calculations:**
 
-| Calculation | Method | Used In |
-|---|---|---|
-| Unrealized P&L | `(current_price - avg_cost_basis) × quantity` | Positions table, overview |
-| Realized P&L | Sale proceeds − FIFO cost basis | Transaction history, tax export |
-| Average cost basis | Weighted average across all buys | Position card, DCA analytics |
-| Allocation drift | `actual_pct - target_pct` per asset | Rebalance alerts |
-| Rebalance suggestion | Dollar amounts to buy/sell to restore targets | Portfolio overview |
-| Time-weighted return (TWRR) | Geometric linking of sub-period returns | Analytics dashboard |
+| Calculation                 | Method                                        | Used In                         |
+| --------------------------- | --------------------------------------------- | ------------------------------- |
+| Unrealized P&L              | `(current_price - avg_cost_basis) × quantity` | Positions table, overview       |
+| Realized P&L                | Sale proceeds − FIFO cost basis               | Transaction history, tax export |
+| Average cost basis          | Weighted average across all buys              | Position card, DCA analytics    |
+| Allocation drift            | `actual_pct - target_pct` per asset           | Rebalance alerts                |
+| Rebalance suggestion        | Dollar amounts to buy/sell to restore targets | Portfolio overview              |
+| Time-weighted return (TWRR) | Geometric linking of sub-period returns       | Analytics dashboard             |
 
 #### DCA Automation (E5)
 
@@ -212,12 +212,12 @@ The DCA module does not execute trades — it enforces the investor's discipline
 
 **Schedule types:**
 
-| Frequency | Trigger | Example |
-|---|---|---|
-| Daily | Every day at user's configured time | BTC $25/day |
-| Weekly | Specific day of week | VOO $100 every Monday |
-| Biweekly | Every other week on a specific day | QQQ $150 biweekly Friday |
-| Monthly | Specific day of month | VOO $400 on the 1st |
+| Frequency | Trigger                             | Example                  |
+| --------- | ----------------------------------- | ------------------------ |
+| Daily     | Every day at user's configured time | BTC $25/day              |
+| Weekly    | Specific day of week                | VOO $100 every Monday    |
+| Biweekly  | Every other week on a specific day  | QQQ $150 biweekly Friday |
+| Monthly   | Specific day of month               | VOO $400 on the 1st      |
 
 **Analytics:** The DCA performance page proves that discipline works — it overlays each DCA buy point on the price chart, plots the evolving average cost basis, and compares the DCA outcome against a hypothetical lump-sum investment on day one.
 
@@ -239,20 +239,20 @@ Two alert categories with three delivery channels:
 
 **Alert types:**
 
-| Type | Conditions | Example |
-|---|---|---|
-| Price alert | Above/below a target | "BTC below $80,000" |
-| Technical indicator | RSI above/below, MA crossover, MVRV Z-Score | "VOO RSI below 30" |
+| Type                | Conditions                                  | Example             |
+| ------------------- | ------------------------------------------- | ------------------- |
+| Price alert         | Above/below a target                        | "BTC below $80,000" |
+| Technical indicator | RSI above/below, MA crossover, MVRV Z-Score | "VOO RSI below 30"  |
 
 **Evaluation:** A Vercel Cron job runs every 5 minutes, fetches current prices and indicator values, and evaluates all active alerts. Triggered alerts flip to "triggered" status and fire a notification. Alerts do not re-trigger — the user must manually reset them.
 
 **Delivery channels:**
 
-| Channel | Implementation | Always On |
-|---|---|---|
-| In-app | Notification bell in dashboard header, unread badge | Yes |
-| Email | Supabase Edge Function → Resend API | Opt-in |
-| Telegram | Bot created via BotFather, `lib/notifications/telegram.ts` | Opt-in |
+| Channel  | Implementation                                             | Always On |
+| -------- | ---------------------------------------------------------- | --------- |
+| In-app   | Notification bell in dashboard header, unread badge        | Yes       |
+| Email    | Supabase Edge Function → Resend API                        | Opt-in    |
+| Telegram | Bot created via BotFather, `lib/notifications/telegram.ts` | Opt-in    |
 
 #### Bitcoin On-Chain Analytics (E8)
 
@@ -296,7 +296,7 @@ Three reporting capabilities for measuring investing success:
 │     └─ DCA reminders, triggered alerts                          │
 │                                                                 │
 │  4. If DCA reminder pending:                                    │
-│     └─ Execute buy on IBKR/Kraken → Mark as Done in dashboard   │
+│     └─ Execute buy on IBKR/exchange → Mark as Done in dashboard  │
 │                                                                 │
 │  5. DONE — close dashboard, get on with the day                 │
 └─────────────────────────────────────────────────────────────────┘
@@ -322,7 +322,7 @@ Cron job checks due schedules (daily at configured time)
   │                        Deliver via: in-app + enabled channels (email/telegram)
   │
   └── User receives reminder
-        ├── Opens IBKR/Kraken → Executes the buy
+        ├── Opens IBKR/exchange → Executes the buy
         ├── Returns to dashboard → Clicks "Mark as Done"
         ├── Enters actual execution price
         └── Transaction auto-logged → Position updated → DCA analytics refresh
@@ -338,7 +338,7 @@ Portfolio page detects drift > 5%
   │     "Sell 0.01 BTC ($920) → Buy 2 VOO ($920)"
   │
   ├── User decides to act:
-  │     ├── Executes sell on Kraken
+  │     ├── Executes sell on exchange
   │     ├── Logs sell transaction in dashboard
   │     ├── Executes buy on IBKR
   │     ├── Logs buy transaction in dashboard
@@ -407,23 +407,23 @@ Analytics → Tax Export page
 
 ### External API Inventory
 
-| API | Base URL | Data Provided | Auth | Free Tier Limits | Fallback |
-|---|---|---|---|---|---|
-| **Twelve Data** | `api.twelvedata.com` | VOO/QQQ/DXY prices, OHLCV history | API key | 800 req/day, 8 req/min | Supabase cache |
-| **CoinGecko** | `api.coingecko.com/api/v3` | BTC price, market cap, volume, chart history | None (or API key for Pro) | Generous (50 req/min) | Supabase cache |
-| **Alternative.me** | `api.alternative.me` | Crypto Fear & Greed Index (0-100) | None | Unlimited | Supabase cache |
-| **FRED** | `api.stlouisfed.org` | Fed Funds Rate, 10Y Yield, CPI, Unemployment | API key | Unlimited | Supabase cache |
-| **Mempool.space** | `mempool.space/api` | Block height, hashrate, mempool, difficulty, fees | None | Unlimited | Supabase cache |
-| **LookIntoBitcoin** | `lookintobitcoin.com` | MVRV Z-Score, S2F model data, Rainbow bands | Web scraping / API | Best-effort | Supabase cache |
+| API                 | Base URL                   | Data Provided                                     | Auth                      | Free Tier Limits       | Fallback       |
+| ------------------- | -------------------------- | ------------------------------------------------- | ------------------------- | ---------------------- | -------------- |
+| **Twelve Data**     | `api.twelvedata.com`       | VOO/QQQ/DXY prices, OHLCV history                 | API key                   | 800 req/day, 8 req/min | Supabase cache |
+| **CoinGecko**       | `api.coingecko.com/api/v3` | BTC price, market cap, volume, chart history      | None (or API key for Pro) | Generous (50 req/min)  | Supabase cache |
+| **Alternative.me**  | `api.alternative.me`       | Crypto Fear & Greed Index (0-100)                 | None                      | Unlimited              | Supabase cache |
+| **FRED**            | `api.stlouisfed.org`       | Fed Funds Rate, 10Y Yield, CPI, Unemployment      | API key                   | Unlimited              | Supabase cache |
+| **Mempool.space**   | `mempool.space/api`        | Block height, hashrate, mempool, difficulty, fees | None                      | Unlimited              | Supabase cache |
+| **LookIntoBitcoin** | `lookintobitcoin.com`      | MVRV Z-Score, S2F model data, Rainbow bands       | Web scraping / API        | Best-effort            | Supabase cache |
 
 ### Refresh Tiers
 
-| Tier | Refresh Interval | Data Types | Mechanism |
-|---|---|---|---|
-| **Real-time** | 60 seconds | Bitcoin on-chain metrics (block height, mempool, hashrate) | Client-side polling with `setInterval` |
-| **Near real-time** | 5 minutes | Asset prices (VOO, QQQ, BTC), portfolio value | In-memory TTL cache, API route with SWR |
-| **Daily** | 24 hours | Historical OHLCV, macro indicators, Fear & Greed, AI summary, valuation models | Vercel Cron → Supabase storage |
-| **On-demand** | User-triggered | AI portfolio analysis, AI chat, report generation, CSV export | Direct API call per request |
+| Tier               | Refresh Interval | Data Types                                                                     | Mechanism                               |
+| ------------------ | ---------------- | ------------------------------------------------------------------------------ | --------------------------------------- |
+| **Real-time**      | 60 seconds       | Bitcoin on-chain metrics (block height, mempool, hashrate)                     | Client-side polling with `setInterval`  |
+| **Near real-time** | 5 minutes        | Asset prices (VOO, QQQ, BTC), portfolio value                                  | In-memory TTL cache, API route with SWR |
+| **Daily**          | 24 hours         | Historical OHLCV, macro indicators, Fear & Greed, AI summary, valuation models | Vercel Cron → Supabase storage          |
+| **On-demand**      | User-triggered   | AI portfolio analysis, AI chat, report generation, CSV export                  | Direct API call per request             |
 
 ### Caching Architecture
 
@@ -526,28 +526,28 @@ Twelve Data's 800 req/day constraint is the binding limit. Strategy:
 
 Built entirely on **shadcn/ui** — accessible, composable, Tailwind-styled:
 
-| Component Category | shadcn/ui Components Used | Custom Components |
-|---|---|---|
-| Layout | `Sidebar`, `Sheet` (mobile), `Separator` | Dashboard shell, page headers |
-| Data display | `Card`, `Table`, `Badge`, `Tooltip` | Metric cards, sparklines |
-| Forms | `Input`, `Select`, `Button`, `Dialog`, `Form` | Position form, alert form, DCA form |
-| Feedback | `Toast`, `Skeleton`, `Alert` | Loading states, empty states |
-| Navigation | `NavigationMenu`, `Tabs`, `Breadcrumb` | Sidebar nav, settings tabs |
-| Charts | — (shadcn/ui doesn't include charts) | Recharts: line, donut, bar, area |
+| Component Category | shadcn/ui Components Used                     | Custom Components                   |
+| ------------------ | --------------------------------------------- | ----------------------------------- |
+| Layout             | `Sidebar`, `Sheet` (mobile), `Separator`      | Dashboard shell, page headers       |
+| Data display       | `Card`, `Table`, `Badge`, `Tooltip`           | Metric cards, sparklines            |
+| Forms              | `Input`, `Select`, `Button`, `Dialog`, `Form` | Position form, alert form, DCA form |
+| Feedback           | `Toast`, `Skeleton`, `Alert`                  | Loading states, empty states        |
+| Navigation         | `NavigationMenu`, `Tabs`, `Breadcrumb`        | Sidebar nav, settings tabs          |
+| Charts             | — (shadcn/ui doesn't include charts)          | Recharts: line, donut, bar, area    |
 
 ### Chart Specifications
 
-| Chart | Library | Used In | Key Config |
-|---|---|---|---|
-| Portfolio value over time | Recharts `AreaChart` | Dashboard, analytics | Time range selector, gradient fill |
-| Allocation donut | Recharts `PieChart` | Dashboard, portfolio | Interactive segments, center total |
-| Fear & Greed gauge | Custom SVG | Market page | Radial gauge, color gradient (red→green) |
-| Price history + DCA markers | Recharts `ComposedChart` | DCA analytics | Line (price) + Scatter (DCA buys) + ReferenceLine (avg cost) |
-| MVRV Z-Score | Recharts `AreaChart` | Bitcoin valuation | Color-coded background zones |
-| Stock-to-Flow | Recharts `ComposedChart` | Bitcoin valuation | Scatter (actual) + Line (model) + ReferenceLine (halvings) |
-| Rainbow bands | Recharts `AreaChart` | Bitcoin valuation | 9 stacked semi-transparent areas |
-| Monthly returns | Recharts `BarChart` | Analytics reports | Green (positive) / red (negative) bars |
-| Drift comparison | Recharts `BarChart` | Portfolio | Grouped bars: actual vs target per asset |
+| Chart                       | Library                  | Used In              | Key Config                                                   |
+| --------------------------- | ------------------------ | -------------------- | ------------------------------------------------------------ |
+| Portfolio value over time   | Recharts `AreaChart`     | Dashboard, analytics | Time range selector, gradient fill                           |
+| Allocation donut            | Recharts `PieChart`      | Dashboard, portfolio | Interactive segments, center total                           |
+| Fear & Greed gauge          | Custom SVG               | Market page          | Radial gauge, color gradient (red→green)                     |
+| Price history + DCA markers | Recharts `ComposedChart` | DCA analytics        | Line (price) + Scatter (DCA buys) + ReferenceLine (avg cost) |
+| MVRV Z-Score                | Recharts `AreaChart`     | Bitcoin valuation    | Color-coded background zones                                 |
+| Stock-to-Flow               | Recharts `ComposedChart` | Bitcoin valuation    | Scatter (actual) + Line (model) + ReferenceLine (halvings)   |
+| Rainbow bands               | Recharts `AreaChart`     | Bitcoin valuation    | 9 stacked semi-transparent areas                             |
+| Monthly returns             | Recharts `BarChart`      | Analytics reports    | Green (positive) / red (negative) bars                       |
+| Drift comparison            | Recharts `BarChart`      | Portfolio            | Grouped bars: actual vs target per asset                     |
 
 ### Theming
 
@@ -559,11 +559,11 @@ Built entirely on **shadcn/ui** — accessible, composable, Tailwind-styled:
 
 ### Responsive Breakpoints
 
-| Breakpoint | Layout Behavior |
-|---|---|
-| `< 768px` (mobile) | Sidebar collapses to hamburger overlay. Cards stack vertically. Charts full-width. |
+| Breakpoint              | Layout Behavior                                                                      |
+| ----------------------- | ------------------------------------------------------------------------------------ |
+| `< 768px` (mobile)      | Sidebar collapses to hamburger overlay. Cards stack vertically. Charts full-width.   |
 | `768px–1024px` (tablet) | Sidebar remains, content uses 2-column grid. Charts side-by-side where space allows. |
-| `> 1024px` (desktop) | Full sidebar + 3-column card grid. Charts at optimal aspect ratio. |
+| `> 1024px` (desktop)    | Full sidebar + 3-column card grid. Charts at optimal aspect ratio.                   |
 
 ### Loading & Empty States
 
@@ -579,22 +579,22 @@ Every data-dependent component has three visual states:
 
 ### Stack Summary
 
-| Layer | Technology | Role |
-|---|---|---|
-| Framework | Next.js 15 (App Router) | Server Components, Server Actions, API routes, Cron |
-| Language | TypeScript strict | Zero `any`, zero `@ts-ignore` |
-| Styling | Tailwind CSS v4 | Utility-first, no custom CSS files |
-| UI | shadcn/ui | Accessible component primitives |
-| State | Jotai | Atomic client-side state, colocated `_atoms.ts` per route |
-| Forms | React Hook Form + Zod | Client hints + server-side validation in `_actions.ts` |
-| Database | Supabase (Postgres) | Tables, RLS, generated types |
-| Auth | Supabase Auth | Email/password + Google OAuth, session cookies |
-| AI | Vercel AI SDK + OpenAI | `generateText`, `streamText`, `useChat` |
-| Charts | Recharts | SVG-based responsive charts |
-| Testing | Vitest | Unit tests for pure logic — schemas, calculations, parsers |
-| Hosting | Vercel | Deployment, edge functions, cron jobs |
-| Email | Resend | Transactional notification emails |
-| Notifications | Telegram Bot API | Real-time push alerts |
+| Layer         | Technology              | Role                                                       |
+| ------------- | ----------------------- | ---------------------------------------------------------- |
+| Framework     | Next.js 15 (App Router) | Server Components, Server Actions, API routes, Cron        |
+| Language      | TypeScript strict       | Zero `any`, zero `@ts-ignore`                              |
+| Styling       | Tailwind CSS v4         | Utility-first, no custom CSS files                         |
+| UI            | shadcn/ui               | Accessible component primitives                            |
+| State         | Jotai                   | Atomic client-side state, colocated `_atoms.ts` per route  |
+| Forms         | React Hook Form + Zod   | Client hints + server-side validation in `_actions.ts`     |
+| Database      | Supabase (Postgres)     | Tables, RLS, generated types                               |
+| Auth          | Supabase Auth           | Email/password + Google OAuth, session cookies             |
+| AI            | Vercel AI SDK + OpenAI  | `generateText`, `streamText`, `useChat`                    |
+| Charts        | Recharts                | SVG-based responsive charts                                |
+| Testing       | Vitest                  | Unit tests for pure logic — schemas, calculations, parsers |
+| Hosting       | Vercel                  | Deployment, edge functions, cron jobs                      |
+| Email         | Resend                  | Transactional notification emails                          |
+| Notifications | Telegram Bot API        | Real-time push alerts                                      |
 
 ### Colocated Feature Architecture
 
@@ -627,15 +627,15 @@ app/<route>/
 
 Cross-cutting concerns that serve 3+ route segments:
 
-| Module | Purpose | Consumers |
-|---|---|---|
-| `lib/supabase/` | Client, server, middleware helpers, generated types | Every authenticated route |
-| `lib/market/` | External API integrations (Twelve Data, CoinGecko, Alternative.me, FRED) | Market, dashboard, portfolio, alerts |
-| `lib/bitcoin/` | On-chain data (Mempool.space), valuation models, halving calculations | Bitcoin route, alerts, dashboard |
-| `lib/indicators/` | RSI, SMA, EMA calculations | Alerts, market, bitcoin |
-| `lib/ai/` | Prompt templates for market summary, portfolio analysis, learning assistant | Insights, dashboard, API routes |
-| `lib/notifications/` | Multi-channel dispatcher (in-app, email, Telegram) | Alerts, DCA reminders |
-| `lib/utils/` | Formatting (currency, dates, percentages) | Every route |
+| Module               | Purpose                                                                     | Consumers                            |
+| -------------------- | --------------------------------------------------------------------------- | ------------------------------------ |
+| `lib/supabase/`      | Client, server, middleware helpers, generated types                         | Every authenticated route            |
+| `lib/market/`        | External API integrations (Twelve Data, CoinGecko, Alternative.me, FRED)    | Market, dashboard, portfolio, alerts |
+| `lib/bitcoin/`       | On-chain data (Mempool.space), valuation models, halving calculations       | Bitcoin route, alerts, dashboard     |
+| `lib/indicators/`    | RSI, SMA, EMA calculations                                                  | Alerts, market, bitcoin              |
+| `lib/ai/`            | Prompt templates for market summary, portfolio analysis, learning assistant | Insights, dashboard, API routes      |
+| `lib/notifications/` | Multi-channel dispatcher (in-app, email, Telegram)                          | Alerts, DCA reminders                |
+| `lib/utils/`         | Formatting (currency, dates, percentages)                                   | Every route                          |
 
 ### Server/Client Boundary
 
@@ -657,18 +657,18 @@ API routes — external APIs            Theme toggle
 
 All tables live in Supabase Postgres with RLS enforced:
 
-| Table | Key Columns | RLS Policy |
-|---|---|---|
-| `profiles` | user_id (FK→auth.users), display_name, base_currency, country, risk_tolerance | Owner read/write |
-| `portfolios` | user_id, target_allocations (JSONB) | Owner read/write |
-| `positions` | portfolio_id, symbol, asset_type, quantity, avg_cost_basis | Owner via portfolio |
-| `transactions` | position_id, type, quantity, price_usd, fee_usd, executed_at | Owner via position |
-| `dca_schedules` | user_id, symbol, amount_usd, frequency, day_trigger, status | Owner read/write |
-| `alerts` | user_id, symbol, condition_type, operator, target_value, status | Owner read/write |
-| `notifications` | user_id, type, title, body, read, channel | Owner read only |
-| `ai_summaries` | date, content, market_snapshot (JSONB) | All authenticated read |
-| `portfolio_snapshots` | user_id, date, total_value_usd, positions_snapshot (JSONB) | Owner read only |
-| `market_cache` | key, data (JSONB), cached_at, ttl_seconds | System read/write |
+| Table                 | Key Columns                                                                   | RLS Policy             |
+| --------------------- | ----------------------------------------------------------------------------- | ---------------------- |
+| `profiles`            | user_id (FK→auth.users), display_name, base_currency, country, risk_tolerance | Owner read/write       |
+| `portfolios`          | user_id, target_allocations (JSONB)                                           | Owner read/write       |
+| `positions`           | portfolio_id, symbol, asset_type, quantity, avg_cost_basis                    | Owner via portfolio    |
+| `transactions`        | position_id, type, quantity, price_usd, fee_usd, executed_at                  | Owner via position     |
+| `dca_schedules`       | user_id, symbol, amount_usd, frequency, day_trigger, status                   | Owner read/write       |
+| `alerts`              | user_id, symbol, condition_type, operator, target_value, status               | Owner read/write       |
+| `notifications`       | user_id, type, title, body, read, channel                                     | Owner read only        |
+| `ai_summaries`        | date, content, market_snapshot (JSONB)                                        | All authenticated read |
+| `portfolio_snapshots` | user_id, date, total_value_usd, positions_snapshot (JSONB)                    | Owner read only        |
+| `market_cache`        | key, data (JSONB), cached_at, ttl_seconds                                     | System read/write      |
 
 Migrations are append-only in `supabase/migrations/`. Never modify an existing migration — always create a new one.
 
@@ -703,25 +703,25 @@ Supabase
 
 ### Security Model
 
-| Layer | Measure |
-|---|---|
-| Authentication | Supabase Auth with email/password + Google OAuth. Session cookies via `@supabase/ssr`. |
-| Authorization | RLS on every table. Users can only access their own data. Service role key used only in server-side cron jobs. |
-| Input validation | Zod schemas validate all user input in `_actions.ts` before any database operation. |
-| API keys | User-provided API keys (e.g., Twelve Data) are encrypted at rest via Supabase Vault or encrypted column. |
-| Environment | All secret keys are server-only env vars — never prefixed with `NEXT_PUBLIC_`. |
-| XSS/CSRF | Next.js App Router handles CSRF via Server Actions. React's JSX escaping prevents XSS. AI output rendered as markdown with sanitization. |
-| Rate limiting | External API calls are rate-limited and cached. Alert evaluation cron has built-in deduplication. |
-| Account deletion | CASCADE delete across all user tables + Supabase Auth account removal. |
+| Layer            | Measure                                                                                                                                  |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Authentication   | Supabase Auth with email/password + Google OAuth. Session cookies via `@supabase/ssr`.                                                   |
+| Authorization    | RLS on every table. Users can only access their own data. Service role key used only in server-side cron jobs.                           |
+| Input validation | Zod schemas validate all user input in `_actions.ts` before any database operation.                                                      |
+| API keys         | User-provided API keys (e.g., Twelve Data) are encrypted at rest via Supabase Vault or encrypted column.                                 |
+| Environment      | All secret keys are server-only env vars — never prefixed with `NEXT_PUBLIC_`.                                                           |
+| XSS/CSRF         | Next.js App Router handles CSRF via Server Actions. React's JSX escaping prevents XSS. AI output rendered as markdown with sanitization. |
+| Rate limiting    | External API calls are rate-limited and cached. Alert evaluation cron has built-in deduplication.                                        |
+| Account deletion | CASCADE delete across all user tables + Supabase Auth account removal.                                                                   |
 
 ---
 
 ## Appendix: Relationship to Other Docs
 
-| Document | Purpose | Relationship to PDD |
-|---|---|---|
-| **SPECS.md** | Detailed epics, user stories, tasks, Gherkin acceptance criteria | PDD is the "what and why"; SPECS is the "what exactly and how to verify" |
-| **CLAUDE.md** | AI agent instructions — code style, conventions, commands | PDD informs architecture; CLAUDE.md enforces it at the code level |
-| **README-ARCHITECTURE.md** | Route segment contract, naming rules, canonical example | Technical details that implement PDD Section 7 |
-| **README-SPECS.md** | Epic→route mapping, task→file mapping | Maps PDD features to code locations |
-| **README.md** | Investing guide for Costa Rica developers | PDD Section 1 (user profile) is derived from this guide |
+| Document                   | Purpose                                                          | Relationship to PDD                                                      |
+| -------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| **SPECS.md**               | Detailed epics, user stories, tasks, Gherkin acceptance criteria | PDD is the "what and why"; SPECS is the "what exactly and how to verify" |
+| **CLAUDE.md**              | AI agent instructions — code style, conventions, commands        | PDD informs architecture; CLAUDE.md enforces it at the code level        |
+| **README-ARCHITECTURE.md** | Route segment contract, naming rules, canonical example          | Technical details that implement PDD Section 7                           |
+| **README-SPECS.md**        | Epic→route mapping, task→file mapping                            | Maps PDD features to code locations                                      |
+| **README.md**              | Investing guide for Costa Rica developers                        | PDD Section 1 (user profile) is derived from this guide                  |

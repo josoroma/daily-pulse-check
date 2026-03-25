@@ -1,9 +1,11 @@
 import { createClient } from '@/lib/supabase/server'
 import { getProfile } from '@/app/profile/_actions'
+import { getNotifications } from '@/app/dashboard/dca/_actions'
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { Separator } from '@/components/ui/separator'
 import { AuthProvider } from './_components/auth-provider'
 import { SidebarNav } from './_components/sidebar-nav'
+import { NotificationCenter } from './_components/notification-center'
 import { OnboardingModal } from '@/app/profile/_components/onboarding-modal'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -13,6 +15,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   } = await supabase.auth.getUser()
 
   const profile = await getProfile()
+  const notifications = await getNotifications()
 
   const needsOnboarding = profile && !profile.base_currency
 
@@ -25,6 +28,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
             <span className="text-sm font-medium text-muted-foreground">Finance Dashboard</span>
+            <div className="ml-auto">
+              <NotificationCenter initialNotifications={notifications} />
+            </div>
           </header>
           <main className="flex-1">{children}</main>
         </SidebarInset>

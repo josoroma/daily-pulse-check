@@ -686,3 +686,372 @@ Run `/capture-prompts all` to extract, improve, and persist every user prompt fr
 - Append new entries (Prompts 25–31) to `README-PROMPTS.md`
 
 ---
+
+## Prompt 32 — `dca`
+
+**Intent**: Plan Epic E5 (DCA Automation) implementation strategy.
+
+**Prompt**
+
+Run `/plan-item E5` to analyze Epic E5 (DCA Automation). Break down US-5.1 (Schedule Configuration), US-5.2 (Reminder Notifications), and US-5.3 (Performance Analytics) into atomic implementation tasks. Identify dependencies on E1–E4 (project setup, auth, market data, portfolio tracker). Map each user story to its route segment, colocated files, Supabase tables (`dca_schedules`, `notifications`), and migration order. Produce a sequenced implementation plan with file paths, component names, and schema definitions.
+
+**Derived Tasks**
+
+- Read SPECS.md Gherkin scenarios for US-5.1, US-5.2, US-5.3 to extract acceptance criteria
+- Map US-5.1 → `app/dashboard/dca/` with schedule form, schedule list, status toggle
+- Map US-5.2 → notifications table, notification center component, dispatch logic
+- Map US-5.3 → DCA performance summary cards, cost basis vs current value, savings rate
+- Identify E1–E4 dependencies: auth guard, Supabase client, market price data, position records
+- Plan migration: `dca_schedules` table + `notifications` table with RLS policies
+- Define component tree: 8+ components under `_components/`, schemas in `app/dashboard/dca/_schema.ts`
+- Sequence tasks: migration → schema → actions → components → tests → integration
+
+---
+
+## Prompt 33 — `dca`
+
+**Intent**: Implement Epic E5 (DCA Automation) end-to-end.
+
+**Prompt**
+
+Run `/implement-item E5` to execute all 3 user stories and 15 tasks for Epic E5 (DCA Automation). Create `supabase/migrations/20260322100000_dca_schedule_day_columns.sql` for `dca_schedules` and `notifications` tables with RLS policies. Create `app/dashboard/dca/_schema.ts` with `CreateDcaScheduleSchema` (superRefine for conditional `day_of_week`/`day_of_month` validation), `UpdateDcaScheduleSchema`, frequency/day labels. Build `app/dashboard/dca/_actions.ts` with Server Actions: `getDcaSchedules`, `createDcaSchedule`, `updateDcaSchedule`, `deleteDcaSchedule`, `getNotifications`, `markNotificationRead`, `markDcaAsDone`, `checkAndDispatchReminders`. Create 8 components under `_components/`: `schedule-form.tsx`, `schedule-list.tsx`, `dca-summary-cards.tsx`, `dca-performance-chart.tsx`, `notification-center.tsx` (in dashboard `_components/`), `reminder-settings.tsx`, `schedule-status-badge.tsx`, `next-execution-label.tsx`. Wire the DCA page with schedule management and performance analytics tabs. Write unit tests for schemas, utils, and date calculations.
+
+**Derived Tasks**
+
+- Create migration `20260322100000_dca_schedule_day_columns.sql` with `dca_schedules` and `notifications` tables, RLS policies, and indexes
+- Create `app/dashboard/dca/_schema.ts` with `CreateDcaScheduleSchema` (superRefine), `UpdateDcaScheduleSchema`, `FREQUENCY_LABELS`, `DAY_OF_WEEK_LABELS`
+- Create `app/dashboard/dca/_actions.ts` with 8 Server Actions for schedule CRUD, notifications, and reminder dispatch
+- Create `app/dashboard/dca/_utils.ts` with `getNextExecution`, `calculateDcaPerformance`, `formatFrequency` helpers
+- Create `app/dashboard/dca/_constants.ts` with frequency options, status colors, default values
+- Build `schedule-form.tsx` — React Hook Form + Zod with conditional day picker fields
+- Build `schedule-list.tsx` — table of DCA schedules with edit/delete/toggle actions
+- Build `dca-summary-cards.tsx` — total invested, current value, average cost basis, savings rate
+- Build `dca-performance-chart.tsx` — Recharts area chart showing cumulative DCA investment over time
+- Build `notification-center.tsx` — bell dropdown in dashboard sidebar with unread count badge
+- Build `reminder-settings.tsx`, `schedule-status-badge.tsx`, `next-execution-label.tsx` supporting components
+- Create `app/dashboard/dca/page.tsx` composing schedule management and performance analytics tabs
+- Write `app/dashboard/dca/__tests__/_schema.test.ts` with conditional validation tests
+- Write `app/dashboard/dca/__tests__/_utils.test.ts` with next-execution and performance calculation tests
+- Apply migration, regenerate Supabase types, run all tests (194 pass) and lint (0 errors)
+
+---
+
+## Prompt 34 — `dca`
+
+**Intent**: Code review E5 (DCA Automation) against conventions and acceptance criteria.
+
+**Prompt**
+
+Run `/review-item E5` to audit the entire Epic E5 (DCA Automation) implementation. Check all files under `app/dashboard/dca/` (page, actions, utils, constants, schema, components), `app/dashboard/_components/notification-center.tsx`, and `supabase/migrations/20260322100000_dca_schedule_day_columns.sql` against CLAUDE.md conventions, SPECS.md Gherkin acceptance criteria, security rules, TypeScript strict compliance, and test coverage. Investigate any login failures after `supabase db reset`. Report a verdict with file-level findings grouped by severity.
+
+**Derived Tasks**
+
+- Read all E5-related files: `app/dashboard/dca/page.tsx`, `_actions.ts`, `_utils.ts`, `_constants.ts`, `_schema.ts`, `_components/` (6 components), `notification-center.tsx`, migration file
+- Verify security: auth checks in all Server Actions, RLS enforcement, Zod validation on mutations
+- Verify schema correctness: superRefine conditional validation for frequency-dependent day fields
+- Verify correctness: cross-reference against Gherkin scenarios for US-5.1, US-5.2, US-5.3
+- Check for duplicate code: compare `app/portfolio/_schema.ts` DCA schemas with `app/dashboard/dca/_schema.ts`
+- Verify `markDcaAsDone` uses real pricing instead of placeholder values
+- Investigate login failure after `supabase db reset` wiping auth users
+- Produce verdict with severity-ranked findings and specific file/line references
+
+---
+
+## Prompt 35 — `dca`
+
+**Intent**: Fix all 3 findings from the E5 code review.
+
+**Prompt**
+
+Apply all 3 fixes identified in the `/review-item E5` code review:
+
+1. **Login failure after `supabase db reset`**: Run `supabase db reset` to cleanly apply all migrations, then regenerate `lib/supabase/database.types.ts`. Clean any stray CLI output lines from the generated types file.
+
+2. **Duplicate DCA schemas**: Remove the stale `CreateDcaScheduleSchema`, `UpdateDcaScheduleSchema`, and their inferred types from `app/portfolio/_schema.ts` (which lacks superRefine validation). Remove the corresponding test cases from `app/portfolio/__tests__/_schema.test.ts`. The authoritative schemas in `app/dashboard/dca/_schema.ts` remain unchanged.
+
+3. **Placeholder pricing in `markDcaAsDone`**: Refactor `markDcaAsDone(scheduleId)` to `markDcaAsDone(scheduleId, executionPrice, executionQuantity)` with positive-number validation. Create `app/dashboard/dca/_components/mark-done-dialog.tsx` — a dialog with price and quantity inputs and live total cost preview. Update `app/dashboard/_components/notification-center.tsx` to open the dialog on "Done" click instead of calling the action directly, extracting symbol and amount from notification metadata.
+
+Run all tests and lint to validate.
+
+**Derived Tasks**
+
+- Run `supabase db reset` to apply all 5 migrations cleanly
+- Regenerate `lib/supabase/database.types.ts` via `supabase gen types typescript --local`
+- Remove stray "Connecting to db 5432" line and CLI version warning from generated types
+- Remove duplicate DCA schema section (CreateDcaScheduleSchema, UpdateDcaScheduleSchema, types) from `app/portfolio/_schema.ts`
+- Remove DCA test block and clean imports in `app/portfolio/__tests__/_schema.test.ts`
+- Refactor `markDcaAsDone` signature in `app/dashboard/dca/_actions.ts` to accept `executionPrice` and `executionQuantity` with validation
+- Create `app/dashboard/dca/_components/mark-done-dialog.tsx` with price/quantity inputs and total cost preview
+- Add `parseNotificationMeta()` helper to `notification-center.tsx` extracting symbol from title and amount from body
+- Wire "Done" button to open `MarkDoneDialog` with pre-populated symbol/amount
+- Run Vitest (191 pass) and ESLint (0 errors) to validate all fixes
+
+---
+
+## Prompt 36 — `docs`
+
+**Intent**: Create documentation explaining the E5 DCA Performance Analytics implementation.
+
+**Prompt**
+
+Create `README-DCA-PERFORMANCE-ANALYTICS.md` documenting how Epic E5 (DCA Automation) was implemented. Cover the architecture of `app/dashboard/dca/` route segment, the Supabase schema for `dca_schedules` and `notifications` tables, the conditional Zod validation with superRefine, Server Actions for schedule CRUD and notification dispatch, the `markDcaAsDone` flow with real execution pricing, and the performance analytics components (summary cards, performance chart). Include the file tree, key design decisions, and how Gherkin acceptance criteria from SPECS.md were satisfied.
+
+**Derived Tasks**
+
+- Document the `app/dashboard/dca/` route segment file tree and purpose of each file
+- Explain the `dca_schedules` and `notifications` Supabase tables, columns, and RLS policies
+- Describe `CreateDcaScheduleSchema` superRefine logic for conditional day_of_week/day_of_month validation
+- Document all 8 Server Actions with their signatures and behavior
+- Explain the `markDcaAsDone` flow: notification → dialog → price/quantity → transaction record
+- Describe performance analytics: summary cards calculations, performance chart data flow
+- Map implementation to SPECS.md Gherkin scenarios for US-5.1, US-5.2, US-5.3
+
+---
+
+## Prompt 37 — `docs`
+
+**Intent**: Capture all E5 session prompts to README-PROMPTS.md.
+
+**Prompt**
+
+Run `/capture-prompts all E5` to extract, improve, and persist every user prompt from the E5 DCA Automation session into `README-PROMPTS.md`. Include prompts covering E5 planning, implementation, code review, review fixes, documentation, and this capture request itself. Derive actionable tasks for each, categorize by domain, and append in the established entry format continuing from Prompt 31.
+
+**Derived Tasks**
+
+- Review the full E5 chat session and extract all distinct user prompts
+- Improve wording, normalize terminology, and rewrite in imperative form
+- Derive atomic, implementation-ready tasks for each prompt
+- Assign category tags (`dca`, `docs`)
+- Deduplicate against existing entries (Prompts 1–31) before appending
+- Append new entries (Prompts 32–37) to `README-PROMPTS.md`
+
+---
+
+## Prompt 38 — `insights`
+
+**Intent**: Plan Epic E6 (AI-Powered Insights) implementation.
+
+**Prompt**
+
+Plan Epic E6 — AI-Powered Insights. Analyze all user stories (US-6.0 through US-6.3) and their tasks. Identify dependencies on existing Epics (E3 Market Data, E4 Portfolio Tracker), map out the Vercel AI SDK integration strategy (`ai`, `@ai-sdk/openai`), and produce an implementation plan covering: AI model configuration with OpenAI and Ollama provider support, daily market summary with streaming, portfolio AI analysis with chat interface, and financial learning assistant with topic guardrails.
+
+**Derived Tasks**
+
+- Analyze US-6.0 through US-6.3 Gherkin scenarios and task lists
+- Identify dependencies: market data APIs (E3), portfolio positions/allocation (E4), user profile (E2)
+- Map Vercel AI SDK primitives to each story: `generateText`/`streamText` for US-6.1, chat interface for US-6.2/US-6.3
+- Plan `lib/ai/provider.ts` model registry supporting OpenAI and Ollama providers
+- Plan prompt template architecture: `lib/ai/market-summary.ts`, `lib/ai/portfolio-analysis.ts`, `lib/ai/learning-assistant.ts`
+- Plan Settings page AI Model card with provider/model selectors
+- Plan streaming API routes: `app/api/ai/summary`, `app/api/ai/portfolio`, `app/api/ai/learn`
+- Plan Insights page layout: market summary card, portfolio analysis chat, learning assistant chat
+- Estimate task complexity and implementation order
+
+---
+
+## Prompt 39 — `insights`
+
+**Intent**: Implement Epic E6 (AI-Powered Insights) end-to-end.
+
+**Prompt**
+
+Implement Epic E6 — AI-Powered Insights. Execute all user stories US-6.0 through US-6.3 and their tasks: create `lib/ai/provider.ts` with a model registry and provider factory supporting both OpenAI and Ollama, add `ai_provider` and `ai_model` columns to the `profiles` table, build the AI Model settings card with provider/model selectors and Ollama connectivity check, create prompt templates for market summary, portfolio analysis, and learning assistant, build three streaming API routes (`/api/ai/summary`, `/api/ai/portfolio`, `/api/ai/learn`), implement the Insights page at `app/dashboard/insights/page.tsx` with market summary card, portfolio analysis chat, and learning assistant chat, add topic guardrails for non-financial queries, include AI disclaimer on all output areas, and write Vitest tests for all prompt builders, provider factory, and schema validation.
+
+**Derived Tasks**
+
+- Create Supabase migration adding `ai_provider` and `ai_model` columns to `profiles` table
+- Create `lib/ai/provider.ts` with model registry mapping providers to models, `getLanguageModel()` factory function
+- Create `lib/ai/market-summary.ts` with `buildMarketSummaryPrompt()` injecting prices, sentiment, and macro data
+- Create `lib/ai/portfolio-analysis.ts` with `buildPortfolioAnalysisPrompt()` injecting positions, allocation, drift, P&L
+- Create `lib/ai/learning-assistant.ts` with `buildLearningSystemPrompt()`, `isFinancialTopic()` guardrail, and starter questions
+- Update `app/profile/_schema.ts` with `AiModelSchema` validation
+- Build `app/dashboard/settings/_components/ai-model-card.tsx` with provider and model selectors
+- Create `app/dashboard/settings/_actions.ts` with save/load AI model preferences
+- Create `app/api/ai/health/route.ts` for Ollama connectivity check
+- Create `app/api/ai/summary/route.ts` with `streamText` and streaming response
+- Create `app/api/ai/portfolio/route.ts` with `streamText` and chat message support
+- Create `app/api/ai/learn/route.ts` with `streamText`, topic guardrail, and non-financial rejection
+- Build `app/dashboard/insights/page.tsx` composing three AI feature cards
+- Build `market-summary-card.tsx` with streaming text display and refresh button
+- Build `portfolio-analysis.tsx` with chat message history and streaming responses
+- Build `learning-chat.tsx` with starter questions, message history, and streaming
+- Build `ai-disclaimer.tsx` component for all AI output areas
+- Write tests for `lib/ai/provider.ts`, `lib/ai/market-summary.ts`, `lib/ai/portfolio-analysis.ts`, `lib/ai/learning-assistant.ts`
+- Write tests for `app/dashboard/settings/__tests__/_schema.test.ts` covering AI model schema
+- Update SPECS.md to mark all E6 tasks complete
+- Regenerate Supabase database types
+
+---
+
+## Prompt 40 — `insights`
+
+**Intent**: Fix Ollama provider integration — replace `ollama-ai-provider` with OpenAI-compatible endpoint.
+
+**Prompt**
+
+Replace the `ollama-ai-provider` package with `@ai-sdk/openai`'s `createOpenAI` pointing at Ollama's `/v1` endpoint (`http://localhost:11434/v1`). The `ollama-ai-provider` package has peer dependency conflicts with AI SDK v6 and does not properly support reasoning models. Use the OpenAI-compatible API that Ollama exposes natively.
+
+**Derived Tasks**
+
+- Remove `ollama-ai-provider` usage from `lib/ai/provider.ts`
+- Import `createOpenAI` from `@ai-sdk/openai` and configure it with `baseURL: 'http://localhost:11434/v1'`
+- Update `getLanguageModel()` to use the OpenAI-compatible Ollama provider for local models
+- Verify Ollama's `/v1/chat/completions` endpoint responds correctly with `qwen3.5:27b`
+
+---
+
+## Prompt 41 — `insights`
+
+**Intent**: Add error handling to AI API routes with manual ReadableStream wrapping.
+
+**Prompt**
+
+Add robust error handling to all three AI API routes (`summary`, `portfolio`, `learn`). Wrap the `streamText` result in a manual `ReadableStream` with try/catch around the stream iteration. When errors occur during streaming, write the error message to the stream before closing rather than letting the response fail silently. This prevents blank responses when the AI provider throws.
+
+**Derived Tasks**
+
+- Refactor `app/api/ai/summary/route.ts` to wrap `streamText` result in a manual `ReadableStream` with error handling
+- Refactor `app/api/ai/portfolio/route.ts` with the same error-handling stream wrapper pattern
+- Refactor `app/api/ai/learn/route.ts` with the same error-handling stream wrapper pattern
+- Ensure error messages are written to the stream as text before `controller.close()`
+
+---
+
+## Prompt 42 — `insights`
+
+**Intent**: Fix Ollama streaming by stripping unsupported `stream_options` and `max_tokens` from requests.
+
+**Prompt**
+
+Create an `ollamaFetch` wrapper in `lib/ai/provider.ts` that intercepts outgoing requests to Ollama and strips the `stream_options` field (which Ollama doesn't support) and `max_tokens` (which causes reasoning models like `qwen3.5:27b` to spend all tokens on thinking when capped). Refactor the Ollama provider to use `@ai-sdk/openai-compatible`'s `createOpenAICompatible` for cleaner `stream_options` handling.
+
+**Derived Tasks**
+
+- Install `@ai-sdk/openai-compatible` package
+- Create `ollamaFetch` custom fetch wrapper in `lib/ai/provider.ts` that parses request body JSON, deletes `stream_options` and `max_tokens` fields, and passes the modified request to native `fetch`
+- Replace `createOpenAI` with `createOpenAICompatible` from `@ai-sdk/openai-compatible` for the Ollama provider
+- Define a `REASONING_MODELS` set containing models that need `max_tokens` stripped (e.g., `qwen3.5:27b`, `o4-mini`)
+- Pass `ollamaFetch` as the `fetch` option to `createOpenAICompatible`
+- Update provider tests to cover the new factory function
+- Verify streaming works end-to-end with `qwen3.5:27b`
+
+---
+
+## Prompt 43 — `insights`
+
+**Intent**: Redesign Settings page with tabs and add diagnostics panel.
+
+**Prompt**
+
+Redesign the Settings page (`app/dashboard/settings/page.tsx`) with a tabbed layout using shadcn/ui Tabs: Profile tab, AI Model tab, and Diagnostics tab. Create a `DiagnosticsPanel` component that tests AI model connectivity (`/api/ai/test`) and database connectivity (`/api/db/test`), displaying connection status, response times, and error details. Create both test API endpoints.
+
+**Derived Tasks**
+
+- Refactor `app/dashboard/settings/page.tsx` to use shadcn/ui `Tabs` with three tabs: Profile, AI Model, Diagnostics
+- Move existing profile form into the Profile tab
+- Move existing AI model card into the AI Model tab
+- Create `app/api/ai/test/route.ts` endpoint that sends a test prompt to the configured AI provider and returns status, latency, and model info
+- Create `app/api/db/test/route.ts` endpoint that runs a simple Supabase query and returns connection status and latency
+- Build `app/dashboard/settings/_components/diagnostics-panel.tsx` with "Test AI" and "Test DB" buttons, displaying results with status badges, response times, and error messages
+- Add loading states and error handling to diagnostics panel
+
+---
+
+## Prompt 44 — `insights`
+
+**Intent**: Improve Insights UI with provider/model badge and thinking indicators.
+
+**Prompt**
+
+Enhance the Insights page components with provider and model information display. Show the currently configured AI provider and model name as a badge/chip on each AI card. Add a "Thinking… reasoning models may take a moment" indicator with a pulsing Brain icon while the model is generating. This helps users understand which model is active and sets expectations for reasoning model response times.
+
+**Derived Tasks**
+
+- Fetch the user's `ai_provider` and `ai_model` from their profile on the Insights page
+- Pass provider/model info to `market-summary-card.tsx`, `portfolio-analysis.tsx`, and `learning-chat.tsx` as props
+- Render a subtle badge showing provider and model name on each card
+- Add "Thinking… reasoning models may take a moment" loading state with animated Brain icon
+- Use `Skeleton` components for loading placeholders during AI generation
+
+---
+
+## Prompt 45 — `insights`
+
+**Intent**: Fix empty AI responses from reasoning model by injecting `/no_think` suppression.
+
+**Prompt**
+
+Fix the Ollama reasoning model (`qwen3.5:27b`) producing empty responses. The model streams empty `content: ""` chunks during its thinking phase while the AI SDK's `textStream` only surfaces content tokens, causing the UI to show nothing. Inject `/no_think` into the system prompt via `ollamaFetch` to skip the reasoning phase and produce content immediately. Verify the fix produces actual content within a reasonable time.
+
+**Derived Tasks**
+
+- Diagnose: confirm Ollama is running and model is loaded in VRAM
+- Diagnose: test direct streaming to Ollama to observe empty `content` chunks during thinking phase
+- Modify `ollamaFetch` in `lib/ai/provider.ts` to inject `/no_think` into the last user message content
+- Verify fix: confirm model now produces content (e.g., `"Hello!"`) instead of empty response
+- Run all 232 tests to confirm no regressions
+
+---
+
+## Prompt 46 — `insights`
+
+**Intent**: Review Epic E6 implementation against CLAUDE.md and SPECS.md.
+
+**Prompt**
+
+Review Epic E6 — AI-Powered Insights implementation. Audit all changed files against CLAUDE.md conventions (colocated architecture, naming rules, code style) and SPECS.md Gherkin acceptance criteria for US-6.0 through US-6.3. Check `lib/ai/provider.ts` factory pattern, all three prompt template modules, the three streaming API routes, the Settings AI Model card, the Insights page with its three chat/summary components, the AI disclaimer component, and all associated tests. Verify security (auth checks on API routes), error handling, and TypeScript strictness.
+
+**Derived Tasks**
+
+- Verify `lib/ai/provider.ts` follows naming conventions and exports named functions only
+- Audit `lib/ai/market-summary.ts`, `portfolio-analysis.ts`, `learning-assistant.ts` for prompt template quality and type safety
+- Check all 3 API routes (`summary`, `portfolio`, `learn`) for auth guard (`supabase.auth.getUser()`), error handling, and proper streaming
+- Verify Settings AI Model card saves to Supabase and reflects in AI features
+- Check Insights page component composition and prop passing
+- Validate topic guardrail in learning assistant rejects non-financial queries
+- Confirm AI disclaimer is present on all AI output areas
+- Check test coverage: provider, market-summary, portfolio-analysis, learning-assistant, settings schema
+- Verify all Gherkin scenarios for US-6.0–US-6.3 are satisfied by implementation
+- Check for TypeScript `any` types, missing error handling, or security issues
+
+---
+
+## Prompt 47 — `insights`
+
+**Intent**: Display the AI model's chain-of-thought reasoning in the Insights UI.
+
+**Prompt**
+
+Enable chain-of-thought / reasoning visibility across all AI features. When using a reasoning model (e.g., `qwen3.5:27b`, `o4-mini`), show the model's thinking process in the UI instead of suppressing it. Remove the `/no_think` injection from `lib/ai/provider.ts`. Switch all 3 AI API routes (`summary`, `portfolio`, `learn`) from `textStream` to `fullStream` to capture both `reasoning-delta` and `text-delta` events from the Vercel AI SDK. Stream responses as newline-delimited JSON (`{type: 'reasoning'|'text'|'error', text}`) and parse them on the client. Add a collapsible "Thinking (N chars)" section with a Brain icon toggle to `market-summary-card.tsx`, and per-message inline reasoning toggles to `portfolio-analysis.tsx` and `learning-chat.tsx`. Show a pulsing "Thinking…" indicator while reasoning tokens are streaming before content begins. Gracefully hide reasoning UI when using non-reasoning models.
+
+**Derived Tasks**
+
+- Remove `/no_think` injection from `ollamaFetch` in `lib/ai/provider.ts` (keep `max_tokens` stripping only)
+- Switch `app/api/ai/summary/route.ts` from `result.textStream` to `result.fullStream` with NDJSON output
+- Switch `app/api/ai/portfolio/route.ts` from `result.textStream` to `result.fullStream` with NDJSON output
+- Switch `app/api/ai/learn/route.ts` from `result.textStream` to `result.fullStream` with NDJSON output
+- Set `Content-Type: application/x-ndjson; charset=utf-8` on all 3 AI streaming responses
+- Update `market-summary-card.tsx`: parse NDJSON stream, add `reasoning` + `showReasoning` state, render collapsible reasoning section with Brain icon, ChevronRight toggle, character count, and scrollable `<pre>` box
+- Update `portfolio-analysis.tsx`: add `reasoning` field to Message type, `expandedReasoning` Set state, NDJSON parser in `sendMessage`, per-message reasoning toggle with collapsible `<pre>` in assistant bubbles
+- Update `learning-chat.tsx`: same NDJSON + per-message reasoning pattern, with `try/catch` fallback for plain-text responses (non-financial topic rejection)
+- Convert learn route's non-financial rejection path from `text/plain` to NDJSON format for protocol consistency
+- Add "Thinking…" pulsing indicator when reasoning is streaming but content hasn't started yet
+
+---
+
+## Prompt 48 — `insights`
+
+**Intent**: Update SPECS.md to add US-6.4 for chain-of-thought reasoning display.
+
+**Prompt**
+
+Update SPECS.md for E6: add `US-6.4: Chain of Thought Reasoning Display` as a new completed story with Gherkin scenarios covering reasoning toggle on market summary, per-message reasoning in chat, streaming reasoning indicator, non-reasoning model graceful fallback, and NDJSON streaming protocol. Add 5 completed tasks (T-6.4.1 through T-6.4.5). Update the Progress Summary table to reflect 5 stories (all completed) for E6.
+
+**Derived Tasks**
+
+- Update Progress Summary table row for E6 from 4 stories to 5 stories (all completed)
+- Add `US-6.4: Chain of Thought Reasoning Display [x] 🎨` section after US-6.3
+- Write Gherkin feature with 5 scenarios: reasoning toggle on summary, per-message reasoning in chat, streaming indicator, non-reasoning fallback, NDJSON protocol
+- Add 5 completed task checkboxes (T-6.4.1–T-6.4.5) covering provider fix, API route updates, and 3 component updates
+
+---

@@ -20,7 +20,7 @@
 
 ## Overview
 
-A purpose-built dashboard for a Costa Rica-based software developer managing a focused three-asset portfolio through Interactive Brokers (VOO, QQQ) and Kraken (Bitcoin). Replaces the daily ritual of checking multiple apps with a single, AI-augmented command center.
+A purpose-built dashboard for a Costa Rica-based software developer managing a focused three-asset portfolio through Interactive Brokers (VOO, QQQ) and a crypto exchange (Bitcoin). Replaces the daily ritual of checking multiple apps with a single, AI-augmented command center.
 
 **Target allocation:**
 

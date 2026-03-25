@@ -22,8 +22,8 @@
 | E2: Authentication & User Profile | 3       | 0    | 0           | 3         | 0       |
 | E3: Market Data Engine            | 4       | 0    | 0           | 4         | 0       |
 | E4: Portfolio Tracker             | 4       | 0    | 0           | 4         | 0       |
-| E5: DCA Automation                | 3       | 3    | 0           | 0         | 0       |
-| E6: AI-Powered Insights           | 3       | 3    | 0           | 0         | 0       |
+| E5: DCA Automation                | 3       | 0    | 0           | 3         | 0       |
+| E6: AI-Powered Insights           | 5       | 0    | 0           | 5         | 0       |
 | E7: Alerts & Notifications        | 3       | 3    | 0           | 0         | 0       |
 | E8: Bitcoin On-Chain Analytics    | 3       | 3    | 0           | 0         | 0       |
 | E9: Analytics & Reporting         | 3       | 3    | 0           | 0         | 0       |
@@ -808,7 +808,7 @@ Feature: Target Allocation & Rebalancing
 
 ## E5: DCA Automation
 
-### US-5.1: DCA Schedule Configuration [ ] 🎨
+### US-5.1: DCA Schedule Configuration [x] 🎨
 
 **As a** user
 **I want** to configure recurring DCA schedules for my assets
@@ -856,15 +856,15 @@ Feature: DCA Schedule Configuration
 
 #### Tasks
 
-- [ ] T-5.1.1: Create `dca_schedules` table: id, user_id, symbol, asset_type, amount_usd, frequency (daily/weekly/biweekly/monthly), day_of_week/day_of_month, status (active/paused), created_at
-- [ ] T-5.1.2: Build DCA schedule form with React Hook Form + Zod validation
-- [ ] T-5.1.3: Create DCA schedules list component with status toggle (active/pause)
-- [ ] T-5.1.4: Build DCA page at `app/dashboard/dca/page.tsx`
-- [ ] T-5.1.5: Write unit tests for schedule creation and validation
+- [x] T-5.1.1: Create `dca_schedules` table: id, user_id, symbol, asset_type, amount_usd, frequency (daily/weekly/biweekly/monthly), day_of_week/day_of_month, status (active/paused), created_at
+- [x] T-5.1.2: Build DCA schedule form with React Hook Form + Zod validation
+- [x] T-5.1.3: Create DCA schedules list component with status toggle (active/pause)
+- [x] T-5.1.4: Build DCA page at `app/dashboard/dca/page.tsx`
+- [x] T-5.1.5: Write unit tests for schedule creation and validation
 
 ---
 
-### US-5.2: DCA Reminder Notifications [ ] 🎨
+### US-5.2: DCA Reminder Notifications [x] 🎨
 
 **As a** user
 **I want** to receive reminders when a DCA buy is due
@@ -902,15 +902,15 @@ Feature: DCA Reminders
 
 #### Tasks
 
-- [ ] T-5.2.1: Create Supabase Edge Function or cron job (via Vercel Cron) to check due DCA schedules
-- [ ] T-5.2.2: Create `notifications` table: id, user_id, type, title, body, read, created_at
-- [ ] T-5.2.3: Build notification center component in dashboard header
-- [ ] T-5.2.4: Implement "Mark as Done" flow that pre-fills a transaction form
-- [ ] T-5.2.5: Write unit tests for schedule-due calculation logic
+- [x] T-5.2.1: Create Supabase Edge Function or cron job (via Vercel Cron) to check due DCA schedules
+- [x] T-5.2.2: Create `notifications` table: id, user_id, type, title, body, read, created_at
+- [x] T-5.2.3: Build notification center component in dashboard header
+- [x] T-5.2.4: Implement "Mark as Done" flow that pre-fills a transaction form
+- [x] T-5.2.5: Write unit tests for schedule-due calculation logic
 
 ---
 
-### US-5.3: DCA Performance Analytics [ ] 🎨
+### US-5.3: DCA Performance Analytics [x] 🎨
 
 **As a** user
 **I want** to see how my DCA strategy has performed over time
@@ -943,17 +943,69 @@ Feature: DCA Performance Analytics
 
 #### Tasks
 
-- [ ] T-5.3.1: Build DCA analytics page at `app/dashboard/dca/analytics/page.tsx`
-- [ ] T-5.3.2: Implement DCA vs lump sum comparison calculation
-- [ ] T-5.3.3: Build DCA history chart — price line with DCA buy markers and average cost basis line
-- [ ] T-5.3.4: Create summary stats cards: total invested, current value, return %, avg cost basis
-- [ ] T-5.3.5: Write unit tests for DCA return and lump sum comparison calculations
+- [x] T-5.3.1: Build DCA analytics page at `app/dashboard/dca/analytics/page.tsx`
+- [x] T-5.3.2: Implement DCA vs lump sum comparison calculation
+- [x] T-5.3.3: Build DCA history chart — price line with DCA buy markers and average cost basis line
+- [x] T-5.3.4: Create summary stats cards: total invested, current value, return %, avg cost basis
+- [x] T-5.3.5: Write unit tests for DCA return and lump sum comparison calculations
 
 ---
 
 ## E6: AI-Powered Insights
 
-### US-6.1: Daily Market Summary (Vercel AI SDK) [ ] 🎨
+### US-6.0: AI Model Configuration [x] 🎨
+
+**As a** user
+**I want** to choose between OpenAI and Ollama models in the Settings page
+**So that** I can use a local model for privacy/cost or a cloud model for quality
+
+```gherkin
+Feature: AI Model Configuration
+  As a user
+  I want to choose my AI provider and model in Settings
+  So that I control whether AI runs locally or in the cloud
+
+  Scenario: Display AI Model card in Settings
+    Given the user navigates to /dashboard/settings
+    Then a "AI Model" card is displayed with provider and model selectors
+
+  Scenario: Select OpenAI provider
+    Given the user is on the AI Model settings card
+    When the user selects provider "OpenAI"
+    Then the model dropdown shows: gpt-4.1-nano, gpt-4.1-mini, gpt-4.1, o4-mini
+    And the default model is "gpt-4.1-mini"
+
+  Scenario: Select Ollama provider
+    Given the user is on the AI Model settings card
+    When the user selects provider "Ollama"
+    Then the model dropdown shows locally available models (e.g., qwen3.5:27b, llama3.1:8b, mistral)
+    And the default model is "qwen3.5:27b"
+
+  Scenario: Persist model selection
+    Given the user selects provider "Ollama" and model "qwen3.5:27b"
+    When the user clicks "Save"
+    Then the selection is stored in the user's profile
+    And all AI features (US-6.1, US-6.2, US-6.3) use the selected provider and model
+
+  Scenario: Validate Ollama connectivity
+    Given the user selects provider "Ollama"
+    When the Ollama server is not reachable at the configured base URL
+    Then a warning is shown: "Cannot connect to Ollama. Check that it is running."
+```
+
+#### Tasks
+
+- [x] T-6.0.1: Add `ai_provider` and `ai_model` columns to `profiles` table via migration
+- [x] T-6.0.2: Create `lib/ai/provider.ts` — model registry and provider factory (OpenAI + Ollama)
+- [x] T-6.0.3: Update `app/profile/_schema.ts` with `AiModelSchema` (provider enum + model string)
+- [x] T-6.0.4: Build AI Model settings card component in `app/dashboard/settings/_components/ai-model-card.tsx`
+- [x] T-6.0.5: Create server action to save/load AI model preferences in `app/dashboard/settings/_actions.ts`
+- [x] T-6.0.6: Add Ollama connectivity check endpoint `app/api/ai/health/route.ts`
+- [x] T-6.0.7: Write tests for provider factory and schema validation
+
+---
+
+### US-6.1: Daily Market Summary (Vercel AI SDK) [x] 🎨
 
 **As a** user
 **I want** an AI-generated daily summary of market conditions
@@ -990,16 +1042,16 @@ Feature: AI Daily Market Summary
 
 #### Tasks
 
-- [ ] T-6.1.1: Create `lib/ai/market-summary.ts` using Vercel AI SDK `generateText` with structured prompt
-- [ ] T-6.1.2: Build prompt template that injects current market data (prices, changes, sentiment, macro indicators)
-- [ ] T-6.1.3: Create API route `app/api/ai/summary/route.ts` with streaming response
-- [ ] T-6.1.4: Build summary card component with streaming text display
-- [ ] T-6.1.5: Implement daily auto-generation via Vercel Cron and cache in `ai_summaries` table
-- [ ] T-6.1.6: Write integration tests for prompt construction and response parsing
+- [x] T-6.1.1: Create `lib/ai/market-summary.ts` using Vercel AI SDK `generateText` with structured prompt
+- [x] T-6.1.2: Build prompt template that injects current market data (prices, changes, sentiment, macro indicators)
+- [x] T-6.1.3: Create API route `app/api/ai/summary/route.ts` with streaming response
+- [x] T-6.1.4: Build summary card component with streaming text display
+- [x] T-6.1.5: Implement daily auto-generation via Vercel Cron and cache in `ai_summaries` table
+- [x] T-6.1.6: Write integration tests for prompt construction and response parsing
 
 ---
 
-### US-6.2: Portfolio AI Analysis [ ] 🎨
+### US-6.2: Portfolio AI Analysis [x] 🎨
 
 **As a** user
 **I want** AI analysis of my specific portfolio
@@ -1036,16 +1088,16 @@ Feature: Portfolio AI Analysis
 
 #### Tasks
 
-- [ ] T-6.2.1: Create `lib/ai/portfolio-analysis.ts` with portfolio context builder
-- [ ] T-6.2.2: Build prompt template injecting: positions, allocation, drift, P&L, user risk tolerance
-- [ ] T-6.2.3: Implement chat interface using Vercel AI SDK `useChat` hook
-- [ ] T-6.2.4: Create analysis page component at `app/dashboard/insights/page.tsx`
-- [ ] T-6.2.5: Add persistent disclaimer component to all AI output areas
-- [ ] T-6.2.6: Write tests for prompt construction with various portfolio states
+- [x] T-6.2.1: Create `lib/ai/portfolio-analysis.ts` with portfolio context builder
+- [x] T-6.2.2: Build prompt template injecting: positions, allocation, drift, P&L, user risk tolerance
+- [x] T-6.2.3: Implement chat interface using Vercel AI SDK `useChat` hook
+- [x] T-6.2.4: Create analysis page component at `app/dashboard/insights/page.tsx`
+- [x] T-6.2.5: Add persistent disclaimer component to all AI output areas
+- [x] T-6.2.6: Write tests for prompt construction with various portfolio states
 
 ---
 
-### US-6.3: Ask AI About Market Concepts [ ] 🎨
+### US-6.3: Ask AI About Market Concepts [x] 🎨
 
 **As a** user
 **I want** to ask the AI questions about investing concepts
@@ -1082,12 +1134,64 @@ Feature: AI Learning Assistant
 
 #### Tasks
 
-- [ ] T-6.3.1: Create `lib/ai/learning-assistant.ts` with system prompt scoped to financial topics
-- [ ] T-6.3.2: Implement topic guardrail — reject non-financial queries politely
-- [ ] T-6.3.3: Build chat UI component with message history using shadcn/ui
-- [ ] T-6.3.4: Inject user context (country, portfolio summary) into system prompt for personalization
-- [ ] T-6.3.5: Add suggested starter questions: "What is DCA?", "How do ETFs work?", "Explain Bitcoin halving"
-- [ ] T-6.3.6: Write tests for topic guardrail and context injection
+- [x] T-6.3.1: Create `lib/ai/learning-assistant.ts` with system prompt scoped to financial topics
+- [x] T-6.3.2: Implement topic guardrail — reject non-financial queries politely
+- [x] T-6.3.3: Build chat UI component with message history using shadcn/ui
+- [x] T-6.3.4: Inject user context (country, portfolio summary) into system prompt for personalization
+- [x] T-6.3.5: Add suggested starter questions: "What is DCA?", "How do ETFs work?", "Explain Bitcoin halving"
+- [x] T-6.3.6: Write tests for topic guardrail and context injection
+
+---
+
+### US-6.4: Chain of Thought Reasoning Display [x] 🎨
+
+**As a** user
+**I want** to see the AI model's reasoning / chain of thought when using a reasoning model
+**So that** I can understand how the AI arrived at its analysis
+
+```gherkin
+Feature: Chain of Thought Reasoning Display
+  As a user
+  I want to see the AI's reasoning process
+  So that I understand how conclusions were reached
+
+  Scenario: Display reasoning toggle on market summary
+    Given the user is using a reasoning model (e.g., qwen3.5:27b, o4-mini)
+    When the AI generates a market summary
+    Then a collapsible "Thinking (N chars)" section appears above the summary
+    And clicking the toggle reveals the chain of thought in a scrollable box
+
+  Scenario: Display per-message reasoning in chat
+    Given the user is in the Portfolio Analysis or Learning Assistant chat
+    When the AI responds with reasoning content
+    Then each assistant message shows an inline reasoning toggle
+    And expanding it reveals the model's thinking process
+
+  Scenario: Streaming reasoning indicator
+    Given the AI is in the reasoning phase (content not yet started)
+    When reasoning tokens are streaming
+    Then a "Thinking…" indicator with a pulsing brain icon is displayed
+
+  Scenario: Non-reasoning model graceful fallback
+    Given the user is using a non-reasoning model (e.g., gpt-4.1-mini)
+    When the AI generates a response without reasoning content
+    Then no reasoning toggle is shown
+    And the response displays normally
+
+  Scenario: NDJSON streaming protocol
+    Given the user triggers any AI feature
+    When the API streams the response
+    Then events are sent as newline-delimited JSON: {type: 'reasoning'|'text'|'error', text}
+    And the client parses both reasoning and text chunks independently
+```
+
+#### Tasks
+
+- [x] T-6.4.1: Remove `/no_think` injection from `lib/ai/provider.ts` to allow full reasoning output
+- [x] T-6.4.2: Switch all 3 AI API routes (`summary`, `portfolio`, `learn`) from `textStream` to `fullStream` with NDJSON streaming protocol
+- [x] T-6.4.3: Update `market-summary-card.tsx` with collapsible reasoning section (Brain icon, character count, scrollable pre box)
+- [x] T-6.4.4: Update `portfolio-analysis.tsx` with per-message reasoning toggle and NDJSON parsing
+- [x] T-6.4.5: Update `learning-chat.tsx` with per-message reasoning toggle and plain-text fallback for non-financial rejections
 
 ---
 

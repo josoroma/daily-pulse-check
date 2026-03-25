@@ -87,30 +87,6 @@ export const CreateTransactionSchema = z.object({
 export type CreateTransaction = z.infer<typeof CreateTransactionSchema>
 
 // ============================================================
-// DCA Schedules
-// ============================================================
-export const CreateDcaScheduleSchema = z.object({
-  portfolio_id: z.string().uuid('Invalid portfolio'),
-  symbol: z.string().min(1, 'Symbol is required').max(10).toUpperCase(),
-  asset_type: z.enum(['ETF', 'Crypto'], {
-    message: 'Asset type is required',
-  }),
-  amount: z.number({ message: 'Amount is required' }).positive('Amount must be positive'),
-  frequency: z.enum(['Daily', 'Weekly', 'Biweekly', 'Monthly'], {
-    message: 'Frequency is required',
-  }),
-})
-
-export type CreateDcaSchedule = z.infer<typeof CreateDcaScheduleSchema>
-
-export const UpdateDcaScheduleSchema = CreateDcaScheduleSchema.partial().extend({
-  id: z.string().uuid(),
-  is_active: z.boolean().optional(),
-})
-
-export type UpdateDcaSchedule = z.infer<typeof UpdateDcaScheduleSchema>
-
-// ============================================================
 // Alerts
 // ============================================================
 export const CreateAlertSchema = z.object({

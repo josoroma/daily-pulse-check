@@ -34,6 +34,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_summaries: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          model_used: string
+          summary_date: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          model_used: string
+          summary_date?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          model_used?: string
+          summary_date?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       alerts: {
         Row: {
           asset_type: string
@@ -76,11 +103,31 @@ export type Database = {
         }
         Relationships: []
       }
+      api_request_counts: {
+        Row: {
+          date_key: string
+          provider: string
+          request_count: number
+        }
+        Insert: {
+          date_key?: string
+          provider: string
+          request_count?: number
+        }
+        Update: {
+          date_key?: string
+          provider?: string
+          request_count?: number
+        }
+        Relationships: []
+      }
       dca_schedules: {
         Row: {
           amount: number
           asset_type: string
           created_at: string
+          day_of_month: number | null
+          day_of_week: number | null
           frequency: string
           id: string
           is_active: boolean
@@ -94,6 +141,8 @@ export type Database = {
           amount: number
           asset_type: string
           created_at?: string
+          day_of_month?: number | null
+          day_of_week?: number | null
           frequency: string
           id?: string
           is_active?: boolean
@@ -107,6 +156,8 @@ export type Database = {
           amount?: number
           asset_type?: string
           created_at?: string
+          day_of_month?: number | null
+          day_of_week?: number | null
           frequency?: string
           id?: string
           is_active?: boolean
@@ -119,6 +170,98 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "dca_schedules_portfolio_id_fkey"
+            columns: ["portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "portfolios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      market_cache: {
+        Row: {
+          data: Json
+          fetched_at: string
+          key: string
+          ttl_seconds: number
+        }
+        Insert: {
+          data: Json
+          fetched_at?: string
+          key: string
+          ttl_seconds?: number
+        }
+        Update: {
+          data?: Json
+          fetched_at?: string
+          key?: string
+          ttl_seconds?: number
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          read: boolean
+          related_id: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          read?: boolean
+          related_id?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          read?: boolean
+          related_id?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      portfolio_snapshots: {
+        Row: {
+          created_at: string
+          id: string
+          portfolio_id: string
+          positions_data: Json
+          snapshot_date: string
+          total_value: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          portfolio_id: string
+          positions_data?: Json
+          snapshot_date?: string
+          total_value?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          portfolio_id?: string
+          positions_data?: Json
+          snapshot_date?: string
+          total_value?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_snapshots_portfolio_id_fkey"
             columns: ["portfolio_id"]
             isOneToOne: false
             referencedRelation: "portfolios"
@@ -205,6 +348,8 @@ export type Database = {
       }
       profiles: {
         Row: {
+          ai_model: string
+          ai_provider: string
           base_currency: string
           country: string
           created_at: string
@@ -214,6 +359,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          ai_model?: string
+          ai_provider?: string
           base_currency?: string
           country?: string
           created_at?: string
@@ -223,6 +370,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          ai_model?: string
+          ai_provider?: string
           base_currency?: string
           country?: string
           created_at?: string
@@ -421,4 +570,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-

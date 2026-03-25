@@ -1,25 +1,62 @@
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getProfile } from '@/app/profile/_actions'
+import { getAiPreferences } from './_actions'
 import { ProfileForm } from '@/app/profile/_components/profile-form'
+import { AiModelCard } from './_components/ai-model-card'
+import { DiagnosticsPanel } from './_components/diagnostics-panel'
 
 export default async function SettingsPage() {
-  const profile = await getProfile()
+  const [profile, aiPrefs] = await Promise.all([getProfile(), getAiPreferences()])
 
   return (
     <div className="space-y-6 px-4 py-8">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground">Manage your profile and preferences</p>
+        <p className="text-muted-foreground">
+          Manage your profile, AI preferences, and system diagnostics
+        </p>
       </div>
-      <div className="max-w-md rounded-lg border border-border bg-card p-6">
-        <ProfileForm
-          defaultValues={{
-            display_name: profile?.display_name ?? null,
-            base_currency: profile?.base_currency ?? 'USD',
-            country: profile?.country ?? '',
-            risk_tolerance: profile?.risk_tolerance ?? 'moderate',
-          }}
-        />
-      </div>
+
+      <Tabs defaultValue="profile" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="profile">Profile</TabsTrigger>
+          <TabsTrigger value="ai">AI Model</TabsTrigger>
+          <TabsTrigger value="diagnostics">Diagnostics</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="profile">
+          <div className="max-w-md">
+            <div className="rounded-lg border border-border bg-card p-6">
+              <ProfileForm
+                defaultValues={{
+                  display_name: profile?.display_name ?? null,
+                  base_currency: profile?.base_currency ?? 'USD',
+                  country: profile?.country ?? '',
+                  risk_tolerance: profile?.risk_tolerance ?? 'moderate',
+                }}
+              />
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="ai">
+          <div className="max-w-md">
+            <AiModelCard
+              defaultValues={{
+                ai_provider: aiPrefs?.ai_provider ?? 'openai',
+                ai_model: aiPrefs?.ai_model ?? 'gpt-4.1-mini',
+              }}
+            />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="diagnostics">
+          <DiagnosticsPanel
+            provider={aiPrefs?.ai_provider ?? 'openai'}
+            model={aiPrefs?.ai_model ?? 'gpt-4.1-mini'}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

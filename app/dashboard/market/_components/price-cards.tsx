@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { InfoTooltip } from '@/components/info-tooltip'
 import type { StockPrice } from '@/lib/market/stocks'
 import type { BitcoinPrice } from '@/lib/market/crypto'
 
@@ -34,6 +35,7 @@ export const PriceCards = ({ voo, qqq, btc, isLoading, usingCachedData }: PriceC
           price={voo.price}
           accentColor="text-blue-500"
           bgColor="bg-blue-500/10"
+          infoText="Vanguard S&P 500 ETF — tracks the 500 largest US companies by market cap. One of the most popular low-cost index funds for broad US stock market exposure. Expense ratio: 0.03%."
         />
       )}
       {qqq && (
@@ -43,6 +45,7 @@ export const PriceCards = ({ voo, qqq, btc, isLoading, usingCachedData }: PriceC
           price={qqq.price}
           accentColor="text-purple-500"
           bgColor="bg-purple-500/10"
+          infoText="Invesco QQQ Trust — tracks the Nasdaq-100 index, which includes the 100 largest non-financial Nasdaq-listed companies. Heavily weighted toward tech (Apple, Microsoft, Nvidia, etc.). More growth-oriented and volatile than VOO."
         />
       )}
       {btc && <BitcoinPriceCard data={btc} />}
@@ -63,16 +66,21 @@ const PriceCard = ({
   price,
   accentColor,
   bgColor,
+  infoText,
 }: {
   symbol: string
   name: string
   price: number
   accentColor: string
   bgColor: string
+  infoText?: string
 }) => (
   <Card>
     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-      <CardTitle className="text-sm font-medium text-muted-foreground">{name}</CardTitle>
+      <div className="flex items-center gap-1">
+        <CardTitle className="text-sm font-medium text-muted-foreground">{name}</CardTitle>
+        {infoText && <InfoTooltip text={infoText} />}
+      </div>
       <Badge variant="outline" className={`${accentColor} ${bgColor} border-transparent`}>
         {symbol}
       </Badge>
@@ -91,7 +99,10 @@ const BitcoinPriceCard = ({ data }: { data: BitcoinPrice }) => {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">Bitcoin</CardTitle>
+        <div className="flex items-center gap-1">
+          <CardTitle className="text-sm font-medium text-muted-foreground">Bitcoin</CardTitle>
+          <InfoTooltip text="Current Bitcoin price in USD (and CRC if available), with 24-hour percentage change. Market cap = price × circulating supply. Volume shows how much BTC was traded in the last 24 hours. Data from CoinGecko." />
+        </div>
         <Badge variant="outline" className="text-orange-500 bg-orange-500/10 border-transparent">
           BTC
         </Badge>

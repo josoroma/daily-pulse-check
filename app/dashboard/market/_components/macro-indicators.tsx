@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { InfoTooltip } from '@/components/info-tooltip'
 import type { MacroIndicator } from '@/lib/market/macro'
 import { formatMonthYear } from '@/lib/date'
 
@@ -37,9 +38,12 @@ export const MacroIndicators = ({ indicators, inflationRate, isLoading }: MacroI
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
-          Macro Indicators
-        </CardTitle>
+        <div className="flex items-center gap-1">
+          <CardTitle className="text-sm font-medium text-muted-foreground">
+            Macro Indicators
+          </CardTitle>
+          <InfoTooltip text="Economic data from the Federal Reserve (FRED). Fed Funds Rate sets borrowing costs; 10Y Yield reflects long-term interest rate expectations; CPI measures inflation; Unemployment shows labor market health. These factors influence stock and crypto markets. YoY Inflation is calculated from the last 12 months of CPI data." />
+        </div>
         <CardDescription className="text-xs">Key economic data points</CardDescription>
       </CardHeader>
       <CardContent>

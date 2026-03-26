@@ -66,16 +66,16 @@ export function DcaHistoryChart({
                 <stop offset="95%" stopColor={assetColor} stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" strokeOpacity={0.5} />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" strokeOpacity={0.5} />
             <XAxis
               dataKey="dateLabel"
               tick={{ fontSize: 12 }}
-              stroke="hsl(var(--muted-foreground))"
+              stroke="var(--muted-foreground)"
               tickLine={false}
             />
             <YAxis
               tick={{ fontSize: 12 }}
-              stroke="hsl(var(--muted-foreground))"
+              stroke="var(--muted-foreground)"
               tickLine={false}
               tickFormatter={(v: number) => `$${v.toLocaleString()}`}
             />
@@ -119,12 +119,12 @@ export function DcaHistoryChart({
             <Scatter dataKey="buyPrice" fill={assetColor} name="DCA Buy" r={5} />
             <ReferenceLine
               y={currentPrice}
-              stroke="hsl(var(--muted-foreground))"
+              stroke="var(--muted-foreground)"
               strokeDasharray="4 4"
               label={{
                 value: `Current: ${formatUsd(currentPrice)}`,
                 position: 'right',
-                fill: 'hsl(var(--muted-foreground))',
+                fill: 'var(--muted-foreground)',
                 fontSize: 11,
               }}
             />

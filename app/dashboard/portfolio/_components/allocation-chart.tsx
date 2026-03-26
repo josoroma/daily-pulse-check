@@ -62,7 +62,7 @@ export function AllocationChart({ data }: AllocationChartProps) {
                   outerRadius={90}
                   dataKey="value"
                   nameKey="symbol"
-                  stroke="hsl(var(--background))"
+                  stroke="var(--background)"
                   strokeWidth={2}
                 >
                   {data.map((entry) => (

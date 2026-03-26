@@ -1211,3 +1211,191 @@ Run `/capture-prompts all` to extract, improve, and persist every user prompt fr
 - Append new entries (Prompts 49–54) to `README-PROMPTS.md`
 
 ---
+
+## Prompt 55 — `bitcoin`
+
+**Intent**: Plan Epic E8 (Bitcoin On-Chain Analytics) before implementation.
+
+**Prompt**
+
+Run `/plan-item E8` to analyze the Bitcoin On-Chain Analytics epic. Break down all three user stories (US-8.1 Network Metrics, US-8.2 Valuation Models, US-8.3 Halving Countdown) and their 17 tasks. Identify external API dependencies (Mempool.space, CoinGecko, Blockchain.info), assess complexity, determine task execution order, and produce an implementation plan following the colocated architecture in CLAUDE.md.
+
+**Derived Tasks**
+
+- Read SPECS.md E8 section including all Gherkin scenarios for US-8.1, US-8.2, and US-8.3
+- Read CLAUDE.md and README-ARCHITECTURE.md for route segment conventions
+- Map E8 stories to route segments: `app/dashboard/bitcoin/` and `app/dashboard/bitcoin/valuation/`
+- Map shared logic to `lib/bitcoin/` modules: `onchain.ts`, `valuation.ts`, `halving.ts`
+- Identify external API dependencies: Mempool.space (block height, hashrate, mempool, difficulty), CoinGecko (BTC price history, market cap), Blockchain.info (market cap for realized cap approximation)
+- Determine task ordering: lib modules first, then API routes, then page components
+- Estimate complexity per story and identify CoinGecko free-tier rate-limit risk
+- Produce a formatted implementation plan with sequenced phases
+
+---
+
+## Prompt 56 — `bitcoin`
+
+**Intent**: Implement Epic E8 (Bitcoin On-Chain Analytics) end-to-end.
+
+**Prompt**
+
+Run `/implement-item E8` to build the full Bitcoin On-Chain Analytics epic. Implement all three user stories and 17 tasks: create `lib/bitcoin/onchain.ts` with Mempool.space API integration (block height, hashrate, mempool, difficulty), create `lib/bitcoin/valuation.ts` with MVRV Z-Score, Stock-to-Flow, and Rainbow Price Band calculations using CoinGecko and Blockchain.info, create `lib/bitcoin/halving.ts` with halving countdown and supply metrics, build both dashboard pages (`app/dashboard/bitcoin/` and `app/dashboard/bitcoin/valuation/`), create all metric card and chart components with Recharts, add API routes, write comprehensive Vitest unit tests for all pure logic, and validate all 11 Gherkin acceptance scenarios. Update SPECS.md upon completion.
+
+**Derived Tasks**
+
+- Create `lib/bitcoin/onchain.ts` with `fetchBlockHeight()`, `fetchHashrate()`, `fetchMempool()`, `fetchDifficulty()` using Mempool.space API
+- Create `lib/bitcoin/valuation.ts` with MVRV Z-Score, S2F model price, and Rainbow band calculations
+- Create `lib/bitcoin/halving.ts` with halving countdown, halving history, and supply metric functions
+- Create `lib/bitcoin/rainbow-bands.ts` with band labels and color constants
+- Create API route `app/api/market/bitcoin/onchain/route.ts` for network metrics
+- Create API route `app/api/market/bitcoin/valuation/route.ts` for valuation model data
+- Build `app/dashboard/bitcoin/page.tsx` Server Component with `Promise.allSettled` for parallel API calls
+- Build `app/dashboard/bitcoin/valuation/page.tsx` Server Component for valuation models
+- Create `_hooks.ts` with `useBitcoinMetrics()` and `useValuationModel()` client-side polling hooks
+- Create 10 UI components: `bitcoin-metrics-live.tsx`, `network-metrics.tsx`, `metric-card.tsx`, `hashrate-sparkline.tsx`, `mvrv-chart.tsx`, `s2f-chart.tsx`, `rainbow-chart.tsx`, `halving-countdown.tsx`, `halving-timeline.tsx`, `supply-metrics.tsx`
+- Create `loading.tsx` Suspense fallback for both route segments
+- Write `lib/bitcoin/__tests__/onchain.test.ts` with API response parsing tests
+- Write `lib/bitcoin/__tests__/valuation.test.ts` with MVRV, S2F, and Rainbow calculation tests
+- Write `lib/bitcoin/__tests__/halving.test.ts` with halving countdown and supply metric tests
+- Write `app/dashboard/bitcoin/__tests__/_hooks.test.ts` for client-side hook tests
+- Validate all 11 Gherkin scenarios across the three user stories
+- Update SPECS.md to mark all E8 tasks and stories as `[x]` completed
+
+---
+
+## Prompt 57 — `bitcoin`
+
+**Intent**: Fix code quality gaps and add observation tooltips to all E8 components.
+
+**Prompt**
+
+Fix all issues and gaps in E8 Bitcoin On-Chain Analytics and add observation caveats as InfoTooltips. Specifically: extract magic numbers (`0.65`, `0.7`, `890_000`) into named constants with JSDoc documentation, add comprehensive JSDoc to `fetchRealizedCap()` explaining the UTXO-based approximation and to `s2fModelPrice()` noting the 2019 regression divergence. Add InfoTooltip observation warnings on all 15 cards and charts — MVRV (realized cap approximation caveat), S2F (model divergence warning), Rainbow (regression-based caveat), Halving countdown (10-minute block time assumption), and Supply metrics (block time estimation note).
+
+**Derived Tasks**
+
+- Extract `0.65` to `REALIZED_CAP_DISCOUNT` constant in `lib/bitcoin/valuation.ts` with JSDoc
+- Extract `0.7` to `REALIZED_CAP_FALLBACK_MULT` constant in `lib/bitcoin/valuation.ts` with JSDoc
+- Extract `890_000` to `FALLBACK_BLOCK_HEIGHT` constant in `app/dashboard/bitcoin/page.tsx` with JSDoc
+- Add JSDoc to `fetchRealizedCap()` documenting the Blockchain.info market cap × discount approximation
+- Add JSDoc to `s2fModelPrice()` documenting PlanB's 2019 regression formula and known divergence post-2021
+- Add InfoTooltip with realized cap approximation caveat to `mvrv-chart.tsx` (main tooltip and Realized Cap label)
+- Add InfoTooltip with S2F model divergence warning to `s2f-chart.tsx`
+- Add InfoTooltip with logarithmic regression caveat to `rainbow-chart.tsx`
+- Add InfoTooltip with 10-minute block time assumption to `halving-countdown.tsx`
+- Add InfoTooltip with block time estimation note to `supply-metrics.tsx`
+- Run all 83 bitcoin tests and verify lint passes with 0 errors
+
+---
+
+## Prompt 58 — `frontend`
+
+**Intent**: Fix Rainbow chart visual issues — remove dots and fix X-axis crowding.
+
+**Prompt**
+
+Fix the Rainbow Price Band chart visual issues shown in the screenshot: remove all dots from the 9 rainbow band Area components and the BTC price line by adding `dot={false}` and `activeDot={false}`. Fix the crowded X-axis labels by computing a dynamic `interval` value based on chart data length (`Math.floor(chartData.length / 6) - 1`). Enhance the tooltip to show the current band name using a `getBandAtPoint()` helper that determines which rainbow band the price falls into, with color-coded display.
+
+**Derived Tasks**
+
+- Add `dot={false}` and `activeDot={false}` to all 9 rainbow band `<Area>` components in `rainbow-chart.tsx`
+- Add `dot={false}` and `activeDot={false}` to the BTC Price `<Area>` component
+- Compute dynamic X-axis interval: `interval={Math.max(0, Math.floor(chartData.length / 6) - 1)}`
+- Create `getBandAtPoint(price, bands)` helper function to determine which band a price falls into
+- Update the custom tooltip to display the band name with matching color indicator
+- Verify chart renders cleanly with no visual artifacts
+
+---
+
+## Prompt 59 — `frontend`
+
+**Intent**: Confirm Rainbow chart fix and remove active dot from BTC price line.
+
+**Prompt**
+
+Confirm the Rainbow chart visual fix from the second screenshot. The chart looks correct now. Also add `activeDot={false}` to the BTC Price `<Area>` component — it was present on the rainbow bands but missing from the price overlay line.
+
+**Derived Tasks**
+
+- Add `activeDot={false}` to the BTC Price `<Area>` component in `rainbow-chart.tsx`
+- Verify all 10 Area components (9 bands + price) now have both `dot={false}` and `activeDot={false}`
+
+---
+
+## Prompt 60 — `bitcoin`
+
+**Intent**: Code review the entire E8 implementation (first pass).
+
+**Prompt**
+
+Run `/review-item E8` to audit the full Epic E8 (Bitcoin On-Chain Analytics) implementation. Read all 25 E8 files across `app/dashboard/bitcoin/`, `lib/bitcoin/`, and `app/api/market/bitcoin/`. Verify compliance with CLAUDE.md conventions (route segment contract, naming rules, TypeScript strict, named exports, path aliases), validate all 11 Gherkin acceptance scenarios from SPECS.md, check security (no exposed API keys, no XSS vectors), assess code quality (error handling, test coverage), and produce a formal verdict with file-level findings.
+
+**Derived Tasks**
+
+- Read all 25 E8 files: 16 in `app/dashboard/bitcoin/`, 7 in `lib/bitcoin/`, 2 in `app/api/market/bitcoin/`
+- Read SPECS.md E8 section with all 3 stories, 17 tasks, and 11 Gherkin scenarios
+- Read README-ARCHITECTURE.md for route segment contract validation
+- Verify TypeScript strict compliance: no `any`, no `@ts-ignore`, no `as unknown as`
+- Verify naming conventions: kebab-case files, PascalCase components, underscore-prefix modules
+- Audit error handling patterns in all `fetchRealizedCap`, `Promise.allSettled`, and API routes
+- Validate all 11 Gherkin scenarios are implemented correctly
+- Check for security issues: no exposed keys, input validation, no XSS in chart rendering
+- Assess test coverage across 4 test files (88 tests)
+- Produce a verdict (PASS / PASS WITH NOTES / NEEDS CHANGES) with specific findings
+
+---
+
+## Prompt 61 — `bitcoin`
+
+**Intent**: Fix all code review findings — add error logging, dedup toasts, remove active dots.
+
+**Prompt**
+
+Fix all minor issues from the E8 code review findings. For catch block warnings, use `console.error` to log the error before falling back — specifically in `fetchRealizedCap` in `lib/bitcoin/valuation.ts`, change the silent `} catch {` to `} catch (error) {` with `console.error('[bitcoin] Realized cap fetch failed, using fallback:', error)`. Fix the `ErrorToasts` component in `app/dashboard/_components/error-toasts.tsx` to prevent duplicate toasts on re-render by adding a `useRef<Set<string>>` dedup guard. Add `activeDot={false}` to the BTC Price `<Line>` in `app/dashboard/bitcoin/_components/s2f-chart.tsx` (the S2F model line already had it, but the price line was missing it).
+
+**Derived Tasks**
+
+- Change `} catch {` to `} catch (error) {` in `fetchRealizedCap` and add `console.error('[bitcoin] Realized cap fetch failed, using fallback:', error)`
+- Add `useRef<Set<string>>` dedup guard to `ErrorToasts` component to prevent same error from being toasted twice on re-render
+- Add `activeDot={false}` to BTC Price `<Line>` component in `s2f-chart.tsx`
+- Run all bitcoin tests (88) and verify 0 lint errors across modified files
+
+---
+
+## Prompt 62 — `bitcoin`
+
+**Intent**: Re-run E8 code review to confirm all findings are resolved.
+
+**Prompt**
+
+Run `/review-item E8` again to verify that all findings from the first code review have been resolved. Re-read the 3 modified files (`lib/bitcoin/valuation.ts`, `app/dashboard/_components/error-toasts.tsx`, `app/dashboard/bitcoin/_components/s2f-chart.tsx`), confirm the fixes are applied correctly, and re-validate all 25 E8 files against CLAUDE.md conventions and SPECS.md Gherkin scenarios. Produce a final verdict confirming a clean pass.
+
+**Derived Tasks**
+
+- Re-read `lib/bitcoin/valuation.ts` and confirm `console.error` in `fetchRealizedCap` catch block
+- Re-read `app/dashboard/_components/error-toasts.tsx` and confirm `useRef<Set<string>>` dedup guard
+- Re-read `app/dashboard/bitcoin/_components/s2f-chart.tsx` and confirm `activeDot={false}` on BTC Price line
+- Re-validate all 25 E8 files against CLAUDE.md conventions
+- Cross-reference all 11 Gherkin scenarios from SPECS.md
+- Produce final verdict (expected: ✅ PASS — upgraded from PASS WITH NOTES)
+
+---
+
+## Prompt 63 — `docs`
+
+**Intent**: Capture all E8 session prompts to README-PROMPTS.md.
+
+**Prompt**
+
+Run `/capture-prompts all` for E8 to extract, improve, and persist every user prompt from the E8 Bitcoin On-Chain Analytics sessions into `README-PROMPTS.md`. Include prompts covering E8 planning, implementation, code quality fixes, screenshot-driven chart debugging (Rainbow chart, 2 rounds), first code review (PASS WITH NOTES), review findings fix (3 files), second code review (clean PASS), and this capture request. Derive actionable tasks for each, categorize by domain, and append in the established entry format continuing from Prompt 54. Then update SPECS.md progress summary.
+
+**Derived Tasks**
+
+- Review the full E8 chat session (including prior implementation session from conversation summary and current review/fix session) and extract all distinct user prompts
+- Improve wording, normalize terminology, and rewrite in imperative form
+- Derive atomic, implementation-ready tasks for each prompt
+- Assign category tags (`bitcoin`, `frontend`, `docs`)
+- Deduplicate against existing entries (Prompts 1–54) before appending
+- Append new entries (Prompts 55–63) to `README-PROMPTS.md`
+- Update SPECS.md progress summary table if needed
+
+---

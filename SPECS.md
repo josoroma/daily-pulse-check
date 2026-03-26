@@ -1,6 +1,6 @@
 # SPECS.md — Finance Dashboard
 
-> Version: 0.1.0 | Last updated: 2026-03-17
+> Version: 0.1.0 | Last updated: 2026-03-26
 
 ---
 
@@ -25,7 +25,7 @@
 | E5: DCA Automation                | 3       | 0    | 0           | 3         | 0       |
 | E6: AI-Powered Insights           | 5       | 0    | 0           | 5         | 0       |
 | E7: Alerts & Notifications        | 3       | 0    | 0           | 3         | 0       |
-| E8: Bitcoin On-Chain Analytics    | 3       | 3    | 0           | 0         | 0       |
+| E8: Bitcoin On-Chain Analytics    | 3       | 0    | 0           | 3         | 0       |
 | E9: Analytics & Reporting         | 3       | 3    | 0           | 0         | 0       |
 | E10: Settings & Data Management   | 2       | 2    | 0           | 0         | 0       |
 
@@ -1339,7 +1339,7 @@ Feature: Notification Channels
 
 ## E8: Bitcoin On-Chain Analytics
 
-### US-8.1: Bitcoin Network Metrics [ ] 🎨
+### US-8.1: Bitcoin Network Metrics [x] 🎨
 
 **As a** user
 **I want** to see Bitcoin on-chain metrics (hashrate, difficulty, mempool size, block height)
@@ -1377,16 +1377,16 @@ Feature: Bitcoin Network Metrics
 
 #### Tasks
 
-- [ ] T-8.1.1: Create `lib/bitcoin/onchain.ts` with functions: `fetchBlockHeight()`, `fetchHashrate()`, `fetchMempool()`, `fetchDifficulty()`
-- [ ] T-8.1.2: Integrate Mempool.space API endpoints
-- [ ] T-8.1.3: Build Bitcoin metrics page at `app/dashboard/bitcoin/page.tsx`
-- [ ] T-8.1.4: Create metric cards with sparkline charts for trends
-- [ ] T-8.1.5: Add auto-refresh (every 60 seconds) for real-time feel
-- [ ] T-8.1.6: Write unit tests for API response parsing
+- [x] T-8.1.1: Create `lib/bitcoin/onchain.ts` with functions: `fetchBlockHeight()`, `fetchHashrate()`, `fetchMempool()`, `fetchDifficulty()`
+- [x] T-8.1.2: Integrate Mempool.space API endpoints
+- [x] T-8.1.3: Build Bitcoin metrics page at `app/dashboard/bitcoin/page.tsx`
+- [x] T-8.1.4: Create metric cards with sparkline charts for trends
+- [x] T-8.1.5: Add auto-refresh (every 60 seconds) for real-time feel
+- [x] T-8.1.6: Write unit tests for API response parsing
 
 ---
 
-### US-8.2: Bitcoin Valuation Models [ ] 🎨
+### US-8.2: Bitcoin Valuation Models [x] 🎨
 
 **As a** user
 **I want** to see Bitcoin valuation model charts (MVRV Z-Score, Stock-to-Flow, Rainbow Chart)
@@ -1401,7 +1401,7 @@ Feature: Bitcoin Valuation Models
   Scenario: Display MVRV Z-Score
     Given historical MVRV data is available
     When the valuation page loads
-    Then a chart displays the MVRV Z-Score over time
+    Then the current MVRV Z-Score is displayed as a gauge
     And the current Z-Score value is highlighted
     And zones are color-coded: green (undervalued, Z < 0), yellow (fair, 0-3), orange (overvalued, 3-6), red (bubble, > 6)
 
@@ -1422,16 +1422,16 @@ Feature: Bitcoin Valuation Models
 
 #### Tasks
 
-- [ ] T-8.2.1: Create `lib/bitcoin/valuation.ts` with model calculation functions
-- [ ] T-8.2.2: Implement MVRV Z-Score chart with color-coded zones
-- [ ] T-8.2.3: Implement Stock-to-Flow chart with halving event markers
-- [ ] T-8.2.4: Implement Rainbow Price Band chart with logarithmic regression bands
-- [ ] T-8.2.5: Build valuation models page at `app/dashboard/bitcoin/valuation/page.tsx`
-- [ ] T-8.2.6: Write unit tests for valuation model calculations
+- [x] T-8.2.1: Create `lib/bitcoin/valuation.ts` with model calculation functions
+- [x] T-8.2.2: Implement MVRV Z-Score chart with color-coded zones
+- [x] T-8.2.3: Implement Stock-to-Flow chart with halving event markers
+- [x] T-8.2.4: Implement Rainbow Price Band chart with logarithmic regression bands
+- [x] T-8.2.5: Build valuation models page at `app/dashboard/bitcoin/valuation/page.tsx`
+- [x] T-8.2.6: Write unit tests for valuation model calculations
 
 ---
 
-### US-8.3: Bitcoin Halving Countdown [ ] 🎨
+### US-8.3: Bitcoin Halving Countdown [x] 🎨
 
 **As a** user
 **I want** a visual countdown to the next Bitcoin halving
@@ -1469,11 +1469,11 @@ Feature: Bitcoin Halving Countdown
 
 #### Tasks
 
-- [ ] T-8.3.1: Implement halving calculation in `lib/bitcoin/halving.ts`: blocks remaining, estimated date based on avg block time
-- [ ] T-8.3.2: Build halving countdown widget component with animated blocks counter
-- [ ] T-8.3.3: Build halving history timeline component with price context
-- [ ] T-8.3.4: Build supply metrics card (total supply, % mined, issuance rate)
-- [ ] T-8.3.5: Write unit tests for halving block calculation and date estimation
+- [x] T-8.3.1: Implement halving calculation in `lib/bitcoin/halving.ts`: blocks remaining, estimated date based on avg block time
+- [x] T-8.3.2: Build halving countdown widget component with animated blocks counter
+- [x] T-8.3.3: Build halving history timeline component with price context
+- [x] T-8.3.4: Build supply metrics card (total supply, % mined, issuance rate)
+- [x] T-8.3.5: Write unit tests for halving block calculation and date estimation
 
 ---
 

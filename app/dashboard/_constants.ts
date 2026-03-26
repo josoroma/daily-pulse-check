@@ -6,6 +6,7 @@ import {
   Bell,
   Lightbulb,
   Settings,
+  Bitcoin,
 } from 'lucide-react'
 
 export const NAV_ITEMS = [
@@ -23,6 +24,11 @@ export const NAV_ITEMS = [
     title: 'Markets',
     href: '/dashboard/market',
     icon: TrendingUp,
+  },
+  {
+    title: 'Bitcoin',
+    href: '/dashboard/bitcoin',
+    icon: Bitcoin,
   },
   {
     title: 'DCA',

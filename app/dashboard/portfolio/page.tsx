@@ -18,9 +18,11 @@ import {
 import { ASSET_COLORS, CRYPTO_COIN_IDS } from './_constants'
 import { EmptyState } from './_components/empty-state'
 import { PortfolioTabs } from './_components/portfolio-tabs'
+import { ErrorToasts } from '../_components/error-toasts'
 
 async function fetchCurrentPrices(symbols: Array<{ symbol: string; asset_type: string }>) {
   const prices: Record<string, number> = {}
+  const failedSymbols: string[] = []
 
   const results = await Promise.allSettled(
     symbols.map(async ({ symbol, asset_type }) => {
@@ -35,13 +37,16 @@ async function fetchCurrentPrices(symbols: Array<{ symbol: string; asset_type: s
     }),
   )
 
-  for (const result of results) {
+  for (let i = 0; i < results.length; i++) {
+    const result = results[i]
     if (result.status === 'fulfilled') {
       prices[result.value.symbol] = result.value.price
+    } else {
+      failedSymbols.push(symbols[i].symbol)
     }
   }
 
-  return prices
+  return { prices, failedSymbols }
 }
 
 export default async function PortfolioPage() {
@@ -88,7 +93,9 @@ export default async function PortfolioPage() {
       rawPositions.map((p) => [p.symbol, { symbol: p.symbol, asset_type: p.asset_type }]),
     ).values(),
   )
-  const currentPrices = await fetchCurrentPrices(uniqueAssets)
+  const { prices: currentPrices, failedSymbols } = await fetchCurrentPrices(uniqueAssets)
+  const errors: string[] =
+    failedSymbols.length > 0 ? [`Live price failed for: ${failedSymbols.join(', ')}`] : []
 
   // Enrich positions with P&L
   const positions: PositionWithPnL[] = rawPositions.map((p) => {
@@ -142,6 +149,8 @@ export default async function PortfolioPage() {
 
   return (
     <div className="space-y-6 px-4 py-8">
+      {errors.length > 0 && <ErrorToasts errors={errors} />}
+
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Portfolio</h1>
         <p className="text-muted-foreground">Track your VOO, QQQ, and Bitcoin positions</p>

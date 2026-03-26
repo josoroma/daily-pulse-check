@@ -73,7 +73,7 @@ export function DriftIndicator({ driftItems, rebalanceNeeded, suggestions }: Dri
               />
               <Bar
                 dataKey="target"
-                fill="hsl(var(--muted-foreground))"
+                fill="var(--muted-foreground)"
                 opacity={0.3}
                 barSize={14}
                 radius={[0, 4, 4, 0]}

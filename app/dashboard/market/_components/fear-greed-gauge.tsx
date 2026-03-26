@@ -4,6 +4,7 @@ import { RadialBarChart, RadialBar, ResponsiveContainer, PolarAngleAxis } from '
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { InfoTooltip } from '@/components/info-tooltip'
 import { getSentimentColor } from '@/lib/market/sentiment-shared'
 import type { FearGreed } from '@/lib/market/sentiment'
 
@@ -44,9 +45,12 @@ export const FearGreedGauge = ({ data, isLoading, cacheAge }: FearGreedGaugeProp
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div>
-          <CardTitle className="text-sm font-medium text-muted-foreground">
-            Crypto Fear &amp; Greed
-          </CardTitle>
+          <div className="flex items-center gap-1">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Crypto Fear &amp; Greed
+            </CardTitle>
+            <InfoTooltip text="The Crypto Fear & Greed Index aggregates volatility, volume, social media, surveys, and dominance data into a single 0–100 score. Extreme Fear (0–20) often signals buying opportunities; Extreme Greed (80–100) may indicate the market is overheated. Source: Alternative.me." />
+          </div>
           <CardDescription className="text-xs">Market sentiment indicator</CardDescription>
         </div>
         <Badge variant="outline" className={colorClass}>
@@ -71,7 +75,7 @@ export const FearGreedGauge = ({ data, isLoading, cacheAge }: FearGreedGaugeProp
                 <RadialBar
                   dataKey="value"
                   cornerRadius={6}
-                  background={{ fill: 'hsl(var(--muted))' }}
+                  background={{ fill: 'var(--muted)' }}
                   angleAxisId={0}
                 />
               </RadialBarChart>

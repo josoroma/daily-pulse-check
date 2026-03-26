@@ -6,6 +6,7 @@ import { fetchCryptoFearGreed } from '@/lib/market/sentiment'
 import { fetchLatestIndicator, fetchDXY, fetchInflationRate } from '@/lib/market/macro'
 import { buildMarketSummaryPrompt, type MarketContext } from '@/lib/ai/market-summary'
 import { getLanguageModel, type AiProvider } from '@/lib/ai/provider'
+import { createAiNdjsonStream, ndjsonResponse } from '@/lib/ai/stream'
 import type { MacroIndicator } from '@/lib/market/macro'
 
 async function gatherMarketContext(): Promise<MarketContext> {
@@ -55,7 +56,7 @@ export async function POST() {
     .single()
 
   const provider = (profile?.ai_provider ?? 'openai') as AiProvider
-  const model = profile?.ai_model ?? 'gpt-4.1-nano'
+  const model = profile?.ai_model ?? 'gpt-4.1-mini'
 
   const ctx = await gatherMarketContext()
   const prompt = buildMarketSummaryPrompt(ctx)
@@ -68,33 +69,7 @@ export async function POST() {
       temperature: 0.7,
     })
 
-    const encoder = new TextEncoder()
-    const stream = new ReadableStream({
-      async start(controller) {
-        try {
-          for await (const part of result.fullStream) {
-            if (part.type === 'reasoning-delta') {
-              controller.enqueue(
-                encoder.encode(JSON.stringify({ type: 'reasoning', text: part.text }) + '\n'),
-              )
-            } else if (part.type === 'text-delta') {
-              controller.enqueue(
-                encoder.encode(JSON.stringify({ type: 'text', text: part.text }) + '\n'),
-              )
-            }
-          }
-          controller.close()
-        } catch (err) {
-          const msg = err instanceof Error ? err.message : 'Unknown AI error'
-          controller.enqueue(encoder.encode(JSON.stringify({ type: 'error', text: msg }) + '\n'))
-          controller.close()
-        }
-      },
-    })
-
-    return new Response(stream, {
-      headers: { 'Content-Type': 'application/x-ndjson; charset=utf-8' },
-    })
+    return ndjsonResponse(createAiNdjsonStream(result.fullStream))
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'AI generation failed'
     return new Response(msg, { status: 500 })

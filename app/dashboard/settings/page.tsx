@@ -1,19 +1,24 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getProfile } from '@/app/profile/_actions'
-import { getAiPreferences } from './_actions'
+import { getAiPreferences, getNotificationPreferences } from './_actions'
 import { ProfileForm } from '@/app/profile/_components/profile-form'
 import { AiModelCard } from './_components/ai-model-card'
 import { DiagnosticsPanel } from './_components/diagnostics-panel'
+import { NotificationPreferencesCard } from './_components/notification-preferences-card'
 
 export default async function SettingsPage() {
-  const [profile, aiPrefs] = await Promise.all([getProfile(), getAiPreferences()])
+  const [profile, aiPrefs, notifPrefs] = await Promise.all([
+    getProfile(),
+    getAiPreferences(),
+    getNotificationPreferences(),
+  ])
 
   return (
     <div className="space-y-6 px-4 py-8">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
         <p className="text-muted-foreground">
-          Manage your profile, AI preferences, and system diagnostics
+          Manage your profile, AI preferences, notifications, and system diagnostics
         </p>
       </div>
 
@@ -21,6 +26,7 @@ export default async function SettingsPage() {
         <TabsList>
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="ai">AI Model</TabsTrigger>
+          <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="diagnostics">Diagnostics</TabsTrigger>
         </TabsList>
 
@@ -45,6 +51,18 @@ export default async function SettingsPage() {
               defaultValues={{
                 ai_provider: aiPrefs?.ai_provider ?? 'openai',
                 ai_model: aiPrefs?.ai_model ?? 'gpt-4.1-mini',
+              }}
+            />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="notifications">
+          <div className="max-w-md">
+            <NotificationPreferencesCard
+              defaultValues={{
+                notification_email_enabled: notifPrefs?.notification_email_enabled ?? false,
+                notification_telegram_enabled: notifPrefs?.notification_telegram_enabled ?? false,
+                telegram_chat_id: notifPrefs?.telegram_chat_id ?? null,
               }}
             />
           </div>

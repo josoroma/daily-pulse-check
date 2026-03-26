@@ -31,32 +31,27 @@ describe('AI Provider', () => {
       expect(getDefaultModel('openai')).toBe('gpt-4.1-mini')
     })
 
-    it('returns qwen3.5:27b for ollama', () => {
-      expect(getDefaultModel('ollama')).toBe('qwen3.5:27b')
+    it('returns qwen3.5:9b for ollama', () => {
+      expect(getDefaultModel('ollama')).toBe('qwen3.5:9b')
     })
   })
 
   describe('isValidModel', () => {
     it('accepts valid openai models', () => {
-      expect(isValidModel('openai', 'gpt-4.1-nano')).toBe(true)
       expect(isValidModel('openai', 'gpt-4.1-mini')).toBe(true)
-      expect(isValidModel('openai', 'gpt-4.1')).toBe(true)
-      expect(isValidModel('openai', 'o4-mini')).toBe(true)
     })
 
     it('rejects invalid openai models', () => {
       expect(isValidModel('openai', 'gpt-3.5-turbo')).toBe(false)
-      expect(isValidModel('openai', 'qwen3.5:27b')).toBe(false)
+      expect(isValidModel('openai', 'qwen3.5:9b')).toBe(false)
     })
 
     it('accepts valid ollama models', () => {
-      expect(isValidModel('ollama', 'qwen3.5:27b')).toBe(true)
-      expect(isValidModel('ollama', 'llama3.1:8b')).toBe(true)
-      expect(isValidModel('ollama', 'mistral')).toBe(true)
+      expect(isValidModel('ollama', 'qwen3.5:9b')).toBe(true)
     })
 
     it('rejects invalid ollama models', () => {
-      expect(isValidModel('ollama', 'gpt-4.1')).toBe(false)
+      expect(isValidModel('ollama', 'gpt-4.1-mini')).toBe(false)
       expect(isValidModel('ollama', 'claude-3')).toBe(false)
     })
   })

@@ -1,6 +1,7 @@
 import { streamText } from 'ai'
 import { createClient } from '@/lib/supabase/server'
 import { getLanguageModel, type AiProvider } from '@/lib/ai/provider'
+import { createAiNdjsonStream, ndjsonResponse } from '@/lib/ai/stream'
 import {
   buildLearningSystemPrompt,
   isFinancialTopic,
@@ -78,33 +79,7 @@ export async function POST(req: Request) {
       temperature: 0.7,
     })
 
-    const encoder = new TextEncoder()
-    const stream = new ReadableStream({
-      async start(controller) {
-        try {
-          for await (const part of result.fullStream) {
-            if (part.type === 'reasoning-delta') {
-              controller.enqueue(
-                encoder.encode(JSON.stringify({ type: 'reasoning', text: part.text }) + '\n'),
-              )
-            } else if (part.type === 'text-delta') {
-              controller.enqueue(
-                encoder.encode(JSON.stringify({ type: 'text', text: part.text }) + '\n'),
-              )
-            }
-          }
-          controller.close()
-        } catch (err) {
-          const msg = err instanceof Error ? err.message : 'Unknown AI error'
-          controller.enqueue(encoder.encode(JSON.stringify({ type: 'error', text: msg }) + '\n'))
-          controller.close()
-        }
-      },
-    })
-
-    return new Response(stream, {
-      headers: { 'Content-Type': 'application/x-ndjson; charset=utf-8' },
-    })
+    return ndjsonResponse(createAiNdjsonStream(result.fullStream))
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'AI generation failed'
     return new Response(msg, { status: 500 })

@@ -11,7 +11,7 @@ Instead of checking multiple financial sites, Insights consolidates everything i
 - **Real-time market context** — live prices for VOO, QQQ, Bitcoin, macro indicators, and sentiment data are fetched on demand and fed to the AI model as structured context.
 - **Personalized analysis** — the AI receives your actual portfolio positions, allocation, P&L, risk tolerance, and country so recommendations are specific to you.
 - **Privacy-first option** — Ollama runs entirely on your machine. Your financial data never leaves your computer.
-- **Chain-of-thought transparency** — reasoning models (e.g. `qwen3.5:27b`, `o4-mini`) show their thinking process in a collapsible panel, so you can evaluate _how_ the AI reached its conclusions.
+- **Chain-of-thought transparency** — reasoning models (e.g. `qwen3.5:9b`, `o4-mini`) show their thinking process in a collapsible panel, so you can evaluate _how_ the AI reached its conclusions.
 
 ---
 
@@ -98,7 +98,7 @@ The client components parse this stream using a `ReadableStream` reader, splitti
 
 ## Chain of Thought
 
-When using a reasoning model (`qwen3.5:27b` or `o4-mini`), the AI generates internal reasoning before producing its response. This is exposed via `reasoning-delta` events from the Vercel AI SDK's `fullStream` iterator.
+When using a reasoning model (`qwen3.5:9b` or `o4-mini`), the AI generates internal reasoning before producing its response. This is exposed via `reasoning-delta` events from the Vercel AI SDK's `fullStream` iterator.
 
 Each component shows a toggleable section:
 
@@ -131,7 +131,7 @@ OPENAI_API_KEY=sk-...
 2. Pull a model:
 
 ```bash
-ollama pull qwen3.5:27b    # 17GB — reasoning model, best quality
+ollama pull qwen3.5:9b    # 17GB — reasoning model, best quality
 ollama pull llama3.1:8b     # 4.7GB — lighter, no reasoning
 ollama pull mistral          # 4.1GB — lightweight alternative
 ```
@@ -145,7 +145,7 @@ OLLAMA_BASE_URL=http://localhost:11434
 
 5. Go to **Settings → AI Model** and select:
    - **Provider**: Ollama (Local)
-   - **Model**: `qwen3.5:27b`, `llama3.1:8b`, or `mistral`
+   - **Model**: `qwen3.5:9b`, `llama3.1:8b`, or `mistral`
 
 ### Settings Tabs
 
@@ -180,10 +180,10 @@ A custom `ollamaFetch` wrapper strips `max_tokens` from all Ollama requests. Rea
 
 **Model registry:**
 
-| Provider | Models                                               | Reasoning          |
-| -------- | ---------------------------------------------------- | ------------------ |
-| OpenAI   | `gpt-4.1-nano`, `gpt-4.1-mini`, `gpt-4.1`, `o4-mini` | `o4-mini` only     |
-| Ollama   | `qwen3.5:27b`, `llama3.1:8b`, `mistral`              | `qwen3.5:27b` only |
+| Provider | Models                                               | Reasoning         |
+| -------- | ---------------------------------------------------- | ----------------- |
+| OpenAI   | `gpt-4.1-nano`, `gpt-4.1-mini`, `gpt-4.1`, `o4-mini` | `o4-mini` only    |
+| Ollama   | `qwen3.5:9b`, `llama3.1:8b`, `mistral`               | `qwen3.5:9b` only |
 
 ---
 

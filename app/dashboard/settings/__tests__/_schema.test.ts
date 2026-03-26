@@ -13,7 +13,7 @@ describe('AiModelSchema', () => {
   it('accepts valid ollama provider + model', () => {
     const result = AiModelSchema.safeParse({
       ai_provider: 'ollama',
-      ai_model: 'qwen3.5:27b',
+      ai_model: 'qwen3.5:9b',
     })
     expect(result.success).toBe(true)
   })
@@ -29,7 +29,7 @@ describe('AiModelSchema', () => {
   it('rejects model that does not belong to selected provider', () => {
     const result = AiModelSchema.safeParse({
       ai_provider: 'openai',
-      ai_model: 'qwen3.5:27b',
+      ai_model: 'qwen3.5:9b',
     })
     expect(result.success).toBe(false)
   })

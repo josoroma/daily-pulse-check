@@ -24,7 +24,7 @@
 | E4: Portfolio Tracker             | 4       | 0    | 0           | 4         | 0       |
 | E5: DCA Automation                | 3       | 0    | 0           | 3         | 0       |
 | E6: AI-Powered Insights           | 5       | 0    | 0           | 5         | 0       |
-| E7: Alerts & Notifications        | 3       | 3    | 0           | 0         | 0       |
+| E7: Alerts & Notifications        | 3       | 0    | 0           | 3         | 0       |
 | E8: Bitcoin On-Chain Analytics    | 3       | 3    | 0           | 0         | 0       |
 | E9: Analytics & Reporting         | 3       | 3    | 0           | 0         | 0       |
 | E10: Settings & Data Management   | 2       | 2    | 0           | 0         | 0       |
@@ -978,11 +978,11 @@ Feature: AI Model Configuration
   Scenario: Select Ollama provider
     Given the user is on the AI Model settings card
     When the user selects provider "Ollama"
-    Then the model dropdown shows locally available models (e.g., qwen3.5:27b, llama3.1:8b, mistral)
-    And the default model is "qwen3.5:27b"
+    Then the model dropdown shows locally available models (e.g., qwen3.5:9b, llama3.1:8b, mistral)
+    And the default model is "qwen3.5:9b"
 
   Scenario: Persist model selection
-    Given the user selects provider "Ollama" and model "qwen3.5:27b"
+    Given the user selects provider "Ollama" and model "qwen3.5:9b"
     When the user clicks "Save"
     Then the selection is stored in the user's profile
     And all AI features (US-6.1, US-6.2, US-6.3) use the selected provider and model
@@ -1156,7 +1156,7 @@ Feature: Chain of Thought Reasoning Display
   So that I understand how conclusions were reached
 
   Scenario: Display reasoning toggle on market summary
-    Given the user is using a reasoning model (e.g., qwen3.5:27b, o4-mini)
+    Given the user is using a reasoning model (e.g., qwen3.5:9b, o4-mini)
     When the AI generates a market summary
     Then a collapsible "Thinking (N chars)" section appears above the summary
     And clicking the toggle reveals the chain of thought in a scrollable box
@@ -1197,7 +1197,7 @@ Feature: Chain of Thought Reasoning Display
 
 ## E7: Alerts & Notifications
 
-### US-7.1: Price Alerts [ ] 🎨
+### US-7.1: Price Alerts [x] 🎨
 
 **As a** user
 **I want** to set price alerts for specific assets
@@ -1239,16 +1239,16 @@ Feature: Price Alerts
 
 #### Tasks
 
-- [ ] T-7.1.1: Create `alerts` table: id, user_id, symbol, condition (above/below), target_price, status (active/triggered/paused), created_at, triggered_at
-- [ ] T-7.1.2: Build alert creation form with symbol autocomplete, condition selector, and price input
-- [ ] T-7.1.3: Implement alert evaluation engine in `app/alerts/_utils.ts`
-- [ ] T-7.1.4: Create Vercel Cron job (every 5 min) that fetches prices and evaluates active alerts
-- [ ] T-7.1.5: Build alerts management page at `app/dashboard/alerts/page.tsx`
-- [ ] T-7.1.6: Write unit tests for alert evaluation logic (above, below, edge cases)
+- [x] T-7.1.1: Create `alerts` table: id, user_id, symbol, condition (above/below), target_price, status (active/triggered/paused), created_at, triggered_at
+- [x] T-7.1.2: Build alert creation form with symbol autocomplete, condition selector, and price input
+- [x] T-7.1.3: Implement alert evaluation engine in `app/alerts/_utils.ts`
+- [x] T-7.1.4: Create Vercel Cron job (every 5 min) that fetches prices and evaluates active alerts
+- [x] T-7.1.5: Build alerts management page at `app/dashboard/alerts/page.tsx`
+- [x] T-7.1.6: Write unit tests for alert evaluation logic (above, below, edge cases)
 
 ---
 
-### US-7.2: Technical Indicator Alerts [ ] 🎨
+### US-7.2: Technical Indicator Alerts [x] 🎨
 
 **As a** user
 **I want** alerts based on technical indicators (RSI, 200-day MA crossover)
@@ -1283,16 +1283,16 @@ Feature: Technical Indicator Alerts
 
 #### Tasks
 
-- [ ] T-7.2.1: Implement RSI calculation in `lib/indicators/rsi.ts` (14-period default)
-- [ ] T-7.2.2: Implement moving average calculation in `lib/indicators/moving-average.ts` (SMA and EMA)
-- [ ] T-7.2.3: Extend alert creation form with indicator-based conditions (RSI, MA crossover)
-- [ ] T-7.2.4: Integrate MVRV Z-Score data from LookIntoBitcoin or on-chain API
-- [ ] T-7.2.5: Extend alert evaluator to handle indicator-based conditions
-- [ ] T-7.2.6: Write unit tests for RSI, MA, and MVRV calculations
+- [x] T-7.2.1: Implement RSI calculation in `lib/indicators/rsi.ts` (14-period default)
+- [x] T-7.2.2: Implement moving average calculation in `lib/indicators/moving-average.ts` (SMA and EMA)
+- [x] T-7.2.3: Extend alert creation form with indicator-based conditions (RSI, MA crossover)
+- [x] T-7.2.4: Integrate MVRV Z-Score data from LookIntoBitcoin or on-chain API
+- [x] T-7.2.5: Extend alert evaluator to handle indicator-based conditions
+- [x] T-7.2.6: Write unit tests for RSI, MA, and MVRV calculations
 
 ---
 
-### US-7.3: Notification Delivery Channels [ ] 🎨
+### US-7.3: Notification Delivery Channels [x] 🎨
 
 **As a** user
 **I want** to receive notifications via in-app, email, or Telegram
@@ -1328,12 +1328,12 @@ Feature: Notification Channels
 
 #### Tasks
 
-- [ ] T-7.3.1: Build in-app notification center with bell icon, unread count, and dropdown list
-- [ ] T-7.3.2: Integrate Supabase Edge Functions with Resend (email API) for email notifications
-- [ ] T-7.3.3: Create Telegram bot via BotFather and implement `lib/notifications/telegram.ts`
-- [ ] T-7.3.4: Build notification preferences form in Settings
-- [ ] T-7.3.5: Create notification dispatcher in `lib/notifications/dispatcher.ts` that routes to enabled channels
-- [ ] T-7.3.6: Write unit tests for dispatcher routing logic
+- [x] T-7.3.1: Build in-app notification center with bell icon, unread count, and dropdown list
+- [x] T-7.3.2: Integrate Supabase Edge Functions with Resend (email API) for email notifications
+- [x] T-7.3.3: Create Telegram bot via BotFather and implement `lib/notifications/telegram.ts`
+- [x] T-7.3.4: Build notification preferences form in Settings
+- [x] T-7.3.5: Create notification dispatcher in `lib/notifications/dispatcher.ts` that routes to enabled channels
+- [x] T-7.3.6: Write unit tests for dispatcher routing logic
 
 ---
 

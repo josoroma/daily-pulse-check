@@ -22,12 +22,14 @@ export function AddScheduleModal({ portfolioId }: AddScheduleModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm">
-          <Plus className="mr-1 h-4 w-4" />
-          New DCA Schedule
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger
+        render={(props) => (
+          <Button size="sm" {...props}>
+            <Plus className="mr-1 h-4 w-4" />
+            New DCA Schedule
+          </Button>
+        )}
+      />
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>New DCA Schedule</DialogTitle>

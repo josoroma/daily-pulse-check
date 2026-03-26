@@ -70,6 +70,8 @@ export type Database = {
           is_active: boolean
           last_triggered_at: string | null
           notification_channels: string[]
+          parameters: Json
+          status: string
           symbol: string
           threshold: number
           updated_at: string
@@ -83,6 +85,8 @@ export type Database = {
           is_active?: boolean
           last_triggered_at?: string | null
           notification_channels?: string[]
+          parameters?: Json
+          status?: string
           symbol: string
           threshold: number
           updated_at?: string
@@ -96,6 +100,8 @@ export type Database = {
           is_active?: boolean
           last_triggered_at?: string | null
           notification_channels?: string[]
+          parameters?: Json
+          status?: string
           symbol?: string
           threshold?: number
           updated_at?: string
@@ -355,7 +361,10 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          notification_email_enabled: boolean
+          notification_telegram_enabled: boolean
           risk_tolerance: string
+          telegram_chat_id: string | null
           updated_at: string
         }
         Insert: {
@@ -366,7 +375,10 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id: string
+          notification_email_enabled?: boolean
+          notification_telegram_enabled?: boolean
           risk_tolerance?: string
+          telegram_chat_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -377,7 +389,10 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          notification_email_enabled?: boolean
+          notification_telegram_enabled?: boolean
           risk_tolerance?: string
+          telegram_chat_id?: string | null
           updated_at?: string
         }
         Relationships: []

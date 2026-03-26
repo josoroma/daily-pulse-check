@@ -896,7 +896,7 @@ Replace the `ollama-ai-provider` package with `@ai-sdk/openai`'s `createOpenAI` 
 - Remove `ollama-ai-provider` usage from `lib/ai/provider.ts`
 - Import `createOpenAI` from `@ai-sdk/openai` and configure it with `baseURL: 'http://localhost:11434/v1'`
 - Update `getLanguageModel()` to use the OpenAI-compatible Ollama provider for local models
-- Verify Ollama's `/v1/chat/completions` endpoint responds correctly with `qwen3.5:27b`
+- Verify Ollama's `/v1/chat/completions` endpoint responds correctly with `qwen3.5:9b`
 
 ---
 
@@ -923,17 +923,17 @@ Add robust error handling to all three AI API routes (`summary`, `portfolio`, `l
 
 **Prompt**
 
-Create an `ollamaFetch` wrapper in `lib/ai/provider.ts` that intercepts outgoing requests to Ollama and strips the `stream_options` field (which Ollama doesn't support) and `max_tokens` (which causes reasoning models like `qwen3.5:27b` to spend all tokens on thinking when capped). Refactor the Ollama provider to use `@ai-sdk/openai-compatible`'s `createOpenAICompatible` for cleaner `stream_options` handling.
+Create an `ollamaFetch` wrapper in `lib/ai/provider.ts` that intercepts outgoing requests to Ollama and strips the `stream_options` field (which Ollama doesn't support) and `max_tokens` (which causes reasoning models like `qwen3.5:9b` to spend all tokens on thinking when capped). Refactor the Ollama provider to use `@ai-sdk/openai-compatible`'s `createOpenAICompatible` for cleaner `stream_options` handling.
 
 **Derived Tasks**
 
 - Install `@ai-sdk/openai-compatible` package
 - Create `ollamaFetch` custom fetch wrapper in `lib/ai/provider.ts` that parses request body JSON, deletes `stream_options` and `max_tokens` fields, and passes the modified request to native `fetch`
 - Replace `createOpenAI` with `createOpenAICompatible` from `@ai-sdk/openai-compatible` for the Ollama provider
-- Define a `REASONING_MODELS` set containing models that need `max_tokens` stripped (e.g., `qwen3.5:27b`, `o4-mini`)
+- Define a `REASONING_MODELS` set containing models that need `max_tokens` stripped (e.g., `qwen3.5:9b`, `o4-mini`)
 - Pass `ollamaFetch` as the `fetch` option to `createOpenAICompatible`
 - Update provider tests to cover the new factory function
-- Verify streaming works end-to-end with `qwen3.5:27b`
+- Verify streaming works end-to-end with `qwen3.5:9b`
 
 ---
 
@@ -981,7 +981,7 @@ Enhance the Insights page components with provider and model information display
 
 **Prompt**
 
-Fix the Ollama reasoning model (`qwen3.5:27b`) producing empty responses. The model streams empty `content: ""` chunks during its thinking phase while the AI SDK's `textStream` only surfaces content tokens, causing the UI to show nothing. Inject `/no_think` into the system prompt via `ollamaFetch` to skip the reasoning phase and produce content immediately. Verify the fix produces actual content within a reasonable time.
+Fix the Ollama reasoning model (`qwen3.5:9b`) producing empty responses. The model streams empty `content: ""` chunks during its thinking phase while the AI SDK's `textStream` only surfaces content tokens, causing the UI to show nothing. Inject `/no_think` into the system prompt via `ollamaFetch` to skip the reasoning phase and produce content immediately. Verify the fix produces actual content within a reasonable time.
 
 **Derived Tasks**
 
@@ -1022,7 +1022,7 @@ Review Epic E6 — AI-Powered Insights implementation. Audit all changed files a
 
 **Prompt**
 
-Enable chain-of-thought / reasoning visibility across all AI features. When using a reasoning model (e.g., `qwen3.5:27b`, `o4-mini`), show the model's thinking process in the UI instead of suppressing it. Remove the `/no_think` injection from `lib/ai/provider.ts`. Switch all 3 AI API routes (`summary`, `portfolio`, `learn`) from `textStream` to `fullStream` to capture both `reasoning-delta` and `text-delta` events from the Vercel AI SDK. Stream responses as newline-delimited JSON (`{type: 'reasoning'|'text'|'error', text}`) and parse them on the client. Add a collapsible "Thinking (N chars)" section with a Brain icon toggle to `market-summary-card.tsx`, and per-message inline reasoning toggles to `portfolio-analysis.tsx` and `learning-chat.tsx`. Show a pulsing "Thinking…" indicator while reasoning tokens are streaming before content begins. Gracefully hide reasoning UI when using non-reasoning models.
+Enable chain-of-thought / reasoning visibility across all AI features. When using a reasoning model (e.g., `qwen3.5:9b`, `o4-mini`), show the model's thinking process in the UI instead of suppressing it. Remove the `/no_think` injection from `lib/ai/provider.ts`. Switch all 3 AI API routes (`summary`, `portfolio`, `learn`) from `textStream` to `fullStream` to capture both `reasoning-delta` and `text-delta` events from the Vercel AI SDK. Stream responses as newline-delimited JSON (`{type: 'reasoning'|'text'|'error', text}`) and parse them on the client. Add a collapsible "Thinking (N chars)" section with a Brain icon toggle to `market-summary-card.tsx`, and per-message inline reasoning toggles to `portfolio-analysis.tsx` and `learning-chat.tsx`. Show a pulsing "Thinking…" indicator while reasoning tokens are streaming before content begins. Gracefully hide reasoning UI when using non-reasoning models.
 
 **Derived Tasks**
 
@@ -1053,5 +1053,161 @@ Update SPECS.md for E6: add `US-6.4: Chain of Thought Reasoning Display` as a ne
 - Add `US-6.4: Chain of Thought Reasoning Display [x] 🎨` section after US-6.3
 - Write Gherkin feature with 5 scenarios: reasoning toggle on summary, per-message reasoning in chat, streaming indicator, non-reasoning fallback, NDJSON protocol
 - Add 5 completed task checkboxes (T-6.4.1–T-6.4.5) covering provider fix, API route updates, and 3 component updates
+
+---
+
+## Prompt 49 — `alerts`
+
+**Intent**: Plan Epic E7 (Alerts & Notifications) implementation strategy.
+
+**Prompt**
+
+Run `/plan-item E7` to analyze Epic E7 (Alerts & Notifications). Break down US-7.1 (Price Alerts), US-7.2 (Technical Indicator Alerts), and US-7.3 (Notification Delivery Channels) into atomic implementation tasks. Identify dependencies on E1–E6 (project setup, auth, market data, portfolio, DCA, AI insights). Map each user story to its route segment, colocated files, Supabase tables (`alerts`, `notifications`), shared libraries (`lib/indicators/`, `lib/notifications/`, `lib/bitcoin/valuation.ts`), and migration order. Produce a sequenced implementation plan with file paths, component names, and schema definitions.
+
+**Derived Tasks**
+
+- Read SPECS.md Gherkin scenarios for US-7.1, US-7.2, US-7.3 to extract acceptance criteria
+- Map US-7.1 → `app/dashboard/alerts/` with alert CRUD, evaluation engine, cron job
+- Map US-7.2 → `lib/indicators/rsi.ts`, `lib/indicators/moving-average.ts`, `lib/bitcoin/valuation.ts` for MVRV Z-Score
+- Map US-7.3 → `lib/notifications/dispatcher.ts`, `lib/notifications/telegram.ts`, `lib/notifications/email.ts`, notification preferences in settings
+- Identify E1–E6 dependencies: auth guard, Supabase client, market price APIs, portfolio positions, notification center from E5
+- Plan migration: extend `alerts` table with `parameters` JSONB, `asset_type`, indicator condition columns
+- Define component tree: `create-alert-dialog.tsx`, `alerts-table.tsx`, `alert-status-badge.tsx`, notification preferences card
+- Sequence tasks: migration → schema → indicators → evaluator → actions → components → notifications → cron → tests
+
+---
+
+## Prompt 50 — `alerts`
+
+**Intent**: Implement Epic E7 (Alerts & Notifications) end-to-end.
+
+**Prompt**
+
+Run `/implement-item E7` to execute all 3 user stories and 18 tasks for Epic E7 (Alerts & Notifications). Create `supabase/migrations/20260325000000_alerts_status_and_indicators.sql` extending the `alerts` table with `parameters` JSONB, `asset_type`, and indicator-specific columns. Create `app/dashboard/alerts/_schema.ts` with `CreateAlertSchema` (supporting price conditions `above`/`below` and indicator conditions `rsi_above`/`rsi_below`/`ma_cross_above`/`ma_cross_below`/`mvrv_above`/`mvrv_below`), `UpdateAlertSchema`, condition labels, and `AlertRow` type. Build `app/dashboard/alerts/_utils.ts` with an alert evaluation engine supporting price, RSI, moving average crossover, and MVRV Z-Score conditions. Create `app/dashboard/alerts/_actions.ts` with Server Actions: `getAlerts`, `createAlert`, `updateAlert`, `toggleAlertStatus`, `deleteAlert`. Create `lib/indicators/rsi.ts` with Wilder's smoothing RSI calculation and `lib/indicators/moving-average.ts` with SMA, EMA, and cross detection. Implement `lib/bitcoin/valuation.ts` with MVRV Z-Score fetching from CoinGecko and Blockchain.info. Build `lib/notifications/dispatcher.ts` for multi-channel notification routing, `lib/notifications/telegram.ts` for Telegram Bot API, and `lib/notifications/email.ts` for Resend API integration. Create `app/api/cron/alert-evaluation/route.ts` as a Vercel Cron endpoint (every 5 min) that fetches prices, evaluates active alerts, and dispatches notifications. Build 3 UI components: `create-alert-dialog.tsx` (form with conditional RSI/MA/MVRV fields), `alerts-table.tsx` (with toggle/delete actions), `alert-status-badge.tsx` (active/triggered/paused). Add `notification-preferences-card.tsx` to the Settings page. Write comprehensive Vitest tests for schemas, evaluation engine, RSI, moving averages, dispatcher, and Telegram formatting.
+
+**Derived Tasks**
+
+- Create migration `20260325000000_alerts_status_and_indicators.sql` extending alerts table with indicator columns and JSONB parameters
+- Create `app/dashboard/alerts/_schema.ts` with `CreateAlertSchema`, `UpdateAlertSchema`, condition constants, `CONDITION_LABELS`, `AlertRow` type
+- Create `lib/indicators/rsi.ts` with Wilder's smoothing RSI calculation (configurable period, min data validation)
+- Create `lib/indicators/moving-average.ts` with `calculateSMA`, `calculateEMA`, `detectCross` functions
+- Create `lib/bitcoin/valuation.ts` with `fetchMvrvZScore()` using CoinGecko market cap and Blockchain.info realized cap estimate
+- Create `app/dashboard/alerts/_utils.ts` with `evaluateAlert()` supporting all 8 condition types
+- Create `app/dashboard/alerts/_actions.ts` with 5 Server Actions for alert CRUD
+- Create `lib/notifications/dispatcher.ts` with `dispatchNotification()` routing to in-app, email, and Telegram channels
+- Create `lib/notifications/telegram.ts` with `sendTelegramNotification()` using Bot API and HTML formatting
+- Create `lib/notifications/email.ts` with `sendEmailNotification()` using Resend API
+- Create `app/api/cron/alert-evaluation/route.ts` as Vercel Cron (every 5 min) evaluating active alerts and dispatching notifications
+- Build `create-alert-dialog.tsx` with conditional RSI period, MA period/type, and MVRV fields based on selected condition
+- Build `alerts-table.tsx` with symbol colors, condition labels, threshold formatting, toggle/delete actions
+- Build `alert-status-badge.tsx` with active (emerald), triggered (sky), paused (amber) variants
+- Build `app/dashboard/alerts/page.tsx` with summary cards (active/triggered/paused counts) and alerts table
+- Add `notification-preferences-card.tsx` to `app/dashboard/settings/` with channel toggles
+- Write `app/dashboard/alerts/__tests__/_schema.test.ts` with 15 schema validation tests
+- Write `app/dashboard/alerts/__tests__/_utils.test.ts` with 23 evaluator tests covering all conditions
+- Write `lib/indicators/__tests__/rsi.test.ts` with 13 RSI calculation tests
+- Write `lib/indicators/__tests__/moving-average.test.ts` with 20 SMA/EMA/cross tests
+- Write `lib/notifications/__tests__/dispatcher.test.ts` with 6 routing logic tests
+- Write `lib/notifications/__tests__/telegram.test.ts` with 5 message formatting tests
+- Update SPECS.md to mark all E7 tasks and stories as complete
+
+---
+
+## Prompt 51 — `alerts`
+
+**Intent**: Code review E7 (Alerts & Notifications) against conventions and acceptance criteria.
+
+**Prompt**
+
+Run `/review-item E7` to audit the entire Epic E7 (Alerts & Notifications) implementation. Check all files under `app/dashboard/alerts/` (page, actions, utils, schema, components), `lib/notifications/` (dispatcher, telegram, email), `lib/indicators/` (RSI, moving averages), `lib/bitcoin/valuation.ts` (MVRV Z-Score), `app/api/cron/alert-evaluation/route.ts`, `app/dashboard/settings/_components/notification-preferences-card.tsx`, `app/dashboard/_components/notification-center.tsx`, and all associated migrations and tests against CLAUDE.md conventions, SPECS.md Gherkin acceptance criteria (US-7.1 through US-7.3), security rules, TypeScript strict compliance, and test coverage. Report a verdict with file-level findings grouped by severity.
+
+**Derived Tasks**
+
+- Read all E7-related files: `app/dashboard/alerts/` (page, actions, utils, schema, 3 components), `lib/notifications/` (dispatcher, telegram, email), `lib/indicators/` (RSI, moving averages), `lib/bitcoin/valuation.ts`
+- Read infrastructure files: `app/api/cron/alert-evaluation/route.ts`, notification-center, notification-preferences-card, migration files
+- Read all E7 test files: `_utils.test.ts`, `_schema.test.ts`, `dispatcher.test.ts`, `telegram.test.ts`, `rsi.test.ts`, `moving-average.test.ts`
+- Verify security: auth checks in Server Actions, RLS policies, UUID validation on mutation inputs, no `console.log` in production code
+- Verify conventions: `export function` over `export const` for components, named exports, `@/` imports
+- Verify correctness: cross-reference against Gherkin scenarios for US-7.1, US-7.2, US-7.3
+- Verify type safety: no unused variables, proper generics on `useForm`, no dead code
+- Check for missing `<Toaster />` in root layout (required for `toast.success()`/`toast.error()` to render)
+- Check for missing `loading.tsx` Suspense fallback for the alerts page
+- Produce verdict (PASS / PASS WITH NOTES / NEEDS CHANGES) with specific file and line references
+
+---
+
+## Prompt 52 — `alerts`
+
+**Intent**: Fix TypeScript error on `useForm<CreateAlert>` defaultValues type mismatch.
+
+**Prompt**
+
+Fix the TypeScript error in `app/dashboard/alerts/_components/create-alert-dialog.tsx` where `useForm<CreateAlert>` causes a type mismatch on `defaultValues`. The `CreateAlertSchema` uses `.default(['in_app'])` on `notification_channels` and `.default({})` on `parameters`, which makes the Zod input type (what `defaultValues` expects) differ from the output type (`CreateAlert = z.infer<typeof CreateAlertSchema>`). Remove the explicit `<CreateAlert>` generic from `useForm()` and let `zodResolver` infer the correct types. Add `as const` assertions to `defaultValues` literals to preserve literal types.
+
+**Derived Tasks**
+
+- Remove `<CreateAlert>` generic from `useForm()` call in `create-alert-dialog.tsx`
+- Add `as const` assertions to `defaultValues` literal values (`'VOO' as const`, `'above' as const`, `'in_app' as const`)
+- Verify `zodResolver(CreateAlertSchema)` correctly infers both input and output types
+- Confirm there are no remaining TypeScript errors in the file
+
+---
+
+## Prompt 53 — `alerts`
+
+**Intent**: Apply all 11 E7 code review fixes across 7 files.
+
+**Prompt**
+
+Apply all 11 fixes identified in the `/review-item E7` code review:
+
+1. **Missing `<Toaster />`** — Add `import { Toaster } from '@/components/ui/sonner'` and `<Toaster />` to `app/layout.tsx` so all `toast.success()`/`toast.error()` calls render app-wide.
+2. **7 `console.log` statements** — Remove all `console.log` calls from `app/dashboard/alerts/_actions.ts` (lines logging formData, raw input, parsed result, user, assetType, insert error, and create result).
+3. **No UUID validation on toggle/delete** — Add `z.string().uuid()` validation to the `id` parameter in `toggleAlertStatus` and `deleteAlert` Server Actions before passing to Supabase queries.
+4. **`export const` components** — Change `export const` to `export function` in `create-alert-dialog.tsx` (`CreateAlertDialog`), `alerts-table.tsx` (`AlertsTable`, `AlertsTableSkeleton`), and `alert-status-badge.tsx` (`AlertStatusBadge`).
+5. **`useForm<CreateAlert>` TS error** — Remove the explicit generic and add `as const` assertions to `defaultValues`.
+6. **Unused `isIndicatorCondition` variable** — Delete the unused variable declaration in `create-alert-dialog.tsx`.
+7. **`console.log` in dialog** — Remove `console.log('Create alert result:', result)` from `create-alert-dialog.tsx`.
+8. **Unused `type CreateAlert` import** — Remove the unused type import (keep it if still needed by `onSubmit` param and `as` casts).
+9. **Unused `url` variable** — Delete `const url = new URL(...)` dead code in `lib/bitcoin/valuation.ts`.
+10. **TS `possibly undefined`** — Fix `data.values[data.values.length - 1].y` in `valuation.ts` by extracting to a checked variable.
+11. **Missing `loading.tsx`** — Create `app/dashboard/alerts/loading.tsx` Suspense fallback skeleton using `AlertsTableSkeleton` and Card skeleton components.
+
+**Derived Tasks**
+
+- Add `import { Toaster } from '@/components/ui/sonner'` and `<Toaster />` after `{children}` in `app/layout.tsx`
+- Remove all 7 `console.log` statements from `app/dashboard/alerts/_actions.ts`
+- Add `import { z } from 'zod'` and `const uuidSchema = z.string().uuid()` to `_actions.ts`
+- Add `uuidSchema.safeParse(id)` validation to `toggleAlertStatus` and `deleteAlert`
+- Change `export const CreateAlertDialog = () =>` to `export function CreateAlertDialog()` in `create-alert-dialog.tsx`
+- Change `export const AlertsTable = (...)  =>` to `export function AlertsTable(...)` in `alerts-table.tsx`
+- Change `export const AlertsTableSkeleton = () =>` to `export function AlertsTableSkeleton()` in `alerts-table.tsx`
+- Change `export const AlertStatusBadge = (...)  =>` to `export function AlertStatusBadge(...)` in `alert-status-badge.tsx`
+- Remove `<CreateAlert>` generic from `useForm()`, add `as const` to defaultValues
+- Delete unused `isIndicatorCondition` variable declaration
+- Remove `console.log('Create alert result:', result)` from `create-alert-dialog.tsx`
+- Delete `const url = new URL(...)` from `lib/bitcoin/valuation.ts`
+- Fix `data.values[data.values.length - 1].y` with null check in `valuation.ts`
+- Create `app/dashboard/alerts/loading.tsx` with skeleton components
+- Run all 314 tests to verify no regressions
+
+---
+
+## Prompt 54 — `docs`
+
+**Intent**: Capture all E7 session prompts to README-PROMPTS.md.
+
+**Prompt**
+
+Run `/capture-prompts all` to extract, improve, and persist every user prompt from the E7 Alerts & Notifications sessions into `README-PROMPTS.md`. Include prompts covering E7 planning, implementation, code review, TypeScript error fix, all 11 review fix applications, and this capture request. Derive actionable tasks for each, categorize by domain, and append in the established entry format continuing from Prompt 48.
+
+**Derived Tasks**
+
+- Review the full E7 chat sessions (including prior implementation session and current review/fix session) and extract all distinct user prompts
+- Improve wording, normalize terminology, and rewrite in imperative form
+- Derive atomic, implementation-ready tasks for each prompt
+- Assign category tags (`alerts`, `docs`)
+- Deduplicate against existing entries (Prompts 1–48) before appending
+- Append new entries (Prompts 49–54) to `README-PROMPTS.md`
 
 ---

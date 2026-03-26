@@ -23,7 +23,7 @@ export const MarketSummaryCard = ({ cachedSummary }: MarketSummaryCardProps) => 
     setIsThinking(true)
     setSummary('')
     setReasoning('')
-    setShowReasoning(false)
+    setShowReasoning(true)
 
     try {
       const res = await fetch('/api/ai/summary', { method: 'POST' })
@@ -66,7 +66,7 @@ export const MarketSummaryCard = ({ cachedSummary }: MarketSummaryCardProps) => 
                 reasoningRef.current.scrollTop = reasoningRef.current.scrollHeight
               }
             } else if (event.type === 'text') {
-              if (isThinking) setIsThinking(false)
+              setIsThinking(false)
               contentText += event.text
               setSummary(contentText)
             } else if (event.type === 'error') {
@@ -87,7 +87,7 @@ export const MarketSummaryCard = ({ cachedSummary }: MarketSummaryCardProps) => 
       setIsStreaming(false)
       setIsThinking(false)
     }
-  }, [isThinking])
+  }, [])
 
   return (
     <Card>

@@ -17,7 +17,7 @@ Personal finance dashboard for a Costa Rica-based software developer tracking VO
 - **State**: Jotai — atomic state per route segment, colocated `_atoms.ts`
 - **Forms**: React Hook Form + `@hookform/resolvers` + Zod
 - **Database & Auth**: Supabase (Postgres + Auth + RLS)
-- **AI**: Vercel AI SDK (`ai` + `@ai-sdk/openai`) — use `generateText`/`streamText` for AI features
+- **AI**: Vercel AI SDK (`ai` + `@ai-sdk/openai` + `@ai-sdk/openai-compatible`) — use `generateText`/`streamText` for AI features; Ollama for local models
 - **Charts**: Recharts for data visualization
 - **Dates**: date-fns + @date-fns/tz — centralized in `lib/date/`, Costa Rica timezone explicit
 - **Testing**: Vitest — colocated `__tests__/` directories within each route or lib module
@@ -88,7 +88,9 @@ lib/
 ├── indicators/           # RSI, moving averages
 │   ├── rsi.ts
 │   └── moving-average.ts
-├── ai/                   # Vercel AI SDK prompt templates
+├── ai/                   # Vercel AI SDK prompt templates & streaming
+│   ├── provider.ts       # Model registry, Ollama/OpenAI factory, reasoning config
+│   ├── stream.ts         # Shared NDJSON stream with <think> tag parsing
 │   ├── market-summary.ts
 │   ├── portfolio-analysis.ts
 │   └── learning-assistant.ts
@@ -117,6 +119,15 @@ Is this code used by ONLY this route?
 - File naming: kebab-case for component files, underscore prefix for route module files
 - Prefer Server Components. Mark Client Components with `'use client'` only when needed
 - Validation always happens in `_actions.ts` (server-side) — UI shows client-side hints only
+
+## AI Streaming
+
+- All AI API routes use `createAiNdjsonStream()` from `lib/ai/stream.ts` — never inline streaming logic
+- Stream format: newline-delimited JSON with `{ type: 'reasoning' | 'text' | 'error', text }` events
+- Ollama thinking: smaller models (e.g. `qwen3.5:9b`) require `think: true` in the request body — injected via custom fetch in `lib/ai/provider.ts`
+- `<think>...</think>` tags in text deltas are parsed server-side into `reasoning` events
+- Native `reasoning-delta` events (OpenAI o-series) are forwarded directly
+- Model lists: `OPENAI_MODELS` and `OLLAMA_MODELS` in `lib/ai/provider.ts` — single source of truth for settings dropdowns
 
 ## Database
 

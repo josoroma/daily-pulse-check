@@ -5,14 +5,14 @@ import type { LanguageModel } from 'ai'
 export const AI_PROVIDERS = ['openai', 'ollama'] as const
 export type AiProvider = (typeof AI_PROVIDERS)[number]
 
-export const OPENAI_MODELS = ['gpt-4.1-nano', 'gpt-4.1-mini', 'gpt-4.1', 'o4-mini'] as const
-export const OLLAMA_MODELS = ['qwen3.5:27b', 'llama3.1:8b', 'mistral'] as const
+export const OPENAI_MODELS = ['gpt-4.1-mini'] as const
+export const OLLAMA_MODELS = ['qwen3.5:9b'] as const
 
 export type OpenAiModel = (typeof OPENAI_MODELS)[number]
 export type OllamaModel = (typeof OLLAMA_MODELS)[number]
 
 export const DEFAULT_OPENAI_MODEL: OpenAiModel = 'gpt-4.1-mini'
-export const DEFAULT_OLLAMA_MODEL: OllamaModel = 'qwen3.5:27b'
+export const DEFAULT_OLLAMA_MODEL: OllamaModel = 'qwen3.5:9b'
 
 export const MODEL_REGISTRY: Record<AiProvider, readonly string[]> = {
   openai: OPENAI_MODELS,
@@ -21,7 +21,7 @@ export const MODEL_REGISTRY: Record<AiProvider, readonly string[]> = {
 
 // Models that use reasoning tokens (thinking) before generating content.
 // These need unlimited max_tokens so reasoning doesn't consume the entire budget.
-export const REASONING_MODELS = new Set(['qwen3.5:27b', 'o4-mini'])
+export const REASONING_MODELS = new Set(['qwen3.5:9b'])
 
 export function getDefaultModel(provider: AiProvider): string {
   return provider === 'openai' ? DEFAULT_OPENAI_MODEL : DEFAULT_OLLAMA_MODEL
@@ -43,10 +43,16 @@ export function getOllamaBaseUrl(): string {
 // Reasoning models spend their budget on thinking first; a low max_tokens means
 // all tokens go to reasoning with empty content output.
 // Local models don't cost per token, so remove the cap entirely.
+// Also inject `think: true` so smaller reasoning models (e.g. qwen3.5:9b)
+// explicitly enable chain-of-thought — larger models default to thinking,
+// but smaller ones require the flag.
 const ollamaFetch: typeof globalThis.fetch = async (url, init) => {
   if (init?.body && typeof init.body === 'string') {
     const body = JSON.parse(init.body)
     delete body.max_tokens
+    if (REASONING_MODELS.has(body.model)) {
+      body.think = true
+    }
     return globalThis.fetch(url, { ...init, body: JSON.stringify(body) })
   }
   return globalThis.fetch(url, init)

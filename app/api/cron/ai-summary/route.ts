@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
 
     try {
       const provider = (profile.ai_provider ?? 'openai') as AiProvider
-      const model = profile.ai_model ?? 'gpt-4.1-nano'
+      const model = profile.ai_model ?? 'gpt-4.1-mini'
 
       const content = await generateMarketSummary(provider, model, ctx)
 

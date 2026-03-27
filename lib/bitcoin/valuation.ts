@@ -80,17 +80,16 @@ export const RainbowDataSchema = z.object({
 
 export type RainbowData = z.infer<typeof RainbowDataSchema>
 
-const BLOCKCHAIN_INFO_BASE = 'https://api.blockchain.info'
 const COINGECKO_BASE = 'https://api.coingecko.com/api/v3'
 
 /**
- * Realized cap discount factor applied to market cap from Blockchain.info.
+ * Realized cap discount factor applied to current market cap.
  * True realized cap requires on-chain UTXO data (Glassnode / CoinMetrics).
  * This approximation assumes realized cap ≈ 65% of market cap.
  */
 const REALIZED_CAP_DISCOUNT = 0.65
 
-/** Fallback multiplier when Blockchain.info is unreachable */
+/** Thermocap heuristic: avg market cap × 0.7 as lower-bound realized cap estimate */
 const REALIZED_CAP_FALLBACK_MULT = 0.7
 
 function getCoinGeckoHeaders(): Record<string, string> {
@@ -122,47 +121,31 @@ export async function fetchBtcPriceHistory(): Promise<Array<[number, number]>> {
 }
 
 /**
- * Fetch Bitcoin realized cap from Blockchain.com (free, no key required).
- * Falls back to a heuristic if the API is unavailable.
+ * Estimate realized cap from historical market cap data.
  *
  * ⚠️ APPROXIMATION: True realized cap requires UTXO-set data (Glassnode,
- * CoinMetrics). The free Blockchain.info API only exposes market cap, so
- * we apply a 0.65× discount factor — historically realized cap sits at
- * ~50-80% of market cap during normal market conditions.
+ * CoinMetrics). We estimate it as the average of:
+ *   - current market cap × 0.65 (realized cap discount)
+ *   - 365-day average market cap × 0.70 (thermocap heuristic)
+ * This blends short-term and long-term signals for a more stable estimate.
  */
-async function fetchRealizedCap(): Promise<number> {
-  try {
-    const response = await fetch(
-      `${BLOCKCHAIN_INFO_BASE}/charts/market-cap?timespan=1days&format=json`,
-      {
-        next: { revalidate: 0 },
-      },
-    )
+function estimateRealizedCap(currentMarketCap: number, historicalMarketCaps: number[]): number {
+  const discounted = currentMarketCap * REALIZED_CAP_DISCOUNT
+  if (historicalMarketCaps.length === 0) return discounted
 
-    if (!response.ok) {
-      throw new Error(`Blockchain.info API error: ${response.status}`)
-    }
+  const avgMarketCap =
+    historicalMarketCaps.reduce((sum, cap) => sum + cap, 0) / historicalMarketCaps.length
+  const heuristic = avgMarketCap * REALIZED_CAP_FALLBACK_MULT
 
-    const data = (await response.json()) as { values: Array<{ x: number; y: number }> }
-    if (data.values && data.values.length > 0) {
-      const lastValue = data.values[data.values.length - 1]
-      if (!lastValue) throw new Error('No data from Blockchain.info')
-      // Discount factor: realized cap ≈ 65% of market cap (free-tier approximation)
-      return lastValue.y * REALIZED_CAP_DISCOUNT
-    }
-    throw new Error('No data from Blockchain.info')
-  } catch (error) {
-    console.error('[bitcoin] Realized cap fetch failed, using fallback:', error)
-    // Returns 0 → caller falls back to avgMarketCap × 0.7 heuristic
-    return 0
-  }
+  return (discounted + heuristic) / 2
 }
 
 /**
  * Fetch MVRV Z-Score data for Bitcoin.
  *
- * Uses CoinGecko for market cap and Blockchain.info for realized cap estimate.
- * The Z-Score is calculated from historical market cap standard deviation.
+ * Uses CoinGecko for market cap and estimates realized cap from
+ * historical market cap data. The Z-Score is calculated from
+ * historical market cap standard deviation.
  */
 export async function fetchMvrvZScore(): Promise<MvrvData> {
   const cacheKey = 'bitcoin:mvrv:zscore'
@@ -206,14 +189,8 @@ export async function fetchMvrvZScore(): Promise<MvrvData> {
 
       const marketCaps = historyData.market_caps.map(([, cap]) => cap).filter((cap) => cap > 0)
 
-      // Try to get realized cap
-      let realizedCap = await fetchRealizedCap()
-
-      // If the fetch failed (returned 0), estimate from market cap
-      if (realizedCap === 0) {
-        const avgMarketCap = marketCaps.reduce((sum, cap) => sum + cap, 0) / marketCaps.length
-        realizedCap = avgMarketCap * REALIZED_CAP_FALLBACK_MULT
-      }
+      // Estimate realized cap from CoinGecko data (no external dependency)
+      const realizedCap = estimateRealizedCap(marketCap, marketCaps)
 
       // Calculate standard deviation of market caps
       const mean = marketCaps.reduce((sum, cap) => sum + cap, 0) / marketCaps.length

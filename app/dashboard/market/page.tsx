@@ -65,12 +65,15 @@ async function fetchMacroData() {
   if (results[2].status === 'fulfilled') indicators.push(results[2].value)
   if (results[3].status === 'fulfilled') indicators.push(results[3].value)
 
-  if (results.slice(0, 4).some((r) => r.status === 'rejected')) {
-    errors.push('Some macro indicators failed to load')
+  const indicatorResults = results.slice(0, 4)
+  const failedCount = indicatorResults.filter((r) => r.status === 'rejected').length
+
+  // Only show error if ALL indicators failed — partial data is still useful
+  if (failedCount > 0 && indicators.length === 0) {
+    errors.push('Macro indicators failed to load')
   }
 
   const inflationRate = results[4].status === 'fulfilled' ? results[4].value.rate : null
-  if (results[4].status === 'rejected') errors.push('Inflation data failed to load')
 
   return { indicators, inflationRate, errors }
 }

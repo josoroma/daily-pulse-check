@@ -15,11 +15,11 @@ type NotificationPrefs = {
   telegram_chat_id: string | null
 }
 
-export function NotificationPreferencesCard({
+export const NotificationPreferencesCard = ({
   defaultValues,
 }: {
   defaultValues: NotificationPrefs
-}) {
+}) => {
   const [emailEnabled, setEmailEnabled] = useState(defaultValues.notification_email_enabled)
   const [telegramEnabled, setTelegramEnabled] = useState(
     defaultValues.notification_telegram_enabled,
@@ -27,7 +27,7 @@ export function NotificationPreferencesCard({
   const [telegramChatId, setTelegramChatId] = useState(defaultValues.telegram_chat_id ?? '')
   const [isPending, startTransition] = useTransition()
 
-  function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
     const formData = new FormData()
@@ -84,7 +84,8 @@ export function NotificationPreferencesCard({
             <button
               type="button"
               role="switch"
-              aria-checked={emailEnabled}
+              aria-checked={emailEnabled ? 'true' : 'false'}
+              aria-label="Toggle email notifications"
               onClick={() => setEmailEnabled(!emailEnabled)}
               className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${emailEnabled ? 'bg-emerald-500' : 'bg-muted'}`}
             >
@@ -107,7 +108,8 @@ export function NotificationPreferencesCard({
               <button
                 type="button"
                 role="switch"
-                aria-checked={telegramEnabled}
+                aria-checked={telegramEnabled ? 'true' : 'false'}
+                aria-label="Toggle Telegram notifications"
                 onClick={() => setTelegramEnabled(!telegramEnabled)}
                 className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${telegramEnabled ? 'bg-emerald-500' : 'bg-muted'}`}
               >

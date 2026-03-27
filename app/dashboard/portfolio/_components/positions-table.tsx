@@ -32,7 +32,8 @@ import {
 import { Pencil, Trash2, ArrowUpDown } from 'lucide-react'
 import { deletePosition } from '../_actions'
 import { PositionForm } from './position-form'
-import { formatUsd, formatPct, formatQuantity, type PositionWithPnL } from '../_utils'
+import { formatPct, formatQuantity, type PositionWithPnL } from '../_utils'
+import { useCurrency } from '@/app/dashboard/_hooks'
 import { ASSET_COLOR_CLASSES, DEFAULT_ASSET_COLOR } from '../_constants'
 
 type SortField = 'symbol' | 'current_value' | 'unrealized_pnl' | 'unrealized_pnl_pct'
@@ -66,6 +67,7 @@ function SortButton({
 }
 
 export function PositionsTable({ positions, portfolioId }: PositionsTableProps) {
+  const { format } = useCurrency()
   const [sortField, setSortField] = useState<SortField>('current_value')
   const [sortDir, setSortDir] = useState<SortDirection>('desc')
   const [editingPosition, setEditingPosition] = useState<PositionWithPnL | null>(null)
@@ -146,18 +148,18 @@ export function PositionsTable({ positions, portfolioId }: PositionsTableProps) 
                   {formatQuantity(pos.quantity, pos.asset_type)}
                 </TableCell>
                 <TableCell className="text-right font-mono tabular-nums">
-                  {formatUsd(pos.average_buy_price)}
+                  {format(pos.average_buy_price)}
                 </TableCell>
                 <TableCell className="text-right font-mono tabular-nums">
-                  {formatUsd(pos.current_price)}
+                  {format(pos.current_price)}
                 </TableCell>
                 <TableCell className="text-right font-mono tabular-nums font-medium">
-                  {formatUsd(pos.current_value)}
+                  {format(pos.current_value)}
                 </TableCell>
                 <TableCell
                   className={`text-right font-mono tabular-nums ${isPnLPositive ? 'text-emerald-500' : 'text-rose-500'}`}
                 >
-                  {formatUsd(pos.unrealized_pnl)}
+                  {format(pos.unrealized_pnl)}
                 </TableCell>
                 <TableCell
                   className={`text-right font-mono tabular-nums ${isPnLPositive ? 'text-emerald-500' : 'text-rose-500'}`}

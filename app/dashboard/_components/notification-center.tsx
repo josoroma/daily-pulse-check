@@ -132,23 +132,25 @@ export function NotificationCenter({
           }
         />
         <DropdownMenuContent align="end" className="w-80">
-          <DropdownMenuLabel className="flex items-center justify-between">
-            <span>Notifications</span>
-            {unreadCount > 0 && (
-              <span
-                role="button"
-                tabIndex={0}
-                className="inline-flex cursor-pointer items-center rounded px-2 py-1 text-xs hover:bg-muted"
-                onClick={handleMarkAllRead}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') handleMarkAllRead()
-                }}
-              >
-                <CheckCheck className="mr-1 h-3 w-3" />
-                Mark all read
-              </span>
-            )}
-          </DropdownMenuLabel>
+          <DropdownMenuGroup>
+            <DropdownMenuLabel className="flex items-center justify-between">
+              <span>Notifications</span>
+              {unreadCount > 0 && (
+                <span
+                  role="button"
+                  tabIndex={0}
+                  className="inline-flex cursor-pointer items-center rounded px-2 py-1 text-xs hover:bg-muted"
+                  onClick={handleMarkAllRead}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') handleMarkAllRead()
+                  }}
+                >
+                  <CheckCheck className="mr-1 h-3 w-3" />
+                  Mark all read
+                </span>
+              )}
+            </DropdownMenuLabel>
+          </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             {notifications.length === 0 ? (

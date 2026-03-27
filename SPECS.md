@@ -26,8 +26,8 @@
 | E6: AI-Powered Insights           | 5       | 0    | 0           | 5         | 0       |
 | E7: Alerts & Notifications        | 3       | 0    | 0           | 3         | 0       |
 | E8: Bitcoin On-Chain Analytics    | 3       | 0    | 0           | 3         | 0       |
-| E9: Analytics & Reporting         | 3       | 3    | 0           | 0         | 0       |
-| E10: Settings & Data Management   | 2       | 2    | 0           | 0         | 0       |
+| E9: Analytics & Reporting         | 3       | 0    | 0           | 3         | 0       |
+| E10: Settings & Data Management   | 2       | 0    | 0           | 2         | 0       |
 
 ---
 
@@ -1479,7 +1479,7 @@ Feature: Bitcoin Halving Countdown
 
 ## E9: Analytics & Reporting
 
-### US-9.1: Performance Metrics [ ] 🎨
+### US-9.1: Performance Metrics [x] 🎨
 
 **As a** user
 **I want** to see key performance metrics for my portfolio
@@ -1517,16 +1517,16 @@ Feature: Performance Metrics
 
 #### Tasks
 
-- [ ] T-9.1.1: Implement total return calculation in `app/analytics/_utils.ts`
-- [ ] T-9.1.2: Implement time-weighted rate of return (TWRR) calculation
-- [ ] T-9.1.3: Build per-asset performance table component
-- [ ] T-9.1.4: Implement benchmark comparison (user portfolio vs VOO over same period)
-- [ ] T-9.1.5: Build analytics page at `app/dashboard/analytics/page.tsx`
-- [ ] T-9.1.6: Write unit tests for return calculations including edge cases (partial periods, zero investment)
+- [x] T-9.1.1: Implement total return calculation in `app/analytics/_utils.ts`
+- [x] T-9.1.2: Implement time-weighted rate of return (TWRR) calculation
+- [x] T-9.1.3: Build per-asset performance table component
+- [x] T-9.1.4: Implement benchmark comparison (user portfolio vs VOO over same period)
+- [x] T-9.1.5: Build analytics page at `app/dashboard/analytics/page.tsx`
+- [x] T-9.1.6: Write unit tests for return calculations including edge cases (partial periods, zero investment)
 
 ---
 
-### US-9.2: Monthly / Yearly Reports [ ] 🎨
+### US-9.2: Monthly / Yearly Reports [x] 🎨
 
 **As a** user
 **I want** monthly and yearly summary reports
@@ -1564,16 +1564,16 @@ Feature: Periodic Reports
 
 #### Tasks
 
-- [ ] T-9.2.1: Implement monthly report data aggregation in `app/analytics/_utils.ts`
-- [ ] T-9.2.2: Implement yearly report data aggregation
-- [ ] T-9.2.3: Calculate DCA adherence score from scheduled vs executed DCA entries
-- [ ] T-9.2.4: Build report viewer component with period selector (month/year dropdown)
-- [ ] T-9.2.5: Implement PDF export using a client-side library (e.g., jsPDF or html2canvas)
-- [ ] T-9.2.6: Write unit tests for report aggregation and adherence calculation
+- [x] T-9.2.1: Implement monthly report data aggregation in `app/analytics/_utils.ts`
+- [x] T-9.2.2: Implement yearly report data aggregation
+- [x] T-9.2.3: Calculate DCA adherence score from scheduled vs executed DCA entries
+- [x] T-9.2.4: Build report viewer component with period selector (month/year dropdown)
+- [x] T-9.2.5: Implement PDF export using a client-side library (e.g., jsPDF or html2canvas)
+- [x] T-9.2.6: Write unit tests for report aggregation and adherence calculation
 
 ---
 
-### US-9.3: Tax-Relevant Export (Costa Rica Context) [ ] 🎨
+### US-9.3: Tax-Relevant Export (Costa Rica Context) [x] 🎨
 
 **As a** user in Costa Rica
 **I want** to export my realized gains and transaction history
@@ -1608,17 +1608,17 @@ Feature: Tax-Relevant Export
 
 #### Tasks
 
-- [ ] T-9.3.1: Implement realized gains calculator in `app/analytics/_utils.ts` using FIFO method
-- [ ] T-9.3.2: Build CSV export utility for transactions and realized gains
-- [ ] T-9.3.3: Add country-specific tax notes based on user profile
-- [ ] T-9.3.4: Build tax export page at `app/dashboard/analytics/tax/page.tsx` with year selector
-- [ ] T-9.3.5: Write unit tests for FIFO gain calculation with multiple lots
+- [x] T-9.3.1: Implement realized gains calculator in `app/analytics/_utils.ts` using FIFO method
+- [x] T-9.3.2: Build CSV export utility for transactions and realized gains
+- [x] T-9.3.3: Add country-specific tax notes based on user profile
+- [x] T-9.3.4: Build tax export page at `app/dashboard/analytics/tax/page.tsx` with year selector
+- [x] T-9.3.5: Write unit tests for FIFO gain calculation with multiple lots
 
 ---
 
 ## E10: Settings & Data Management
 
-### US-10.1: Application Settings [ ] 🎨
+### US-10.1: Application Settings [x] 🎨
 
 **As a** user
 **I want** to configure app-level settings (theme, currency, notifications, API keys)
@@ -1658,15 +1658,15 @@ Feature: Application Settings
 
 #### Tasks
 
-- [ ] T-10.1.1: Build settings page at `app/dashboard/settings/page.tsx` with tab navigation: Profile, Appearance, API Keys, Notifications
-- [ ] T-10.1.2: Implement theme toggle (dark/light/system) using `next-themes` or CSS variables
-- [ ] T-10.1.3: Build API key management with encryption at rest (Supabase vault or encrypted column)
-- [ ] T-10.1.4: Build notification preferences form
-- [ ] T-10.1.5: Implement settings Jotai atoms for client-side reactivity
+- [x] T-10.1.1: Build settings page at `app/dashboard/settings/page.tsx` with tab navigation: Profile, Appearance, API Keys, Notifications
+- [x] T-10.1.2: Implement theme toggle (dark/light/system) using `next-themes` or CSS variables
+- [x] T-10.1.3: Build API key management with encryption at rest (Supabase vault or encrypted column)
+- [x] T-10.1.4: Build notification preferences form
+- [x] T-10.1.5: Implement client-side reactivity via useCurrency hook (app/dashboard/\_hooks.ts) and currency formatting utility (lib/currency.ts)
 
 ---
 
-### US-10.2: Data Export & Account Management [ ] 🎨
+### US-10.2: Data Export & Account Management [x] 🎨
 
 **As a** user
 **I want** to export all my data and manage my account
@@ -1709,12 +1709,12 @@ Feature: Data Export & Account Management
 
 #### Tasks
 
-- [ ] T-10.2.1: Implement full data export Server Action that queries all user tables and returns JSON
-- [ ] T-10.2.2: Build CSV import parser with column mapping and validation preview
-- [ ] T-10.2.3: Implement account deletion with cascade delete across all tables and Supabase Auth
-- [ ] T-10.2.4: Build password change form with current password verification
-- [ ] T-10.2.5: Build data management UI at `app/dashboard/settings/data/page.tsx`
-- [ ] T-10.2.6: Write unit tests for CSV parsing and data export sanitization
+- [x] T-10.2.1: Implement full data export Server Action that queries all user tables and returns JSON
+- [x] T-10.2.2: Build CSV import parser with column mapping and validation preview
+- [x] T-10.2.3: Implement account deletion with cascade delete across all tables and Supabase Auth
+- [x] T-10.2.4: Build password change form with current password verification
+- [x] T-10.2.5: Build data management UI at `app/dashboard/settings/data/page.tsx`
+- [x] T-10.2.6: Write unit tests for CSV parsing and data export sanitization
 
 ---
 

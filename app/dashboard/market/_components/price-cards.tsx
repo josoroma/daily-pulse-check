@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { InfoTooltip } from '@/components/info-tooltip'
+import { useCurrency } from '@/app/dashboard/_hooks'
 import type { StockPrice } from '@/lib/market/stocks'
 import type { BitcoinPrice } from '@/lib/market/crypto'
 
@@ -16,6 +17,8 @@ interface PriceCardsProps {
 }
 
 export const PriceCards = ({ voo, qqq, btc, isLoading, usingCachedData }: PriceCardsProps) => {
+  const { format } = useCurrency()
+
   if (isLoading) {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -33,6 +36,7 @@ export const PriceCards = ({ voo, qqq, btc, isLoading, usingCachedData }: PriceC
           symbol="VOO"
           name="Vanguard S&P 500"
           price={voo.price}
+          format={format}
           accentColor="text-blue-500"
           bgColor="bg-blue-500/10"
           infoText="Vanguard S&P 500 ETF — tracks the 500 largest US companies by market cap. One of the most popular low-cost index funds for broad US stock market exposure. Expense ratio: 0.03%."
@@ -43,12 +47,13 @@ export const PriceCards = ({ voo, qqq, btc, isLoading, usingCachedData }: PriceC
           symbol="QQQ"
           name="Invesco QQQ Trust"
           price={qqq.price}
+          format={format}
           accentColor="text-purple-500"
           bgColor="bg-purple-500/10"
           infoText="Invesco QQQ Trust — tracks the Nasdaq-100 index, which includes the 100 largest non-financial Nasdaq-listed companies. Heavily weighted toward tech (Apple, Microsoft, Nvidia, etc.). More growth-oriented and volatile than VOO."
         />
       )}
-      {btc && <BitcoinPriceCard data={btc} />}
+      {btc && <BitcoinPriceCard data={btc} format={format} />}
       {usingCachedData && (
         <div className="col-span-full">
           <Badge variant="outline" className="text-amber-500 border-amber-500/30">
@@ -64,6 +69,7 @@ const PriceCard = ({
   symbol,
   name,
   price,
+  format,
   accentColor,
   bgColor,
   infoText,
@@ -71,6 +77,7 @@ const PriceCard = ({
   symbol: string
   name: string
   price: number
+  format: (amount: number) => string
   accentColor: string
   bgColor: string
   infoText?: string
@@ -86,14 +93,18 @@ const PriceCard = ({
       </Badge>
     </CardHeader>
     <CardContent>
-      <div className="text-2xl font-bold tabular-nums font-mono">
-        ${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-      </div>
+      <div className="text-2xl font-bold tabular-nums font-mono">{format(price)}</div>
     </CardContent>
   </Card>
 )
 
-const BitcoinPriceCard = ({ data }: { data: BitcoinPrice }) => {
+const BitcoinPriceCard = ({
+  data,
+  format,
+}: {
+  data: BitcoinPrice
+  format: (amount: number) => string
+}) => {
   const isPositive = data.percentChange24h >= 0
 
   return (
@@ -108,13 +119,7 @@ const BitcoinPriceCard = ({ data }: { data: BitcoinPrice }) => {
         </Badge>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold tabular-nums font-mono">
-          $
-          {data.priceUsd.toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}
-        </div>
+        <div className="text-2xl font-bold tabular-nums font-mono">{format(data.priceUsd)}</div>
         <div className="flex items-center gap-2 mt-1">
           <span
             className={`text-xs font-medium ${isPositive ? 'text-emerald-500' : 'text-rose-500'}`}

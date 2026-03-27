@@ -25,15 +25,15 @@ export const ThemeToggle = () => {
         }
       />
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onSelect={() => setTheme('light')}>
+        <DropdownMenuItem onClick={() => setTheme('light')}>
           <Sun className="mr-2 h-4 w-4" />
           Light
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => setTheme('dark')}>
+        <DropdownMenuItem onClick={() => setTheme('dark')}>
           <Moon className="mr-2 h-4 w-4" />
           Dark
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => setTheme('system')}>
+        <DropdownMenuItem onClick={() => setTheme('system')}>
           <Monitor className="mr-2 h-4 w-4" />
           System
         </DropdownMenuItem>

@@ -1,31 +1,47 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getProfile } from '@/app/profile/_actions'
-import { getAiPreferences, getNotificationPreferences } from './_actions'
+import { getAiPreferences, getNotificationPreferences, getApiKeyStatuses } from './_actions'
 import { ProfileForm } from '@/app/profile/_components/profile-form'
 import { AiModelCard } from './_components/ai-model-card'
 import { DiagnosticsPanel } from './_components/diagnostics-panel'
 import { NotificationPreferencesCard } from './_components/notification-preferences-card'
+import { AppearanceCard } from './_components/appearance-card'
+import { ApiKeysCard } from './_components/api-keys-card'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Database } from 'lucide-react'
 
 export default async function SettingsPage() {
-  const [profile, aiPrefs, notifPrefs] = await Promise.all([
+  const [profile, aiPrefs, notifPrefs, apiKeyStatuses] = await Promise.all([
     getProfile(),
     getAiPreferences(),
     getNotificationPreferences(),
+    getApiKeyStatuses(),
   ])
 
   return (
     <div className="space-y-6 px-4 py-8">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground">
-          Manage your profile, AI preferences, notifications, and system diagnostics
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+          <p className="text-muted-foreground">
+            Manage your profile, appearance, API keys, notifications, and system diagnostics
+          </p>
+        </div>
+        <Link href="/dashboard/settings/data">
+          <Button variant="outline" size="sm" className="gap-2">
+            <Database className="h-4 w-4" />
+            Data & Account
+          </Button>
+        </Link>
       </div>
 
       <Tabs defaultValue="profile" className="space-y-4">
         <TabsList>
           <TabsTrigger value="profile">Profile</TabsTrigger>
+          <TabsTrigger value="appearance">Appearance</TabsTrigger>
           <TabsTrigger value="ai">AI Model</TabsTrigger>
+          <TabsTrigger value="api-keys">API Keys</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="diagnostics">Diagnostics</TabsTrigger>
         </TabsList>
@@ -45,6 +61,12 @@ export default async function SettingsPage() {
           </div>
         </TabsContent>
 
+        <TabsContent value="appearance">
+          <div className="max-w-md">
+            <AppearanceCard />
+          </div>
+        </TabsContent>
+
         <TabsContent value="ai">
           <div className="max-w-md">
             <AiModelCard
@@ -53,6 +75,12 @@ export default async function SettingsPage() {
                 ai_model: aiPrefs?.ai_model ?? 'gpt-4.1-mini',
               }}
             />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="api-keys">
+          <div className="max-w-lg">
+            <ApiKeysCard keyStatuses={apiKeyStatuses} />
           </div>
         </TabsContent>
 

@@ -7,6 +7,7 @@ import {
   Lightbulb,
   Settings,
   Bitcoin,
+  BarChart3,
 } from 'lucide-react'
 
 export const NAV_ITEMS = [
@@ -44,6 +45,11 @@ export const NAV_ITEMS = [
     title: 'Insights',
     href: '/dashboard/insights',
     icon: Lightbulb,
+  },
+  {
+    title: 'Analytics',
+    href: '/dashboard/analytics',
+    icon: BarChart3,
   },
   {
     title: 'Settings',

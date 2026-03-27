@@ -1399,3 +1399,186 @@ Run `/capture-prompts all` for E8 to extract, improve, and persist every user pr
 - Update SPECS.md progress summary table if needed
 
 ---
+
+## Prompt 64 — `settings`
+
+**Intent**: Code review E10 (Settings & Data Management) against conventions and Gherkin criteria.
+
+**Prompt**
+
+Run `/review-item E10` to audit the entire Epic E10 (Settings & Data Management) implementation. Verify all 16 files across `app/dashboard/settings/`, `app/profile/`, and `lib/encryption.ts` against CLAUDE.md conventions, SPECS.md Gherkin acceptance criteria (US-10.1 and US-10.2), security rules (AES-256-GCM encryption, RLS policies, auth checks), code style (TypeScript strict, named exports, path aliases), and test coverage. Report a verdict with categorized findings.
+
+**Derived Tasks**
+
+- Read all E10-related files: `page.tsx`, `data/page.tsx`, `_actions.ts`, `_schema.ts`, `_utils.ts`, 9 components, 2 test files, `lib/encryption.ts`, 3 API routes
+- Verify all 8 Gherkin scenarios (theme toggle, base currency, API keys, notifications, export, CSV import, delete account, password change)
+- Audit encryption: `encrypt()` before upsert, `decrypt()` only server-side, no key leakage
+- Check RLS policies on `profiles` and `user_api_keys` tables
+- Validate all 8 Zod schemas in `_schema.ts` and confirm server-side validation in `_actions.ts`
+- Verify test coverage in `__tests__/_schema.test.ts` and `__tests__/_utils.test.ts`
+- Cross-reference SPECS.md task status markers with actual implementation state
+- Produce a verdict (PASS / PASS WITH NOTES / FAIL) with specific findings
+
+---
+
+## Prompt 65 — `settings`
+
+**Intent**: Fix syntax error and server import chain error in settings module.
+
+**Prompt**
+
+Fix two server console errors:
+
+1. Syntax error in `app/dashboard/settings/_actions.ts` line 331 — unexpected token from `...s ?? [],,` (double comma).
+2. Server import chain error — `lib/supabase/server.ts` imported in a client component chain via `app/dashboard/_hooks.ts` → `lib/market/crypto.ts` → `lib/market/cache.ts` → `lib/supabase/server.ts` → `next/headers`. The `useCurrency` hook in `_hooks.ts` cannot use a server-only import.
+
+**Derived Tasks**
+
+- Read `app/dashboard/settings/_actions.ts` around line 331 and fix the syntax error (remove duplicate comma)
+- Trace the import chain from `app/dashboard/_hooks.ts` through `lib/market/crypto.ts` and `lib/market/cache.ts` to `lib/supabase/server.ts`
+- Create an API route at `app/api/market/exchange-rate/route.ts` to serve USD/CRC exchange rate data
+- Refactor `app/dashboard/_hooks.ts` to use `fetch('/api/market/exchange-rate')` instead of directly importing `fetchUsdCrcRate` from `lib/market/crypto.ts`
+- Verify the dev server starts without import chain errors
+
+---
+
+## Prompt 66 — `bitcoin`
+
+**Intent**: Fix Blockchain.info API failure in Bitcoin valuation module.
+
+**Prompt**
+
+Fix the `No data from Blockchain.info` error thrown at `lib/bitcoin/valuation.ts:153`. The `fetchRealizedCap()` function calls the unreliable Blockchain.info API which is failing. Replace it with a CoinGecko-based estimation that uses market cap data already fetched in `fetchMvrvZScore()`.
+
+**Derived Tasks**
+
+- Read `lib/bitcoin/valuation.ts` and locate `fetchRealizedCap()` and its Blockchain.info dependency
+- Replace `fetchRealizedCap()` with `estimateRealizedCap(currentMarketCap, historicalMarketCaps)` using CoinGecko data
+- Remove `BLOCKCHAIN_INFO_BASE` constant and all Blockchain.info references
+- Update `fetchMvrvZScore()` to call `estimateRealizedCap()` with existing CoinGecko market cap data
+- Verify Bitcoin valuation page loads without Blockchain.info errors
+
+---
+
+## Prompt 67 — `market`
+
+**Intent**: Fix overly aggressive error toast for partial macro indicator failures.
+
+**Prompt**
+
+Fix the "Some macro indicators failed to load" error toast on `/dashboard/market`. The toast fires when ANY single macro indicator fails (FEDFUNDS, DGS10, UNRATE, or DXY), even when 3 of 4 load successfully. Change the threshold to only show the error toast when ALL indicators fail and the user gets zero data — partial data should display silently.
+
+**Derived Tasks**
+
+- Read `app/dashboard/market/page.tsx` and locate `fetchMacroData()` error handling logic
+- Verify FRED and Twelve Data API keys are configured in `.env.local`
+- Change error condition from `results.some(r => r.status === 'rejected')` to `failedCount > 0 && indicators.length === 0` (all-fail only)
+- Test that partial macro data renders without an error toast
+
+---
+
+## Prompt 68 — `frontend`
+
+**Intent**: Fix Base UI MenuGroupRootContext missing error in notification center.
+
+**Prompt**
+
+Fix the browser error `Uncaught Error: Base UI: MenuGroupRootContext is missing. Menu group parts must be used within <Menu.Group>` thrown at `components/ui/dropdown-menu.tsx:64` from `app/dashboard/_components/notification-center.tsx:135`. The `DropdownMenuLabel` component wraps Base UI's `MenuPrimitive.GroupLabel`, which requires a parent `Menu.Group` context.
+
+**Derived Tasks**
+
+- Read `app/dashboard/_components/notification-center.tsx` around line 135 to locate the `DropdownMenuLabel` usage
+- Read `components/ui/dropdown-menu.tsx` to understand `DropdownMenuLabel` wraps `MenuPrimitive.GroupLabel`
+- Wrap the `DropdownMenuLabel` inside a `DropdownMenuGroup` so it has the required `Menu.Group` context
+- Verify the notification center dropdown renders without Base UI context errors
+
+---
+
+## Prompt 69 — `settings`
+
+**Intent**: Sync header theme toggle with settings appearance card.
+
+**Prompt**
+
+Connect both theme mode change controls — the settings `AppearanceCard` (which works) and the header `ThemeToggle` (which does not). The header `ThemeToggle` at `app/dashboard/_components/theme-toggle.tsx` uses `onSelect` on `DropdownMenuItem`, but Base UI's `Menu.Item` does not support `onSelect` (that was a Radix UI prop). Replace `onSelect` with `onClick` to match the Base UI API.
+
+**Derived Tasks**
+
+- Read `app/dashboard/_components/theme-toggle.tsx` and identify the `onSelect` usage on `DropdownMenuItem`
+- Read `components/ui/dropdown-menu.tsx` to confirm `DropdownMenuItem` wraps Base UI `MenuPrimitive.Item` (which uses `onClick`, not `onSelect`)
+- Replace all three `onSelect={() => setTheme(...)}` with `onClick={() => setTheme(...)}` in the theme toggle
+- Verify both the header toggle and settings appearance card apply theme changes immediately
+
+---
+
+## Prompt 70 — `docs`
+
+**Intent**: Document E10 Settings architecture with tables, APIs, and encryption details.
+
+**Prompt**
+
+Create `README-SETTINGS.md` documenting E10 (Settings & Data Management). For each of the 10 cards across both settings pages, document: why it is useful to the user, which Supabase tables it reads/writes, which external APIs it calls, which server actions and schemas it uses, and the encryption approach for API key storage. Include the database table schemas for `profiles` and `user_api_keys`, encryption details (AES-256-GCM), API routes used by diagnostics, and test coverage.
+
+**Derived Tasks**
+
+- Research all 10 settings components, server actions, schemas, and utility functions
+- Document `ProfileForm`: purpose, `profiles` table columns, `updateProfile()` action
+- Document `AppearanceCard`: purpose, `next-themes` localStorage (no DB), sync with header toggle
+- Document `AiModelCard`: purpose, `profiles` AI columns, `/api/ai/health` Ollama ping, model registry
+- Document `ApiKeysCard`: purpose, `user_api_keys` table, `encrypt()`/`decrypt()`, 4 external API test endpoints
+- Document `NotificationPreferencesCard`: purpose, `profiles` notification columns
+- Document `DiagnosticsPanel`: purpose, 3 API routes (`/api/db/test`, `/api/ai/health`, `/api/ai/test`)
+- Document `ExportDataCard`: purpose, 7 tables read, `sanitizeExportData()` stripping
+- Document `CsvImportCard`: purpose, `parseCsv()`/`mapHeaders()`, portfolio picker, bulk insert
+- Document `PasswordChangeCard`: purpose, Supabase Auth `signInWithPassword` + `updateUser`
+- Document `DeleteAccountCard`: purpose, admin client cascade delete, email confirmation
+- Add `profiles` and `user_api_keys` table schemas with column types and RLS notes
+- Add encryption section: AES-256-GCM, `ENCRYPTION_SECRET`, storage format
+- Add test coverage table
+
+---
+
+## Prompt 71 — `ai-agent`
+
+**Intent**: Create reusable prompt files for E10 plan, implement, review, and fix workflows.
+
+**Prompt**
+
+Create four `.prompt.md` files in `.github/prompts/` for E10 (Settings & Data Management):
+
+1. `e10-plan.prompt.md` — Plan E10 tasks with dependency analysis, effort/risk ratings, and file lists.
+2. `e10-implement.prompt.md` — Implement E10 end-to-end with Gherkin validation and commit message.
+3. `e10-review.prompt.md` — Read-only code review with security audit (encryption, RLS, auth checks).
+4. `e10-fix.prompt.md` — Diagnose and fix runtime bugs with a file map and common issues catalog.
+
+Each prompt should reference `README-SETTINGS.md` for domain context and follow the `.prompt.md` template (YAML frontmatter with description, argument-hint, body with context references and instructions).
+
+**Derived Tasks**
+
+- Read the `agent-customization` skill and `prompts.md` reference for template and frontmatter conventions
+- Create `e10-plan.prompt.md` with dependency analysis steps and E10 domain knowledge
+- Create `e10-implement.prompt.md` with implementation workflow, route structure, and design marker notes
+- Create `e10-review.prompt.md` with security audit checklist specific to encryption and API keys
+- Create `e10-fix.prompt.md` with file map, common E10 issues catalog, and minimal-fix workflow
+- Verify all four prompts have correct YAML frontmatter (description, argument-hint)
+
+---
+
+## Prompt 72 — `docs`
+
+**Intent**: Capture all E10 session prompts to README-PROMPTS.md.
+
+**Prompt**
+
+Run `/capture-prompts all` for E10 to extract, improve, and persist every user prompt from the E10 Settings & Data Management sessions into `README-PROMPTS.md`. Include prompts covering E10 code review, server import chain fix, Blockchain.info fix, macro indicator toast fix, Base UI context error fix, theme toggle sync, README-SETTINGS.md creation, prompt file creation, and this capture request. Derive actionable tasks for each, categorize by domain, and append in the established entry format continuing from Prompt 63.
+
+**Derived Tasks**
+
+- Review the full E10 chat session (conversation summary + current messages) and extract all distinct user prompts
+- Improve wording, normalize terminology, and rewrite in imperative form
+- Derive atomic, implementation-ready tasks for each prompt
+- Assign category tags (`settings`, `bitcoin`, `market`, `frontend`, `docs`, `ai-agent`)
+- Deduplicate against existing entries (Prompts 1–63) before appending
+- Append new entries (Prompts 64–72) to `README-PROMPTS.md`
+
+---

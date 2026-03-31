@@ -1,34 +1,37 @@
-export default function DashboardPage() {
+import { getDashboardData } from './_actions'
+import { DashboardMetricsCards } from './_components/dashboard-metrics'
+import { DashboardPerformance } from './_components/dashboard-performance'
+import { DashboardAllocationChart } from './_components/dashboard-allocation'
+import { DashboardSummary } from './_components/dashboard-summary'
+import { DashboardActivity } from './_components/dashboard-activity'
+import { ErrorToasts } from './_components/error-toasts'
+
+export default async function DashboardPage() {
+  const data = await getDashboardData()
+
   return (
     <div className="space-y-6 px-4 py-8">
+      {data.errors.length > 0 && <ErrorToasts errors={data.errors} />}
+
       {/* Page header */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground">Portfolio overview and market summary</p>
       </div>
 
-      {/* Placeholder metric cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {['Total Value', 'Day Change', 'Total Return', 'BTC Price'].map((label) => (
-          <div key={label} className="rounded-lg border border-border bg-card p-4">
-            <p className="text-sm text-muted-foreground">{label}</p>
-            <p className="mt-1 text-2xl font-bold tabular-nums font-mono text-muted-foreground/50">
-              —
-            </p>
-          </div>
-        ))}
+      {/* Metric cards */}
+      <DashboardMetricsCards metrics={data.metrics} />
+
+      {/* Performance chart + AI summary */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <DashboardPerformance data={data.snapshots} />
+        <DashboardSummary summary={data.aiSummary} />
       </div>
 
-      {/* Placeholder content area */}
+      {/* Allocation + Recent activity */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <div className="rounded-lg border border-border bg-card p-6 lg:col-span-4">
-          <p className="text-sm text-muted-foreground">
-            Portfolio chart will appear here after setting up positions.
-          </p>
-        </div>
-        <div className="rounded-lg border border-border bg-card p-6 lg:col-span-3">
-          <p className="text-sm text-muted-foreground">Recent activity will appear here.</p>
-        </div>
+        <DashboardAllocationChart data={data.allocations} />
+        <DashboardActivity items={data.recentActivity} />
       </div>
     </div>
   )

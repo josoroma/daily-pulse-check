@@ -28,6 +28,7 @@
 | E8: Bitcoin On-Chain Analytics    | 3       | 0    | 0           | 3         | 0       |
 | E9: Analytics & Reporting         | 3       | 0    | 0           | 3         | 0       |
 | E10: Settings & Data Management   | 2       | 0    | 0           | 2         | 0       |
+| E11: Dashboard Home               | 3       | 0    | 0           | 3         | 0       |
 
 ---
 
@@ -1715,6 +1716,167 @@ Feature: Data Export & Account Management
 - [x] T-10.2.4: Build password change form with current password verification
 - [x] T-10.2.5: Build data management UI at `app/dashboard/settings/data/page.tsx`
 - [x] T-10.2.6: Write unit tests for CSV parsing and data export sanitization
+
+---
+
+## E11: Dashboard Home
+
+### US-11.1: Dashboard Metric Cards [x] 🎨
+
+**As a** user
+**I want** to see key financial metrics at a glance on my dashboard home page
+**So that** I can quickly assess my portfolio health without navigating to sub-pages
+
+```gherkin
+Feature: Dashboard Metric Cards
+  As a user
+  I want to see key financial metrics at a glance
+  So that I can assess portfolio health without navigating to sub-pages
+
+  Scenario: Display total portfolio value
+    Given the user has positions in VOO, QQQ, and BTC
+    When the dashboard home page loads
+    Then the "Total Value" card shows the sum of all positions at current prices
+    And the value is formatted in the user's base currency with comma separators
+
+  Scenario: Display 24h portfolio change
+    Given the user has a portfolio snapshot from yesterday
+    When the dashboard home page loads
+    Then the "Day Change" card shows the dollar and percentage change
+    And positive changes are displayed in emerald green
+    And negative changes are displayed in rose red
+
+  Scenario: Display total unrealized return
+    Given the user has positions with cost basis and current values
+    When the dashboard home page loads
+    Then the "Total Return" card shows unrealized P&L in dollars and percentage
+    And the color reflects whether the return is positive or negative
+
+  Scenario: Display live BTC price
+    Given BTC market data is available
+    When the dashboard home page loads
+    Then the "BTC Price" card shows the current BTC price in USD
+    And the 24h change percentage is shown below
+
+  Scenario: Empty portfolio state
+    Given the user has no positions
+    When the dashboard home page loads
+    Then the metric cards show "$0.00" or "—" placeholders
+    And a prompt to add the first position is visible
+
+  Scenario: Loading skeleton
+    Given the dashboard data is being fetched
+    When the page is in a loading state
+    Then skeleton placeholders matching the metric card layout are displayed
+```
+
+#### Tasks
+
+- [x] T-11.1.1: Create `app/dashboard/_actions.ts` with `getDashboardData()` server action that parallel-fetches portfolio positions, live prices (VOO, QQQ, BTC), latest portfolio snapshot, and computes aggregated metrics
+- [x] T-11.1.2: Build `app/dashboard/_components/dashboard-metrics.tsx` — 4 metric cards grid (Total Value, Day Change, Total Return, BTC Price) using shadcn/ui `Card` and `useCurrency()` hook
+- [x] T-11.1.3: Create `app/dashboard/_components/dashboard-skeleton.tsx` — loading skeleton matching the full dashboard layout
+- [x] T-11.1.4: Create `app/dashboard/loading.tsx` — Suspense fallback using `DashboardSkeleton`
+
+---
+
+### US-11.2: Dashboard Charts & AI Summary [x] 🎨
+
+**As a** user
+**I want** to see a portfolio performance chart, allocation breakdown, and today's AI market briefing on my dashboard
+**So that** I get a visual financial overview and market context in one place
+
+```gherkin
+Feature: Dashboard Charts & AI Summary
+  As a user
+  I want charts and AI briefing on the dashboard home
+  So that I get a visual overview and market context in one place
+
+  Scenario: Display 30-day performance area chart
+    Given the user has portfolio snapshots for the last 30 days
+    When the dashboard home page loads
+    Then a compact area chart shows portfolio value over 30 days
+    And the chart uses emerald gradient for positive trend, rose for negative
+    And clicking the chart area links to the full Portfolio page
+
+  Scenario: Display compact allocation donut chart
+    Given the user has positions in VOO, QQQ, and BTC
+    When the dashboard home page loads
+    Then a donut chart shows allocation percentages by asset
+    And each asset uses its designated color (blue, purple, orange)
+    And a legend shows symbol, percentage, and value for each asset
+
+  Scenario: Display today's AI market summary
+    Given an AI summary was generated today
+    When the dashboard home page loads
+    Then the summary card shows a preview of today's briefing (truncated)
+    And a "View full insights" link navigates to /dashboard/insights
+
+  Scenario: No AI summary available
+    Given no AI summary has been generated today
+    When the dashboard home page loads
+    Then the summary card shows "No summary yet today"
+    And a link to generate one on the Insights page is shown
+
+  Scenario: Empty portfolio charts
+    Given the user has no positions
+    When the dashboard home page loads
+    Then the performance chart shows an empty state message
+    And the allocation chart shows an empty state message
+    And both include CTAs linking to /dashboard/portfolio
+```
+
+#### Tasks
+
+- [x] T-11.2.1: Build `app/dashboard/_components/dashboard-performance.tsx` — compact 30-day area chart (Recharts `AreaChart` with gradient fill, no time range selector)
+- [x] T-11.2.2: Build `app/dashboard/_components/dashboard-allocation.tsx` — compact donut chart using Recharts `PieChart` with asset color constants
+- [x] T-11.2.3: Build `app/dashboard/_components/dashboard-summary.tsx` — today's cached AI summary card (read-only, truncated with "Read more" link to Insights)
+- [x] T-11.2.4: Add AI summary fetch to `getDashboardData()` — query `ai_summaries` table for today's entry
+
+---
+
+### US-11.3: Recent Activity Feed [x] 🎨
+
+**As a** user
+**I want** to see my recent transactions and notifications on the dashboard
+**So that** I can track what's happened without navigating to separate pages
+
+```gherkin
+Feature: Recent Activity Feed
+  As a user
+  I want to see recent activity on my dashboard
+  So that I can track what's happened without navigating to separate pages
+
+  Scenario: Display recent transactions
+    Given the user has recorded buy and sell transactions
+    When the dashboard home page loads
+    Then the recent activity feed shows the last 5 combined items
+    And each item shows an icon, description, and relative timestamp
+
+  Scenario: Display triggered notifications
+    Given a price alert was triggered 2 hours ago
+    When the dashboard home page loads
+    Then the notification appears in the activity feed
+    And it includes the alert type and trigger value
+
+  Scenario: Empty activity state
+    Given the user has no transactions or notifications
+    When the dashboard home page loads
+    Then the activity feed shows "No recent activity"
+    And links to add a position or set up alerts are shown
+
+  Scenario: Assemble full dashboard page
+    Given all data has been fetched
+    When the dashboard home page renders
+    Then the layout is: header → metric cards (4-col grid) → performance chart (col-span-4) + AI summary (col-span-3) → allocation donut + activity feed
+    And the page is responsive: single column on mobile, full grid on desktop
+```
+
+#### Tasks
+
+- [x] T-11.3.1: Build `app/dashboard/_components/dashboard-activity.tsx` — recent activity feed combining last 5 transactions and notifications with icons and relative timestamps
+- [x] T-11.3.2: Add recent transactions and notifications fetch to `getDashboardData()`
+- [x] T-11.3.3: Rewrite `app/dashboard/page.tsx` — Server Component assembling all dashboard sections with graceful partial rendering on API failures
+- [x] T-11.3.4: Write unit tests in `app/dashboard/__tests__/` for dashboard data aggregation helpers
 
 ---
 

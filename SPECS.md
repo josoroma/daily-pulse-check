@@ -29,6 +29,7 @@
 | E9: Analytics & Reporting         | 3       | 0    | 0           | 3         | 0       |
 | E10: Settings & Data Management   | 2       | 0    | 0           | 2         | 0       |
 | E11: Dashboard Home               | 3       | 0    | 0           | 3         | 0       |
+| E12: Luma Theme & Visual Polish   | 1       | 0    | 0           | 1         | 0       |
 
 ---
 
@@ -1880,6 +1881,54 @@ Feature: Recent Activity Feed
 
 ---
 
+## E12: Luma Theme & Visual Polish
+
+### US-12.1: Apply shadcn/ui Luma Design Style [x] 🎨
+
+**As a** user
+**I want** the dashboard to use the Luma visual style with rounded geometry, soft elevation, and breathable layouts
+**So that** the interface feels modern, polished, and inspired by macOS Tahoe aesthetics
+
+```gherkin
+Feature: Luma Theme
+  As a user
+  I want the dashboard to use the Luma visual style
+  So that the interface feels modern and polished
+
+  Scenario: Dark mode uses layered elevation
+    Given the user is in dark mode
+    When any page loads
+    Then the background is a deep neutral tone
+    And cards are visually elevated via a lighter surface color
+    And borders are subtle (low opacity) with depth achieved through soft shadows
+
+  Scenario: Rounded geometry across all components
+    Given the Luma theme is active
+    When buttons, cards, inputs, and popovers render
+    Then all components use a larger base radius (0.875rem)
+    And the radius scale is proportionally derived
+
+  Scenario: Soft elevation on floating surfaces
+    Given the user is in dark mode
+    When a popover, dropdown, select, or dialog opens
+    Then the floating surface has a soft ambient shadow
+    And a subtle 1px ring border is visible around floating elements
+
+  Scenario: Light mode remains clean
+    Given the user is in light mode
+    When any page loads
+    Then the standard light theme tokens are used
+    And borders remain visible for structure
+```
+
+#### Tasks
+
+- [x] T-12.1.1: Update dark mode CSS variables in `app/globals.css` — deeper background (`0.13`), elevated card surface (`0.18`), softer borders (`7%` opacity), and intermediate sidebar tone (`0.16`)
+- [x] T-12.1.2: Increase base `--radius` from `0.625rem` to `0.875rem` for rounded geometry across all components
+- [x] T-12.1.3: Add soft `box-shadow` rules in `@layer base` for `[data-slot="card"]` and floating surfaces (`popover-content`, `dropdown-menu-content`, `select-content`, `dialog-content`) in dark mode
+
+---
+
 ## Architecture Overview
 
 ```
@@ -2052,4 +2101,5 @@ lib/
 
 | Date       | Change                                                                                            | Author |
 | ---------- | ------------------------------------------------------------------------------------------------- | ------ |
+| 2026-03-31 | Added E12: Luma Theme & Visual Polish — shadcn/ui Luma-inspired dark mode, rounded geometry       | @dev   |
 | 2026-03-17 | Initial SPECS: 10 epics, 31 user stories, full Gherkin acceptance criteria, architecture overview | @dev   |

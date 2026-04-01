@@ -1582,3 +1582,87 @@ Run `/capture-prompts all` for E10 to extract, improve, and persist every user p
 - Append new entries (Prompts 64–72) to `README-PROMPTS.md`
 
 ---
+
+## Prompt 73 — `dashboard`
+
+**Intent**: Implement E11 (Dashboard Home) with metric cards, charts, and activity feed.
+
+**Prompt**
+
+Implement Epic E11 — Dashboard Home. Build the dashboard overview page with metric cards (Total Value, Day Change, Total Return, BTC Price), a 30-day performance area chart, allocation donut chart, AI market summary card, and recent activity feed. Create `getDashboardData()` server action with parallel data fetching, loading skeleton, and unit tests.
+
+**Derived Tasks**
+
+- Create `app/dashboard/_actions.ts` with `getDashboardData()` server action
+- Build `dashboard-metrics.tsx` — 4 metric cards grid
+- Build `dashboard-performance.tsx` — 30-day area chart
+- Build `dashboard-allocation.tsx` — donut chart with asset colors
+- Build `dashboard-summary.tsx` — AI summary card (read-only)
+- Build `dashboard-activity.tsx` — recent activity feed
+- Create `dashboard-skeleton.tsx` and `loading.tsx`
+- Rewrite `app/dashboard/page.tsx` assembling all sections
+- Write unit tests for dashboard data aggregation helpers
+- Update SPECS.md marking E11 tasks complete
+
+---
+
+## Prompt 74 — `docs`
+
+**Intent**: Create a user tutorial README for the finance dashboard.
+
+**Prompt**
+
+Create `README-USER-TUTORIAL.md` documenting how to use the finance dashboard from a user perspective. Cover onboarding, portfolio management, market data, DCA schedules, alerts, AI insights, Bitcoin on-chain analytics, analytics/reporting, and settings.
+
+**Derived Tasks**
+
+- Write onboarding section (signup, profile setup, API keys)
+- Document portfolio tracker usage (add positions, view allocation)
+- Document market data features (real-time prices, Fear & Greed, macro)
+- Document DCA automation and performance analytics
+- Document alerts & notifications setup
+- Document AI-powered insights and learning assistant
+- Document Bitcoin on-chain analytics and valuation models
+- Document analytics, tax export, and PDF reports
+- Document settings and data management
+
+---
+
+## Prompt 75 — `frontend`
+
+**Intent**: Apply shadcn/ui Luma visual style to the finance dashboard theme.
+
+**Prompt**
+
+Apply the shadcn/ui Luma design style to the project. Update `app/globals.css` dark mode CSS variables for deeper background tones, elevated card surfaces, softer borders (low opacity), and increased base radius (0.875rem) for rounded geometry. Add soft `box-shadow` rules for cards and floating surfaces (popovers, dropdowns, dialogs) in dark mode to achieve depth through elevation rather than hard borders.
+
+**Derived Tasks**
+
+- Update dark mode `--background` to `oklch(0.13 0 0)` for deeper base
+- Update dark mode `--card` and `--popover` to `oklch(0.18 0 0)` for visible elevation
+- Reduce `--border` opacity to `7%` and `--input` to `10%` for subtle boundaries
+- Set `--sidebar` to `oklch(0.16 0 0)` as intermediate tone
+- Increase `--radius` from `0.625rem` to `0.875rem` for Luma rounded geometry
+- Add `box-shadow` on `[data-slot="card"]` in dark mode
+- Add `box-shadow` on floating surface data-slots (popover, dropdown, select, dialog) in dark mode
+
+---
+
+## Prompt 76 — `docs`
+
+**Intent**: Add E12 Luma Theme epic to SPECS.md, update prompts, and generate commit message.
+
+**Prompt**
+
+Add a new Epic E12 (Luma Theme & Visual Polish) to SPECS.md with US-12.1 covering the Luma-inspired dark mode, rounded geometry, and soft elevation changes. Update the progress summary table, add Gherkin acceptance criteria, mark all tasks complete, and update the changelog. Then append session prompts 73-76 to README-PROMPTS.md and provide a commit message.
+
+**Derived Tasks**
+
+- Add E12 row to SPECS.md progress summary table
+- Write US-12.1 with Gherkin scenarios for dark elevation, rounded geometry, soft shadows, and light mode
+- Add tasks T-12.1.1 through T-12.1.3 matching the CSS changes made
+- Update SPECS.md changelog with E12 entry
+- Append prompts 73–76 to README-PROMPTS.md
+- Provide commit message
+
+---

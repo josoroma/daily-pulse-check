@@ -55,17 +55,19 @@ After login, you're redirected to `/dashboard`. The sidebar on the left gives yo
 
 The sidebar contains these sections:
 
-| Page      | URL                    | What it does                                            |
-| --------- | ---------------------- | ------------------------------------------------------- |
-| Dashboard | `/dashboard`           | Overview with market snapshot and quick stats           |
-| Portfolio | `/dashboard/portfolio` | Manage positions, transactions, allocation, and P&L     |
-| Markets   | `/dashboard/market`    | Live prices, charts, sentiment, and macro indicators    |
-| Bitcoin   | `/dashboard/bitcoin`   | On-chain metrics, halving countdown, valuation models   |
-| DCA       | `/dashboard/dca`       | Dollar-cost averaging schedules and performance         |
-| Alerts    | `/dashboard/alerts`    | Price and technical indicator alerts                    |
-| Insights  | `/dashboard/insights`  | AI-powered market summary, portfolio analysis, learning |
-| Analytics | `/dashboard/analytics` | Performance metrics, reports, tax export                |
-| Settings  | `/dashboard/settings`  | Profile, appearance, AI model, API keys, notifications  |
+| Page      | URL                        | What it does                                            |
+| --------- | -------------------------- | ------------------------------------------------------- |
+| Dashboard | `/dashboard`               | Overview with market snapshot and quick stats           |
+| Portfolio | `/dashboard/portfolio`     | Manage positions, transactions, allocation, and P&L     |
+| Markets   | `/dashboard/market`        | Live prices, charts, sentiment, and macro indicators    |
+| Bitcoin   | `/dashboard/bitcoin`       | On-chain metrics, halving countdown, valuation models   |
+| DCA       | `/dashboard/dca`           | Dollar-cost averaging schedules and performance         |
+| Alerts    | `/dashboard/alerts`        | Price and technical indicator alerts                    |
+| Insights  | `/dashboard/insights`      | AI-powered market summary, portfolio analysis, learning |
+| Analytics | `/dashboard/analytics`     | Performance metrics, reports, tax export                |
+| Tax       | `/dashboard/analytics/tax` | FIFO realized gains calculator and CSV export           |
+| Settings  | `/dashboard/settings`      | Profile, appearance, AI model, API keys, notifications  |
+| Data      | `/dashboard/settings/data` | Export, CSV import, password change, account deletion   |
 
 A **notification bell** in the top-right header shows unread DCA reminders and alert notifications.
 
@@ -196,7 +198,7 @@ At the top of the page:
 | Supply Metrics    | Total BTC mined, % of 21M cap, daily issuance, estimated year of last Bitcoin                |
 | Halving Timeline  | Historical table of all halvings with block height, date, reward, and BTC price              |
 
-**Auto-refresh**: On-chain data auto-polls every 60 seconds via the `/api/market/bitcoin/onchain` endpoint.
+**Auto-refresh**: On-chain data auto-polls every 60 seconds via the `/api/market/bitcoin/onchain` endpoint, using the Mempool.space API.
 
 ### Valuation Models
 
@@ -341,10 +343,10 @@ Three tabs powered by AI models:
 
 Configure in **Settings > AI Model**:
 
-| Provider | Models                         | Pros                 | Cons              |
-| -------- | ------------------------------ | -------------------- | ----------------- |
-| OpenAI   | GPT-4.1, GPT-4.1 Mini, o4-mini | High quality, fast   | Costs money       |
-| Ollama   | qwen3.5:9b, llama3, etc.       | Free, private, local | Requires hardware |
+| Provider | Models       | Pros                 | Cons              |
+| -------- | ------------ | -------------------- | ----------------- |
+| OpenAI   | GPT-4.1 Mini | High quality, fast   | Costs money       |
+| Ollama   | qwen3.5:9b   | Free, private, local | Requires hardware |
 
 Reasoning models (o4-mini, qwen3.5:9b) show their thinking process in a collapsible panel.
 
@@ -431,17 +433,17 @@ Securely store your own API keys for external services. Keys are encrypted befor
 
 All external API integrations and what they provide:
 
-| API             | Base URL                           | Auth Method                         | What It Provides                                      |
-| --------------- | ---------------------------------- | ----------------------------------- | ----------------------------------------------------- |
-| Twelve Data     | `https://api.twelvedata.com`       | `TWELVE_DATA_API_KEY` query param   | VOO/QQQ prices, DXY, historical OHLCV data            |
-| CoinGecko       | `https://api.coingecko.com/api/v3` | Optional `x-cg-demo-api-key` header | Bitcoin price, market cap, history, CRC exchange rate |
-| Alternative.me  | `https://api.alternative.me/fng`   | None (public)                       | Crypto Fear & Greed Index (current + 30-day history)  |
-| FRED            | `https://api.stlouisfed.org/fred`  | `FRED_API_KEY` query param          | Fed Funds Rate, 10Y Treasury, Unemployment, Inflation |
-| Blockchain.info | `https://blockchain.info`          | None (public)                       | Block height, hashrate, mempool, difficulty           |
-| OpenAI          | `https://api.openai.com/v1`        | `OPENAI_API_KEY` Bearer token       | AI text generation, reasoning                         |
-| Ollama          | `http://localhost:11434` (local)   | None                                | Local AI text generation                              |
-| Resend          | `https://api.resend.com`           | API key                             | Email notification delivery                           |
-| Telegram Bot    | `https://api.telegram.org`         | `TELEGRAM_BOT_TOKEN`                | Telegram message delivery                             |
+| API            | Base URL                           | Auth Method                         | What It Provides                                      |
+| -------------- | ---------------------------------- | ----------------------------------- | ----------------------------------------------------- |
+| Twelve Data    | `https://api.twelvedata.com`       | `TWELVE_DATA_API_KEY` query param   | VOO/QQQ prices, DXY, historical OHLCV data            |
+| CoinGecko      | `https://api.coingecko.com/api/v3` | Optional `x-cg-demo-api-key` header | Bitcoin price, market cap, history, CRC exchange rate |
+| Alternative.me | `https://api.alternative.me/fng`   | None (public)                       | Crypto Fear & Greed Index (current + 30-day history)  |
+| FRED           | `https://api.stlouisfed.org/fred`  | `FRED_API_KEY` query param          | Fed Funds Rate, 10Y Treasury, Unemployment, Inflation |
+| Mempool.space  | `https://mempool.space/api`        | None (public)                       | Block height, hashrate, mempool, difficulty           |
+| OpenAI         | `https://api.openai.com/v1`        | `OPENAI_API_KEY` Bearer token       | AI text generation, reasoning                         |
+| Ollama         | `http://localhost:11434` (local)   | None                                | Local AI text generation                              |
+| Resend         | `https://api.resend.com`           | API key                             | Email notification delivery                           |
+| Telegram Bot   | `https://api.telegram.org`         | `TELEGRAM_BOT_TOKEN`                | Telegram message delivery                             |
 
 ### Rate Limits to Be Aware Of
 
@@ -506,7 +508,7 @@ All tables use **Row Level Security (RLS)** — users can only access their own 
 Required variables in `.env.local`:
 
 | Variable                        | Required | Description                                      |
-| ------------------------------- | -------- | ------------------------------------------------ |
+| ------------------------------- | -------- | ------------------------------------------------ | --- | ------------------- | --- | -------------------------------------------------- | --- | ---------------- | --- | ---------------------------------------- |
 | `NEXT_PUBLIC_SUPABASE_URL`      | Yes      | Supabase API URL                                 |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes      | Supabase anonymous key                           |
 | `SUPABASE_SERVICE_ROLE_KEY`     | Yes      | Service role key for admin operations            |
@@ -517,7 +519,7 @@ Required variables in `.env.local`:
 | `CRON_SECRET`                   | Yes      | Secret for authenticating cron job requests      |
 | `TELEGRAM_BOT_TOKEN`            | No       | Telegram bot token (for Telegram alerts)         |
 | `TELEGRAM_CHAT_ID`              | No       | Telegram chat ID (for Telegram alerts)           |
-| `OLLAMA_BASE_URL`               | No       | Ollama URL, defaults to `http://localhost:11434` |
+| `OLLAMA_BASE_URL`               | No       | Ollama URL, defaults to `http://localhost:11434` | \n  | `ENCRYPTION_SECRET` | Yes | 32-byte hex key for AES-256-GCM API key encryption | \n  | `RESEND_API_KEY` | No  | Resend API key (for email notifications) |
 
 ---
 

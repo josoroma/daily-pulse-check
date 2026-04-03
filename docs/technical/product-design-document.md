@@ -1,7 +1,7 @@
 # PDD.md — Product Design Document
 
 > Finance Dashboard for Self-Directed Investors
-> Version: 0.1.0 | Last updated: 2026-03-17
+> Version: 0.2.0 | Last updated: 2026-04-02
 
 ---
 
@@ -180,14 +180,14 @@ The engine aggregates six external APIs into a unified data layer consumed by ev
 
 **Data points tracked:**
 
-| Category          | Specific Data                               | Source             | Refresh Rate                     |
-| ----------------- | ------------------------------------------- | ------------------ | -------------------------------- |
-| Stock/ETF prices  | VOO, QQQ — current price, OHLCV history     | Twelve Data        | 5 min (real-time), 24h (history) |
-| Crypto prices     | BTC — price, market cap, volume, 24h change | CoinGecko          | 5 min                            |
-| Crypto sentiment  | Fear & Greed Index (0-100) + classification | Alternative.me     | 24h                              |
-| Macro indicators  | Fed Funds Rate, 10Y Treasury, CPI, DXY      | FRED + Twelve Data | 24h                              |
-| Bitcoin on-chain  | Block height, hashrate, mempool, difficulty | Mempool.space      | 60 sec                           |
-| Bitcoin valuation | MVRV Z-Score, Stock-to-Flow, Rainbow bands  | LookIntoBitcoin    | 24h                              |
+| Category          | Specific Data                               | Source                 | Refresh Rate                     |
+| ----------------- | ------------------------------------------- | ---------------------- | -------------------------------- |
+| Stock/ETF prices  | VOO, QQQ — current price, OHLCV history     | Twelve Data            | 5 min (real-time), 24h (history) |
+| Crypto prices     | BTC — price, market cap, volume, 24h change | CoinGecko              | 5 min                            |
+| Crypto sentiment  | Fear & Greed Index (0-100) + classification | Alternative.me         | 24h                              |
+| Macro indicators  | Fed Funds Rate, 10Y Treasury, CPI, DXY      | FRED + Twelve Data     | 24h                              |
+| Bitcoin on-chain  | Block height, hashrate, mempool, difficulty | Mempool.space          | 60 sec                           |
+| Bitcoin valuation | MVRV Z-Score, Stock-to-Flow, Rainbow bands  | CoinGecko + calculated | 24h                              |
 
 **Caching strategy:** In-memory TTL cache (5 min for prices, 24h for macro/historical data) backed by Supabase rows for persistence across deploys. When an API returns an error or rate-limit response, the system falls back to the most recent cached value and displays a "Using cached data" indicator.
 
@@ -407,14 +407,14 @@ Analytics → Tax Export page
 
 ### External API Inventory
 
-| API                 | Base URL                   | Data Provided                                     | Auth                      | Free Tier Limits       | Fallback       |
-| ------------------- | -------------------------- | ------------------------------------------------- | ------------------------- | ---------------------- | -------------- |
-| **Twelve Data**     | `api.twelvedata.com`       | VOO/QQQ/DXY prices, OHLCV history                 | API key                   | 800 req/day, 8 req/min | Supabase cache |
-| **CoinGecko**       | `api.coingecko.com/api/v3` | BTC price, market cap, volume, chart history      | None (or API key for Pro) | Generous (50 req/min)  | Supabase cache |
-| **Alternative.me**  | `api.alternative.me`       | Crypto Fear & Greed Index (0-100)                 | None                      | Unlimited              | Supabase cache |
-| **FRED**            | `api.stlouisfed.org`       | Fed Funds Rate, 10Y Yield, CPI, Unemployment      | API key                   | Unlimited              | Supabase cache |
-| **Mempool.space**   | `mempool.space/api`        | Block height, hashrate, mempool, difficulty, fees | None                      | Unlimited              | Supabase cache |
-| **LookIntoBitcoin** | `lookintobitcoin.com`      | MVRV Z-Score, S2F model data, Rainbow bands       | Web scraping / API        | Best-effort            | Supabase cache |
+| API                | Base URL                   | Data Provided                                                           | Auth                      | Free Tier Limits       | Fallback       |
+| ------------------ | -------------------------- | ----------------------------------------------------------------------- | ------------------------- | ---------------------- | -------------- |
+| **Twelve Data**    | `api.twelvedata.com`       | VOO/QQQ/DXY prices, OHLCV history                                       | API key                   | 800 req/day, 8 req/min | Supabase cache |
+| **CoinGecko**      | `api.coingecko.com/api/v3` | BTC price, market cap, volume, chart history                            | None (or API key for Pro) | Generous (50 req/min)  | Supabase cache |
+| **Alternative.me** | `api.alternative.me`       | Crypto Fear & Greed Index (0-100)                                       | None                      | Unlimited              | Supabase cache |
+| **FRED**           | `api.stlouisfed.org`       | Fed Funds Rate, 10Y Yield, CPI, Unemployment                            | API key                   | Unlimited              | Supabase cache |
+| **Mempool.space**  | `mempool.space/api`        | Block height, hashrate, mempool, difficulty, fees                       | None                      | Unlimited              | Supabase cache |
+| **CoinGecko**      | `api.coingecko.com/api/v3` | BTC valuation data (market cap for MVRV, price history for S2F/Rainbow) | None (or API key for Pro) | Generous (50 req/min)  | Supabase cache |
 
 ### Refresh Tiers
 
@@ -537,17 +537,17 @@ Built entirely on **shadcn/ui** — accessible, composable, Tailwind-styled:
 
 ### Chart Specifications
 
-| Chart                       | Library                  | Used In              | Key Config                                                   |
-| --------------------------- | ------------------------ | -------------------- | ------------------------------------------------------------ |
-| Portfolio value over time   | Recharts `AreaChart`     | Dashboard, analytics | Time range selector, gradient fill                           |
-| Allocation donut            | Recharts `PieChart`      | Dashboard, portfolio | Interactive segments, center total                           |
-| Fear & Greed gauge          | Custom SVG               | Market page          | Radial gauge, color gradient (red→green)                     |
-| Price history + DCA markers | Recharts `ComposedChart` | DCA analytics        | Line (price) + Scatter (DCA buys) + ReferenceLine (avg cost) |
-| MVRV Z-Score                | Recharts `AreaChart`     | Bitcoin valuation    | Color-coded background zones                                 |
-| Stock-to-Flow               | Recharts `ComposedChart` | Bitcoin valuation    | Scatter (actual) + Line (model) + ReferenceLine (halvings)   |
-| Rainbow bands               | Recharts `AreaChart`     | Bitcoin valuation    | 9 stacked semi-transparent areas                             |
-| Monthly returns             | Recharts `BarChart`      | Analytics reports    | Green (positive) / red (negative) bars                       |
-| Drift comparison            | Recharts `BarChart`      | Portfolio            | Grouped bars: actual vs target per asset                     |
+| Chart                       | Library                   | Used In              | Key Config                                                   |
+| --------------------------- | ------------------------- | -------------------- | ------------------------------------------------------------ |
+| Portfolio value over time   | Recharts `AreaChart`      | Dashboard, analytics | Time range selector, gradient fill                           |
+| Allocation donut            | Recharts `PieChart`       | Dashboard, portfolio | Interactive segments, center total                           |
+| Fear & Greed gauge          | Recharts `RadialBarChart` | Market page          | Radial gauge, color gradient (red→green)                     |
+| Price history + DCA markers | Recharts `ComposedChart`  | DCA analytics        | Line (price) + Scatter (DCA buys) + ReferenceLine (avg cost) |
+| MVRV Z-Score                | Recharts `AreaChart`      | Bitcoin valuation    | Color-coded background zones                                 |
+| Stock-to-Flow               | Recharts `ComposedChart`  | Bitcoin valuation    | Scatter (actual) + Line (model) + ReferenceLine (halvings)   |
+| Rainbow bands               | Recharts `AreaChart`      | Bitcoin valuation    | 9 stacked semi-transparent areas                             |
+| Monthly returns             | Recharts `BarChart`       | Analytics reports    | Green (positive) / red (negative) bars                       |
+| Drift comparison            | Recharts `BarChart`       | Portfolio            | Grouped bars: actual vs target per asset                     |
 
 ### Theming
 
@@ -579,22 +579,22 @@ Every data-dependent component has three visual states:
 
 ### Stack Summary
 
-| Layer         | Technology              | Role                                                       |
-| ------------- | ----------------------- | ---------------------------------------------------------- |
-| Framework     | Next.js 15 (App Router) | Server Components, Server Actions, API routes, Cron        |
-| Language      | TypeScript strict       | Zero `any`, zero `@ts-ignore`                              |
-| Styling       | Tailwind CSS v4         | Utility-first, no custom CSS files                         |
-| UI            | shadcn/ui               | Accessible component primitives                            |
-| State         | Jotai                   | Atomic client-side state, colocated `_atoms.ts` per route  |
-| Forms         | React Hook Form + Zod   | Client hints + server-side validation in `_actions.ts`     |
-| Database      | Supabase (Postgres)     | Tables, RLS, generated types                               |
-| Auth          | Supabase Auth           | Email/password + Google OAuth, session cookies             |
-| AI            | Vercel AI SDK + OpenAI  | `generateText`, `streamText`, `useChat`                    |
-| Charts        | Recharts                | SVG-based responsive charts                                |
-| Testing       | Vitest                  | Unit tests for pure logic — schemas, calculations, parsers |
-| Hosting       | Vercel                  | Deployment, edge functions, cron jobs                      |
-| Email         | Resend                  | Transactional notification emails                          |
-| Notifications | Telegram Bot API        | Real-time push alerts                                      |
+| Layer         | Technology                      | Role                                                       |
+| ------------- | ------------------------------- | ---------------------------------------------------------- |
+| Framework     | Next.js 16 (App Router)         | Server Components, Server Actions, API routes, Cron        |
+| Language      | TypeScript strict               | Zero `any`, zero `@ts-ignore`                              |
+| Styling       | Tailwind CSS v4                 | Utility-first, no custom CSS files                         |
+| UI            | shadcn/ui                       | Accessible component primitives                            |
+| State         | Jotai                           | Atomic client-side state, colocated `_atoms.ts` per route  |
+| Forms         | React Hook Form + Zod           | Client hints + server-side validation in `_actions.ts`     |
+| Database      | Supabase (Postgres)             | Tables, RLS, generated types                               |
+| Auth          | Supabase Auth                   | Email/password + Google OAuth, session cookies             |
+| AI            | Vercel AI SDK + OpenAI + Ollama | `generateText`, `streamText`, NDJSON streaming             |
+| Charts        | Recharts                        | SVG-based responsive charts                                |
+| Testing       | Vitest                          | Unit tests for pure logic — schemas, calculations, parsers |
+| Hosting       | Vercel                          | Deployment, edge functions, cron jobs                      |
+| Email         | Resend                          | Transactional notification emails                          |
+| Notifications | Telegram Bot API                | Real-time push alerts                                      |
 
 ### Colocated Feature Architecture
 
@@ -634,7 +634,7 @@ Cross-cutting concerns that serve 3+ route segments:
 | `lib/bitcoin/`       | On-chain data (Mempool.space), valuation models, halving calculations       | Bitcoin route, alerts, dashboard     |
 | `lib/indicators/`    | RSI, SMA, EMA calculations                                                  | Alerts, market, bitcoin              |
 | `lib/ai/`            | Prompt templates for market summary, portfolio analysis, learning assistant | Insights, dashboard, API routes      |
-| `lib/notifications/` | Multi-channel dispatcher (in-app, email, Telegram)                          | Alerts, DCA reminders                |
+| `lib/notifications/` | Multi-channel dispatcher (in-app, email via Resend, Telegram)               | Alerts, DCA reminders                |
 | `lib/utils/`         | Formatting (currency, dates, percentages)                                   | Every route                          |
 
 ### Server/Client Boundary
@@ -669,6 +669,8 @@ All tables live in Supabase Postgres with RLS enforced:
 | `ai_summaries`        | date, content, market_snapshot (JSONB)                                        | All authenticated read |
 | `portfolio_snapshots` | user_id, date, total_value_usd, positions_snapshot (JSONB)                    | Owner read only        |
 | `market_cache`        | key, data (JSONB), cached_at, ttl_seconds                                     | System read/write      |
+| `user_api_keys`       | user_id, service, encrypted_key, is_valid, last_verified_at                   | Owner read/write       |
+| `api_request_counts`  | provider, date_key, request_count                                             | System read/write      |
 
 Migrations are append-only in `supabase/migrations/`. Never modify an existing migration — always create a new one.
 
@@ -691,7 +693,8 @@ Vercel
     ├── TWELVE_DATA_API_KEY (server-only)
     ├── FRED_API_KEY (server-only)
     ├── TELEGRAM_BOT_TOKEN (server-only)
-    └── RESEND_API_KEY (server-only)
+    ├── RESEND_API_KEY (server-only)
+    └── ENCRYPTION_SECRET (server-only, AES-256-GCM)
 
 Supabase
 ├── Postgres — All application data
@@ -708,7 +711,7 @@ Supabase
 | Authentication   | Supabase Auth with email/password + Google OAuth. Session cookies via `@supabase/ssr`.                                                   |
 | Authorization    | RLS on every table. Users can only access their own data. Service role key used only in server-side cron jobs.                           |
 | Input validation | Zod schemas validate all user input in `_actions.ts` before any database operation.                                                      |
-| API keys         | User-provided API keys (e.g., Twelve Data) are encrypted at rest via Supabase Vault or encrypted column.                                 |
+| API keys         | User-provided API keys (e.g., Twelve Data) are encrypted at rest via AES-256-GCM in `user_api_keys` table using `ENCRYPTION_SECRET`.     |
 | Environment      | All secret keys are server-only env vars — never prefixed with `NEXT_PUBLIC_`.                                                           |
 | XSS/CSRF         | Next.js App Router handles CSRF via Server Actions. React's JSX escaping prevents XSS. AI output rendered as markdown with sanitization. |
 | Rate limiting    | External API calls are rate-limited and cached. Alert evaluation cron has built-in deduplication.                                        |

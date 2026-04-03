@@ -24,14 +24,14 @@
 
 ### Where to Place CLAUDE.md Files
 
-| Location | Scope | Shared? |
-|---|---|---|
-| `/Library/Application Support/ClaudeCode/CLAUDE.md` (macOS) | **Managed policy** — organization-wide | Deployed by IT/DevOps |
-| `./CLAUDE.md` or `./.claude/CLAUDE.md` | **Project** — team-shared | Yes, via source control |
-| `~/.claude/CLAUDE.md` | **User** — personal preferences | No, local to your machine |
-| `<subdirectory>/CLAUDE.md` | **Subdirectory** — loaded on demand | Yes, via source control |
+| Location                                                    | Scope                                  | Shared?                   |
+| ----------------------------------------------------------- | -------------------------------------- | ------------------------- |
+| `/Library/Application Support/ClaudeCode/CLAUDE.md` (macOS) | **Managed policy** — organization-wide | Deployed by IT/DevOps     |
+| `./CLAUDE.md` or `./.claude/CLAUDE.md`                      | **Project** — team-shared              | Yes, via source control   |
+| `~/.claude/CLAUDE.md`                                       | **User** — personal preferences        | No, local to your machine |
+| `<subdirectory>/CLAUDE.md`                                  | **Subdirectory** — loaded on demand    | Yes, via source control   |
 
-**Resolution order**: More specific locations take precedence over broader ones. Files in the directory hierarchy *above* the working directory load in full at launch. Files in *subdirectories* load on demand when Claude reads files in those directories.
+**Resolution order**: More specific locations take precedence over broader ones. Files in the directory hierarchy _above_ the working directory load in full at launch. Files in _subdirectories_ load on demand when Claude reads files in those directories.
 
 ### Writing Effective Instructions
 
@@ -54,9 +54,11 @@ Use `@path/to/import` syntax to pull in external files:
 See @README for project overview and @package.json for available npm commands.
 
 # Additional Instructions
+
 - Git workflow: @docs/git-instructions.md
 
 # Personal Preferences (not checked in)
+
 - @~/.claude/my-project-instructions.md
 ```
 
@@ -77,10 +79,7 @@ Add `claudeMdExcludes` to `.claude/settings.local.json`:
 
 ```json
 {
-  "claudeMdExcludes": [
-    "**/monorepo/CLAUDE.md",
-    "/home/user/monorepo/other-team/.claude/rules/**"
-  ]
+  "claudeMdExcludes": ["**/monorepo/CLAUDE.md", "/home/user/monorepo/other-team/.claude/rules/**"]
 }
 ```
 
@@ -88,11 +87,11 @@ Add `claudeMdExcludes` to `.claude/settings.local.json`:
 
 Deploy organization-wide via managed policy locations:
 
-| OS | Path |
-|---|---|
-| macOS | `/Library/Application Support/ClaudeCode/CLAUDE.md` |
-| Linux / WSL | `/etc/claude-code/CLAUDE.md` |
-| Windows | `C:\Program Files\ClaudeCode\CLAUDE.md` |
+| OS          | Path                                                |
+| ----------- | --------------------------------------------------- |
+| macOS       | `/Library/Application Support/ClaudeCode/CLAUDE.md` |
+| Linux / WSL | `/etc/claude-code/CLAUDE.md`                        |
+| Windows     | `C:\Program Files\ClaudeCode\CLAUDE.md`             |
 
 Managed policy files **cannot** be excluded by individual settings.
 
@@ -129,8 +128,8 @@ Each project gets its own memory at `~/.claude/projects/<project>/memory/`:
 ### Managing Memory
 
 - Run `/memory` to browse, open, and edit memory files.
-- Ask Claude to remember things: *"always use pnpm, not npm"* — saved to auto memory.
-- Ask Claude to add to CLAUDE.md directly: *"add this to CLAUDE.md"*.
+- Ask Claude to remember things: _"always use pnpm, not npm"_ — saved to auto memory.
+- Ask Claude to add to CLAUDE.md directly: _"add this to CLAUDE.md"_.
 
 ---
 
@@ -159,9 +158,8 @@ Scope rules to specific files using YAML frontmatter:
 ```yaml
 ---
 paths:
-  - "src/api/**/*.ts"
+  - 'src/api/**/*.ts'
 ---
-
 # API Development Rules
 
 - All API endpoints must include input validation
@@ -171,11 +169,11 @@ paths:
 
 Glob pattern examples:
 
-| Pattern | Matches |
-|---|---|
-| `**/*.ts` | All TypeScript files |
-| `src/**/*` | All files under `src/` |
-| `*.md` | Markdown files in project root |
+| Pattern                | Matches                                  |
+| ---------------------- | ---------------------------------------- |
+| `**/*.ts`              | All TypeScript files                     |
+| `src/**/*`             | All files under `src/`                   |
+| `*.md`                 | Markdown files in project root           |
 | `src/components/*.tsx` | React components in a specific directory |
 
 Multiple patterns with brace expansion:
@@ -183,9 +181,9 @@ Multiple patterns with brace expansion:
 ```yaml
 ---
 paths:
-  - "src/**/*.{ts,tsx}"
-  - "lib/**/*.ts"
-  - "tests/**/*.test.ts"
+  - 'src/**/*.{ts,tsx}'
+  - 'lib/**/*.ts'
+  - 'tests/**/*.test.ts'
 ---
 ```
 
@@ -218,12 +216,12 @@ Skills extend what Claude can do. A `SKILL.md` file with instructions adds capab
 
 ### Where Skills Live
 
-| Level | Location | Availability |
-|---|---|---|
-| Enterprise | Managed settings | All users in organization |
-| Personal | `~/.claude/skills/<skill-name>/SKILL.md` | All your projects |
-| Project | `.claude/skills/<skill-name>/SKILL.md` | This project only |
-| Plugin | `<plugin>/skills/<skill-name>/SKILL.md` | Where plugin is enabled |
+| Level      | Location                                 | Availability              |
+| ---------- | ---------------------------------------- | ------------------------- |
+| Enterprise | Managed settings                         | All users in organization |
+| Personal   | `~/.claude/skills/<skill-name>/SKILL.md` | All your projects         |
+| Project    | `.claude/skills/<skill-name>/SKILL.md`   | This project only         |
+| Plugin     | `<plugin>/skills/<skill-name>/SKILL.md`  | Where plugin is enabled   |
 
 Priority: **enterprise > personal > project**. Plugin skills use `plugin-name:skill-name` namespace.
 
@@ -252,7 +250,6 @@ Create `~/.claude/skills/explain-code/SKILL.md`:
 name: explain-code
 description: Explains code with visual diagrams and analogies. Use when explaining how code works.
 ---
-
 When explaining code, always include:
 
 1. **Start with an analogy**: Compare the code to something from everyday life
@@ -274,34 +271,34 @@ context: fork
 agent: Explore
 hooks:
   PreToolUse:
-    - matcher: "Bash"
+    - matcher: 'Bash'
       hooks:
         - type: command
-          command: "./scripts/security-check.sh"
+          command: './scripts/security-check.sh'
 ---
 ```
 
-| Field | Required | Description |
-|---|---|---|
-| `name` | No | Display name (lowercase, hyphens, max 64 chars). Defaults to directory name |
-| `description` | Recommended | What the skill does. Claude uses this to decide when to load it |
-| `argument-hint` | No | Hint for autocomplete, e.g., `[issue-number]` |
-| `disable-model-invocation` | No | `true` = only manual `/name` invocation. Default: `false` |
-| `user-invocable` | No | `false` = hidden from `/` menu. Default: `true` |
-| `allowed-tools` | No | Tools allowed without permission when skill is active |
-| `model` | No | Model to use when skill is active |
-| `context` | No | `fork` = run in a forked subagent context |
-| `agent` | No | Subagent type to use with `context: fork` |
-| `hooks` | No | Hooks scoped to this skill's lifecycle |
+| Field                      | Required    | Description                                                                 |
+| -------------------------- | ----------- | --------------------------------------------------------------------------- |
+| `name`                     | No          | Display name (lowercase, hyphens, max 64 chars). Defaults to directory name |
+| `description`              | Recommended | What the skill does. Claude uses this to decide when to load it             |
+| `argument-hint`            | No          | Hint for autocomplete, e.g., `[issue-number]`                               |
+| `disable-model-invocation` | No          | `true` = only manual `/name` invocation. Default: `false`                   |
+| `user-invocable`           | No          | `false` = hidden from `/` menu. Default: `true`                             |
+| `allowed-tools`            | No          | Tools allowed without permission when skill is active                       |
+| `model`                    | No          | Model to use when skill is active                                           |
+| `context`                  | No          | `fork` = run in a forked subagent context                                   |
+| `agent`                    | No          | Subagent type to use with `context: fork`                                   |
+| `hooks`                    | No          | Hooks scoped to this skill's lifecycle                                      |
 
 ### String Substitutions
 
-| Variable | Description |
-|---|---|
-| `$ARGUMENTS` | All arguments passed when invoking the skill |
-| `$ARGUMENTS[N]` / `$N` | Specific argument by 0-based index |
-| `${CLAUDE_SESSION_ID}` | Current session ID |
-| `${CLAUDE_SKILL_DIR}` | Directory containing the skill's `SKILL.md` |
+| Variable               | Description                                  |
+| ---------------------- | -------------------------------------------- |
+| `$ARGUMENTS`           | All arguments passed when invoking the skill |
+| `$ARGUMENTS[N]` / `$N` | Specific argument by 0-based index           |
+| `${CLAUDE_SESSION_ID}` | Current session ID                           |
+| `${CLAUDE_SKILL_DIR}`  | Directory containing the skill's `SKILL.md`  |
 
 ### Dynamic Context Injection
 
@@ -326,21 +323,21 @@ Summarize this pull request...
 
 ### Bundled Skills
 
-| Command | Description |
-|---|---|
-| `/batch <instruction>` | Orchestrate large-scale changes across a codebase in parallel |
-| `/claude-api` | Load Claude API reference for your project's language |
-| `/debug [description]` | Troubleshoot current session by reading debug log |
-| `/loop [interval] <prompt>` | Run a prompt repeatedly on an interval |
-| `/simplify [focus]` | Review recently changed files for code reuse and quality |
+| Command                     | Description                                                   |
+| --------------------------- | ------------------------------------------------------------- |
+| `/batch <instruction>`      | Orchestrate large-scale changes across a codebase in parallel |
+| `/claude-api`               | Load Claude API reference for your project's language         |
+| `/debug [description]`      | Troubleshoot current session by reading debug log             |
+| `/loop [interval] <prompt>` | Run a prompt repeatedly on an interval                        |
+| `/simplify [focus]`         | Review recently changed files for code reuse and quality      |
 
 ### Invocation Control
 
-| Setting | You invoke? | Claude invokes? |
-|---|---|---|
-| *(default)* | Yes | Yes |
-| `disable-model-invocation: true` | Yes | **No** |
-| `user-invocable: false` | **No** | Yes |
+| Setting                          | You invoke? | Claude invokes? |
+| -------------------------------- | ----------- | --------------- |
+| _(default)_                      | Yes         | Yes             |
+| `disable-model-invocation: true` | Yes         | **No**          |
+| `user-invocable: false`          | **No**      | Yes             |
 
 ---
 
@@ -350,29 +347,29 @@ Hooks are user-defined shell commands, HTTP endpoints, LLM prompts, or agents th
 
 ### Hook Lifecycle Events
 
-| Event | When It Fires | Can Block? |
-|---|---|---|
-| `SessionStart` | Session begins or resumes | No |
-| `UserPromptSubmit` | You submit a prompt, before Claude processes it | Yes |
-| `PreToolUse` | Before a tool call executes | Yes |
-| `PermissionRequest` | Permission dialog appears | Yes |
-| `PostToolUse` | After a tool call succeeds | No (feedback only) |
-| `PostToolUseFailure` | After a tool call fails | No (feedback only) |
-| `Notification` | Claude Code sends a notification | No |
-| `SubagentStart` | Subagent is spawned | No |
-| `SubagentStop` | Subagent finishes | Yes |
-| `Stop` | Claude finishes responding | Yes |
-| `TeammateIdle` | Agent team teammate about to go idle | Yes |
-| `TaskCompleted` | Task being marked as completed | Yes |
-| `InstructionsLoaded` | CLAUDE.md or rule file loaded into context | No |
-| `ConfigChange` | Configuration file changes during session | Yes |
-| `WorktreeCreate` | Worktree being created | Yes |
-| `WorktreeRemove` | Worktree being removed | No |
-| `PreCompact` | Before context compaction | No |
-| `PostCompact` | After compaction completes | No |
-| `Elicitation` | MCP server requests user input | Yes |
-| `ElicitationResult` | User responds to MCP elicitation | Yes |
-| `SessionEnd` | Session terminates | No |
+| Event                | When It Fires                                   | Can Block?         |
+| -------------------- | ----------------------------------------------- | ------------------ |
+| `SessionStart`       | Session begins or resumes                       | No                 |
+| `UserPromptSubmit`   | You submit a prompt, before Claude processes it | Yes                |
+| `PreToolUse`         | Before a tool call executes                     | Yes                |
+| `PermissionRequest`  | Permission dialog appears                       | Yes                |
+| `PostToolUse`        | After a tool call succeeds                      | No (feedback only) |
+| `PostToolUseFailure` | After a tool call fails                         | No (feedback only) |
+| `Notification`       | Claude Code sends a notification                | No                 |
+| `SubagentStart`      | Subagent is spawned                             | No                 |
+| `SubagentStop`       | Subagent finishes                               | Yes                |
+| `Stop`               | Claude finishes responding                      | Yes                |
+| `TeammateIdle`       | Agent team teammate about to go idle            | Yes                |
+| `TaskCompleted`      | Task being marked as completed                  | Yes                |
+| `InstructionsLoaded` | CLAUDE.md or rule file loaded into context      | No                 |
+| `ConfigChange`       | Configuration file changes during session       | Yes                |
+| `WorktreeCreate`     | Worktree being created                          | Yes                |
+| `WorktreeRemove`     | Worktree being removed                          | No                 |
+| `PreCompact`         | Before context compaction                       | No                 |
+| `PostCompact`        | After compaction completes                      | No                 |
+| `Elicitation`        | MCP server requests user input                  | Yes                |
+| `ElicitationResult`  | User responds to MCP elicitation                | Yes                |
+| `SessionEnd`         | Session terminates                              | No                 |
 
 ### Configuration Structure
 
@@ -398,23 +395,23 @@ Hooks are defined in JSON settings files with three levels of nesting:
 
 ### Hook Locations
 
-| File | Scope | Shared? |
-|---|---|---|
-| `~/.claude/settings.json` | All your projects | No, local |
-| `.claude/settings.json` | Single project | Yes, committable |
-| `.claude/settings.local.json` | Single project | No, gitignored |
-| Managed policy settings | Organization-wide | Yes, admin-controlled |
-| Plugin `hooks/hooks.json` | When plugin is enabled | Yes, bundled |
-| Skill/agent frontmatter | While component is active | Yes, in component file |
+| File                          | Scope                     | Shared?                |
+| ----------------------------- | ------------------------- | ---------------------- |
+| `~/.claude/settings.json`     | All your projects         | No, local              |
+| `.claude/settings.json`       | Single project            | Yes, committable       |
+| `.claude/settings.local.json` | Single project            | No, gitignored         |
+| Managed policy settings       | Organization-wide         | Yes, admin-controlled  |
+| Plugin `hooks/hooks.json`     | When plugin is enabled    | Yes, bundled           |
+| Skill/agent frontmatter       | While component is active | Yes, in component file |
 
 ### Hook Handler Types
 
-| Type | Description |
-|---|---|
+| Type      | Description                                                                  |
+| --------- | ---------------------------------------------------------------------------- |
 | `command` | Run a shell command. Receives JSON on stdin, returns via exit codes + stdout |
-| `http` | POST to a URL. Request body = hook JSON. Response = same JSON output format |
-| `prompt` | Single-turn LLM evaluation. Returns `{"ok": true/false, "reason": "..."}` |
-| `agent` | Multi-turn agentic verifier with tool access (Read, Grep, Glob) |
+| `http`    | POST to a URL. Request body = hook JSON. Response = same JSON output format  |
+| `prompt`  | Single-turn LLM evaluation. Returns `{"ok": true/false, "reason": "..."}`    |
+| `agent`   | Multi-turn agentic verifier with tool access (Read, Grep, Glob)              |
 
 ### Example: Block Destructive Commands
 
@@ -438,11 +435,11 @@ fi
 
 ### Exit Code Behavior
 
-| Exit Code | Meaning |
-|---|---|
-| `0` | **Success** — stdout parsed for JSON output |
-| `2` | **Blocking error** — stderr fed back to Claude. Effect depends on event |
-| Other | **Non-blocking error** — stderr shown in verbose mode, execution continues |
+| Exit Code | Meaning                                                                    |
+| --------- | -------------------------------------------------------------------------- |
+| `0`       | **Success** — stdout parsed for JSON output                                |
+| `2`       | **Blocking error** — stderr fed back to Claude. Effect depends on event    |
+| Other     | **Non-blocking error** — stderr shown in verbose mode, execution continues |
 
 ### PreToolUse Decision Control
 
@@ -458,12 +455,12 @@ fi
 }
 ```
 
-| Field | Values |
-|---|---|
-| `permissionDecision` | `"allow"`, `"deny"`, `"ask"` |
-| `permissionDecisionReason` | Explanation text |
-| `updatedInput` | Modify tool input before execution |
-| `additionalContext` | Inject context for Claude |
+| Field                      | Values                             |
+| -------------------------- | ---------------------------------- |
+| `permissionDecision`       | `"allow"`, `"deny"`, `"ask"`       |
+| `permissionDecisionReason` | Explanation text                   |
+| `updatedInput`             | Modify tool input before execution |
+| `additionalContext`        | Inject context for Claude          |
 
 ### Prompt-Based Hooks
 
@@ -560,10 +557,10 @@ Plugins are self-contained directories that extend Claude Code with skills, agen
 
 ### When to Use Plugins vs Standalone
 
-| Approach | Invocation | Best For |
-|---|---|---|
-| Standalone (`.claude/`) | `/hello` | Personal workflows, project-specific, experiments |
-| Plugin | `/plugin-name:hello` | Sharing, versioned releases, reusable across projects |
+| Approach                | Invocation           | Best For                                              |
+| ----------------------- | -------------------- | ----------------------------------------------------- |
+| Standalone (`.claude/`) | `/hello`             | Personal workflows, project-specific, experiments     |
+| Plugin                  | `/plugin-name:hello` | Sharing, versioned releases, reusable across projects |
 
 ### Plugin Directory Structure
 
@@ -613,12 +610,12 @@ Only `name` is required if you include a manifest. If omitted entirely, Claude C
 
 ### Installation Scopes
 
-| Scope | Settings File | Purpose |
-|---|---|---|
-| `user` | `~/.claude/settings.json` | Personal, all projects (default) |
-| `project` | `.claude/settings.json` | Team-shared via version control |
-| `local` | `.claude/settings.local.json` | Project-specific, gitignored |
-| `managed` | Managed settings | Organization-wide (read-only) |
+| Scope     | Settings File                 | Purpose                          |
+| --------- | ----------------------------- | -------------------------------- |
+| `user`    | `~/.claude/settings.json`     | Personal, all projects (default) |
+| `project` | `.claude/settings.json`       | Team-shared via version control  |
+| `local`   | `.claude/settings.local.json` | Project-specific, gitignored     |
+| `managed` | Managed settings              | Organization-wide (read-only)    |
 
 ### CLI Commands
 
@@ -704,20 +701,20 @@ Subagents are specialized AI assistants that handle specific tasks. Each runs in
 
 ### Built-In Subagents
 
-| Agent | Model | Tools | Purpose |
-|---|---|---|---|
-| **Explore** | Haiku (fast) | Read-only | File discovery, code search, codebase exploration |
-| **Plan** | (varies) | Read-only | Planning and analysis |
-| **General-purpose** | (varies) | All inherited | General task delegation |
+| Agent               | Model        | Tools         | Purpose                                           |
+| ------------------- | ------------ | ------------- | ------------------------------------------------- |
+| **Explore**         | Haiku (fast) | Read-only     | File discovery, code search, codebase exploration |
+| **Plan**            | (varies)     | Read-only     | Planning and analysis                             |
+| **General-purpose** | (varies)     | All inherited | General task delegation                           |
 
 ### Where Agents Live
 
-| Location | Scope | Priority |
-|---|---|---|
-| `--agents` CLI flag | Current session only | 1 (highest) |
-| `.claude/agents/` | Current project | 2 |
-| `~/.claude/agents/` | All your projects | 3 |
-| Plugin `agents/` directory | Where plugin is enabled | 4 (lowest) |
+| Location                   | Scope                   | Priority    |
+| -------------------------- | ----------------------- | ----------- |
+| `--agents` CLI flag        | Current session only    | 1 (highest) |
+| `.claude/agents/`          | Current project         | 2           |
+| `~/.claude/agents/`        | All your projects       | 3           |
+| Plugin `agents/` directory | Where plugin is enabled | 4 (lowest)  |
 
 ### Creating an Agent File
 
@@ -728,7 +725,6 @@ description: Reviews code for quality and best practices
 tools: Read, Glob, Grep
 model: opus
 ---
-
 You are a code reviewer. When invoked, analyze the code and provide
 specific, actionable feedback on quality, security, and best practices.
 ```
@@ -737,21 +733,21 @@ The frontmatter defines metadata/configuration. The body becomes the **system pr
 
 ### Supported Frontmatter Fields
 
-| Field | Required | Description |
-|---|---|---|
-| `name` | **Yes** | Unique ID (lowercase letters and hyphens) |
-| `description` | **Yes** | When Claude should delegate to this subagent |
-| `tools` | No | Tool allowlist. Inherits all if omitted |
-| `disallowedTools` | No | Tools to deny (removed from inherited list) |
-| `model` | No | `sonnet`, `opus`, `haiku`, full ID, or `inherit` (default) |
-| `permissionMode` | No | `default`, `acceptEdits`, `dontAsk`, `bypassPermissions`, `plan` |
-| `maxTurns` | No | Max agentic turns before stop |
-| `skills` | No | Skills to preload into subagent's context at startup |
-| `mcpServers` | No | MCP servers available to this subagent |
-| `hooks` | No | Lifecycle hooks scoped to this subagent |
-| `memory` | No | Persistent memory: `user`, `project`, or `local` |
-| `background` | No | `true` = always run as background task |
-| `isolation` | No | `worktree` = run in temporary git worktree |
+| Field             | Required | Description                                                      |
+| ----------------- | -------- | ---------------------------------------------------------------- |
+| `name`            | **Yes**  | Unique ID (lowercase letters and hyphens)                        |
+| `description`     | **Yes**  | When Claude should delegate to this subagent                     |
+| `tools`           | No       | Tool allowlist. Inherits all if omitted                          |
+| `disallowedTools` | No       | Tools to deny (removed from inherited list)                      |
+| `model`           | No       | `sonnet`, `opus`, `haiku`, full ID, or `inherit` (default)       |
+| `permissionMode`  | No       | `default`, `acceptEdits`, `dontAsk`, `bypassPermissions`, `plan` |
+| `maxTurns`        | No       | Max agentic turns before stop                                    |
+| `skills`          | No       | Skills to preload into subagent's context at startup             |
+| `mcpServers`      | No       | MCP servers available to this subagent                           |
+| `hooks`           | No       | Lifecycle hooks scoped to this subagent                          |
+| `memory`          | No       | Persistent memory: `user`, `project`, or `local`                 |
+| `background`      | No       | `true` = always run as background task                           |
+| `isolation`       | No       | `worktree` = run in temporary git worktree                       |
 
 ### CLI-Defined Agents
 
@@ -792,7 +788,7 @@ mcpServers:
   - playwright:
       type: stdio
       command: npx
-      args: ["-y", "@playwright/mcp@latest"]
+      args: ['-y', '@playwright/mcp@latest']
   - github
 ---
 ```
@@ -805,16 +801,15 @@ name: code-reviewer
 description: Reviews code for quality and best practices
 memory: user
 ---
-
 You are a code reviewer. As you review code, update your agent memory with
 patterns, conventions, and recurring issues you discover.
 ```
 
-| Scope | Storage Location | Use When |
-|---|---|---|
-| `user` | `~/.claude/agent-memory/<name>/` | Learnings across all projects |
-| `project` | `.claude/agent-memory/<name>/` | Project-specific, shareable |
-| `local` | `.claude/agent-memory-local/<name>/` | Project-specific, not checked in |
+| Scope     | Storage Location                     | Use When                         |
+| --------- | ------------------------------------ | -------------------------------- |
+| `user`    | `~/.claude/agent-memory/<name>/`     | Learnings across all projects    |
+| `project` | `.claude/agent-memory/<name>/`       | Project-specific, shareable      |
+| `local`   | `.claude/agent-memory-local/<name>/` | Project-specific, not checked in |
 
 ### Hooks in Subagent Frontmatter
 
@@ -825,10 +820,10 @@ description: Execute read-only database queries
 tools: Bash
 hooks:
   PreToolUse:
-    - matcher: "Bash"
+    - matcher: 'Bash'
       hooks:
         - type: command
-          command: "./scripts/validate-readonly-query.sh"
+          command: './scripts/validate-readonly-query.sh'
 ---
 ```
 
@@ -954,15 +949,15 @@ your-project/
 
 ## Troubleshooting
 
-| Issue | Solution |
-|---|---|
-| Claude isn't following CLAUDE.md | Run `/memory` to verify files are loaded. Make instructions more specific. Check for conflicts. |
-| CLAUDE.md is too large | Keep under 200 lines. Move details to `@path` imports or `.claude/rules/` files. |
-| Instructions lost after `/compact` | CLAUDE.md survives compaction. If instruction disappeared, it was only in conversation — add to CLAUDE.md. |
-| Skill not triggering | Check description includes matching keywords. Verify with `What skills are available?`. Try `/skill-name` directly. |
-| Skill triggers too often | Make description more specific. Add `disable-model-invocation: true`. |
-| Hook not firing | Run `claude --debug`. Check script is executable (`chmod +x`). Verify matcher pattern. |
-| Plugin not loading | Run `claude plugin validate`. Ensure components at plugin root, not inside `.claude-plugin/`. |
+| Issue                              | Solution                                                                                                            |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Claude isn't following CLAUDE.md   | Run `/memory` to verify files are loaded. Make instructions more specific. Check for conflicts.                     |
+| CLAUDE.md is too large             | Keep under 200 lines. Move details to `@path` imports or `.claude/rules/` files.                                    |
+| Instructions lost after `/compact` | CLAUDE.md survives compaction. If instruction disappeared, it was only in conversation — add to CLAUDE.md.          |
+| Skill not triggering               | Check description includes matching keywords. Verify with `What skills are available?`. Try `/skill-name` directly. |
+| Skill triggers too often           | Make description more specific. Add `disable-model-invocation: true`.                                               |
+| Hook not firing                    | Run `claude --debug`. Check script is executable (`chmod +x`). Verify matcher pattern.                              |
+| Plugin not loading                 | Run `claude plugin validate`. Ensure components at plugin root, not inside `.claude-plugin/`.                       |
 
 ---
 

@@ -4,6 +4,18 @@
 
 ---
 
+## Table of Contents
+
+- [US-1.1: Initialize Next.js Project with TypeScript](#us-11-initialize-nextjs-project-with-typescript)
+- [US-1.2: Install Core Dependencies](#us-12-install-core-dependencies)
+- [US-1.3: Database Schema & Testing Infrastructure](#us-13-database-schema--testing-infrastructure)
+- [US-1.4: Git Hooks & Commit Quality](#us-14-git-hooks--commit-quality)
+- [Quality Gate Verification](#quality-gate-verification)
+- [Installed Packages Summary](#installed-packages-summary)
+- [Project Structure After E1](#project-structure-after-e1)
+
+---
+
 ## US-1.1: Initialize Next.js Project with TypeScript
 
 ### T-1.1.1: Initialize Next.js project
@@ -423,25 +435,35 @@ npm run format:check
 
 ### Dependencies
 
-| Package                  | Version  | Purpose                      |
-| ------------------------ | -------- | ---------------------------- |
-| next                     | 16.2.1   | Framework (App Router)       |
-| react / react-dom        | 19.2.4   | UI library                   |
-| typescript               | ^5       | Type safety                  |
-| tailwindcss              | ^4       | Utility-first CSS            |
-| @supabase/supabase-js    | ^2.99.3  | Database & Auth client       |
-| @supabase/ssr            | ^0.9.0   | Server-side Supabase helpers |
-| zod                      | ^4.3.6   | Schema validation            |
-| jotai                    | ^2.18.1  | Atomic state management      |
-| react-hook-form          | ^7.71.2  | Form handling                |
-| @hookform/resolvers      | ^5.2.2   | Zod resolver for forms       |
-| ai                       | ^6.0.134 | Vercel AI SDK                |
-| @ai-sdk/openai           | ^3.0.47  | OpenAI provider              |
-| shadcn                   | ^4.1.0   | UI component system          |
-| clsx                     | ^2.1.1   | Conditional classnames       |
-| tailwind-merge           | ^3.5.0   | Tailwind class merging       |
-| class-variance-authority | ^0.7.1   | Variant styling              |
-| lucide-react             | ^0.577.0 | Icons                        |
+| Package                   | Version  | Purpose                      |
+| ------------------------- | -------- | ---------------------------- |
+| next                      | 16.2.1   | Framework (App Router)       |
+| react / react-dom         | 19.2.4   | UI library                   |
+| typescript                | ^5       | Type safety                  |
+| tailwindcss               | ^4       | Utility-first CSS            |
+| @supabase/supabase-js     | ^2.99.3  | Database & Auth client       |
+| @supabase/ssr             | ^0.9.0   | Server-side Supabase helpers |
+| zod                       | ^4.3.6   | Schema validation            |
+| jotai                     | ^2.18.1  | Atomic state management      |
+| react-hook-form           | ^7.71.2  | Form handling                |
+| @hookform/resolvers       | ^5.2.2   | Zod resolver for forms       |
+| ai                        | ^6.0.134 | Vercel AI SDK                |
+| @ai-sdk/openai            | ^3.0.47  | OpenAI provider              |
+| @ai-sdk/openai-compatible | ^2.0.37  | Ollama-compatible provider   |
+| @ai-sdk/react             | ^3.0.139 | React hooks for AI SDK       |
+| shadcn                    | ^4.1.0   | UI component system          |
+| @base-ui/react            | ^1.3.0   | Base UI primitives           |
+| clsx                      | ^2.1.1   | Conditional classnames       |
+| tailwind-merge            | ^3.5.0   | Tailwind class merging       |
+| class-variance-authority  | ^0.7.1   | Variant styling              |
+| lucide-react              | ^0.577.0 | Icons                        |
+| recharts                  | ^3.8.0   | Data visualization           |
+| date-fns                  | ^4.1.0   | Date utilities               |
+| @date-fns/tz              | ^1.4.1   | Timezone support             |
+| next-themes               | ^0.4.6   | Dark/light/system theme      |
+| jspdf                     | ^4.2.1   | PDF export                   |
+| jspdf-autotable           | ^5.0.7   | PDF table generation         |
+| sonner                    | ^2.0.7   | Toast notifications          |
 
 ### Dev Dependencies
 

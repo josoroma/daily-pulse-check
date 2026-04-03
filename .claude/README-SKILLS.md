@@ -1,20 +1,21 @@
 # Skills Reference
 
-> How to use the 7 workflow skills for spec-driven development.
+> How to use the 8 workflow skills for spec-driven development.
 
 ---
 
 ## Available Skills
 
-| Skill | Purpose | Modifies Files? |
-|---|---|---|
-| `/plan-item` | Plan implementation before writing code | No (read-only) |
-| `/add-item` | Add new epics, stories, or tasks to SPECS.md with 🎨 detection | Yes (with approval) |
-| `/implement-item` | Implement an epic or user story end-to-end with 🎨 detection | Yes |
-| `/review-item` | Code review against conventions and acceptance criteria | No (read-only) |
-| `/update-specs` | Apply controlled updates to SPECS.md or CLAUDE.md | Yes (with approval) |
-| `/frontend-design` | Create distinctive UI components with project design system | Yes |
-| `/capture-prompts` | Capture, improve, and persist session prompts with derived tasks | Yes (append-only) |
+| Skill               | Purpose                                                                            | Modifies Files?     |
+| ------------------- | ---------------------------------------------------------------------------------- | ------------------- |
+| `/plan-item`        | Plan implementation before writing code                                            | No (read-only)      |
+| `/add-item`         | Add new epics, stories, or tasks to SPECS.md with 🎨 detection                     | Yes (with approval) |
+| `/implement-item`   | Implement an epic or user story end-to-end with 🎨 detection                       | Yes                 |
+| `/review-item`      | Code review against conventions and acceptance criteria                            | No (read-only)      |
+| `/update-specs`     | Apply controlled updates to SPECS.md or CLAUDE.md                                  | Yes (with approval) |
+| `/frontend-design`  | Create distinctive UI components with project design system                        | Yes                 |
+| `/capture-prompts`  | Capture, improve, and persist session prompts with derived tasks                   | Yes (append-only)   |
+| `/document-feature` | Generate structured technical docs for a dashboard feature/route in `docs/routes/` | Yes                 |
 
 ---
 
@@ -39,6 +40,7 @@
 **Input**: Epic ID (`E1`) or User Story ID (`US-1.1`)
 
 **Output**:
+
 - Summary and current status
 - Dependency analysis (internal + external)
 - Ordered task list with readiness indicators (🟢 🟡 🔴)
@@ -60,12 +62,14 @@
 **🎨 detection**: Checks the story header for the `🎨` marker. If present, applies `/frontend-design` guidelines for all `.tsx` component work.
 
 **Phases**:
+
 1. **Plan** — Read tasks, identify files, check dependencies, detect 🎨 marker
 2. **Implement** — Write code per colocated architecture (+ design system if 🎨), update SPECS.md `[~]`
 3. **Validate** — Run lint + tests, verify Gherkin criteria (+ design checklist if 🎨)
 4. **Complete** — Mark tasks `[x]`, update Progress Summary, suggest commit
 
 **Output**:
+
 - Gherkin Validation Report (✅/❌ per scenario)
 - Updated SPECS.md with correct status markers
 - Conventional commit message
@@ -84,6 +88,7 @@
 **Runs as**: `code-reviewer` agent (read-only, forked context)
 
 **Checklist**:
+
 1. SPECS Compliance — Gherkin scenario-by-scenario verification
 2. Convention Compliance — Architecture, naming, imports, exports
 3. Code Quality — Error handling, loading/empty states, type safety
@@ -104,12 +109,14 @@
 **Input**: Optional description of what to update
 
 **Workflow**:
+
 1. Understand the change (status update, add content, fix inconsistencies)
 2. Show diff preview
 3. Request approval
 4. Apply changes only after explicit approval
 
 **Supported updates**:
+
 - Status marker changes (`[ ]` → `[x]`)
 - Progress Summary table recalculation
 - New stories, tasks, or Gherkin scenarios
@@ -127,12 +134,14 @@
 **Input**: Description of the component or page to design (e.g., "portfolio metric cards", "Fear & Greed gauge", "DCA schedule table")
 
 **Design process**:
+
 1. **Design Thinking** — Purpose, tone, hierarchy, differentiation for this component
 2. **Pattern Matching** — Map to project patterns: metric cards, chart containers, tables, forms, empty/loading states
 3. **Implementation** — Generate production-ready code using shadcn/ui + Tailwind CSS v4 + Recharts
 4. **Verification** — Check against design checklist (colors, numbers, responsive, states)
 
 **Output**:
+
 - Production-ready `.tsx` component files following kebab-case naming
 - Consistent with project design system: dark-first, semantic colors, tabular numbers
 - Loading state (Skeleton), empty state (CTA), error state (Alert)
@@ -151,6 +160,7 @@
 **Input**: Optional category filter (`frontend`, `ai-agent`, `infra`, `docs`, etc.) or `all` (default)
 
 **Phases**:
+
 1. **Extract** — Collect all user prompts from the active chat session
 2. **Improve** — Rewrite for clarity, precision, and professional tone while preserving intent
 3. **Derive Tasks** — Generate atomic, implementation-ready tasks per prompt
@@ -158,10 +168,12 @@
 5. **Persist** — Append to `README-PROMPTS.md` with idempotency checks
 
 **Output**:
+
 - Append-only entries in `README-PROMPTS.md` with: intent summary, improved prompt, and derived task list
 - Summary: count of new prompts captured, duplicates skipped, categories breakdown
 
 **Quality constraints**:
+
 - No semantic drift — original intent preserved exactly
 - No added assumptions or features not in the original prompt
 - Terminology normalized to project conventions (shadcn/ui, Supabase, Next.js 15)
@@ -177,6 +189,7 @@
 **Input**: Description of what to add (e.g., "add epic E11 for notification history", "add US-4.5 CSV import to E4", "add task T-4.1.6 validate symbol format")
 
 **Phases**:
+
 1. **Parse** — Determine item type (epic, story, or task) and target parent
 2. **Assign ID** — Auto-assign the next sequential ID, warn on conflicts
 3. **Detect 🎨** — Auto-detect if the item requires `/frontend-design` based on UI involvement
@@ -185,11 +198,13 @@
 6. **Apply** — Edit SPECS.md and update Progress Summary table
 
 **🎨 Auto-detection rules**:
+
 - Tags with 🎨 if: involves `page.tsx`, `_components/`, charts, forms, tables, dashboards, visualizations
 - No 🎨 if: pure API integration, migrations, cron jobs, config, or test-only work
 - When in doubt, tags with 🎨 (better safe than generic UI)
 
 **Output**:
+
 - Updated SPECS.md with correctly formatted and placed new item
 - Progress Summary table updated (for epics and stories)
 - Confirmation: item ID, parent, 🎨 status with reason

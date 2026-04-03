@@ -4,6 +4,7 @@ import { useAtomValue } from 'jotai'
 import { LogOut, User } from 'lucide-react'
 import { userAtom, profileAtom } from '@/app/dashboard/_atoms'
 import { logout } from '@/app/auth/_actions'
+import { getDisplayName, getInitials } from '@/app/auth/_utils'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -25,13 +26,8 @@ export const UserMenu = () => {
   const user = useAtomValue(userAtom)
   const profile = useAtomValue(profileAtom)
 
-  const displayName = profile?.display_name || user?.email?.split('@')[0] || 'User'
-  const initials = displayName
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
+  const displayName = getDisplayName(profile?.display_name, user?.email)
+  const initials = getInitials(displayName)
 
   return (
     <SidebarFooter>

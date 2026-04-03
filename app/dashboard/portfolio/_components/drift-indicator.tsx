@@ -13,6 +13,7 @@ import {
 } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { InfoTooltip } from '@/components/info-tooltip'
 import { ASSET_COLORS } from '../_constants'
 import { formatUsd, type DriftItem, type RebalanceSuggestion } from '../_utils'
 
@@ -34,7 +35,10 @@ export function DriftIndicator({ driftItems, rebalanceNeeded, suggestions }: Dri
     <div className="space-y-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-base">Allocation Drift</CardTitle>
+          <div className="flex items-center gap-1">
+            <CardTitle className="text-base">Allocation Drift</CardTitle>
+            <InfoTooltip text="Compares your actual asset allocation against your target percentages. Bars show the gap between where you are and where you want to be. 'Rebalance Needed' appears when drift exceeds your threshold." />
+          </div>
           {rebalanceNeeded ? (
             <Badge variant="outline" className="text-rose-500 bg-rose-500/10 border-transparent">
               Rebalance Needed
@@ -95,7 +99,10 @@ export function DriftIndicator({ driftItems, rebalanceNeeded, suggestions }: Dri
       {suggestions.length > 0 && (
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">Rebalance Suggestions</CardTitle>
+            <div className="flex items-center gap-1">
+              <CardTitle className="text-base">Rebalance Suggestions</CardTitle>
+              <InfoTooltip text="Actionable buy/sell suggestions to bring your portfolio back to target allocation. Amounts are calculated based on current prices and your target percentages." />
+            </div>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">

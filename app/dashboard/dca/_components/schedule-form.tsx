@@ -81,7 +81,12 @@ export function ScheduleForm({ portfolioId, defaultValues, onSuccess }: Schedule
       {/* Symbol */}
       <div className="space-y-2">
         <Label htmlFor="symbol">Asset</Label>
-        <Select name="symbol" value={symbol} onValueChange={setSymbol} disabled={isEditing}>
+        <Select
+          name="symbol"
+          value={symbol}
+          onValueChange={(v) => setSymbol(v ?? '')}
+          disabled={isEditing}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Select asset" />
           </SelectTrigger>
@@ -120,7 +125,7 @@ export function ScheduleForm({ portfolioId, defaultValues, onSuccess }: Schedule
       {/* Frequency */}
       <div className="space-y-2">
         <Label htmlFor="frequency">Frequency</Label>
-        <Select name="frequency" value={frequency} onValueChange={setFrequency}>
+        <Select name="frequency" value={frequency} onValueChange={(v) => setFrequency(v ?? '')}>
           <SelectTrigger>
             <SelectValue placeholder="Select frequency" />
           </SelectTrigger>

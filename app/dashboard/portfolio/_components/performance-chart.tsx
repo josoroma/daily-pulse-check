@@ -12,6 +12,7 @@ import {
 } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { InfoTooltip } from '@/components/info-tooltip'
 import { formatUsd } from '../_utils'
 import { TIME_RANGES, type TimeRange } from '../_constants'
 import { daysAgoCR } from '@/lib/date'
@@ -60,7 +61,10 @@ export function PerformanceChart({ data }: PerformanceChartProps) {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle>Performance</CardTitle>
+          <div className="flex items-center gap-1">
+            <CardTitle>Performance</CardTitle>
+            <InfoTooltip text="Your portfolio's total value over time. Use the time range buttons to zoom in on recent trends or zoom out to see the big picture. The chart is based on daily snapshots of your holdings." />
+          </div>
           <CardDescription>
             {isPositive ? '+' : ''}
             {formatUsd(changeAmount)}{' '}

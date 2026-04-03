@@ -53,7 +53,7 @@ export function calculateEma(prices: number[], period: number): MaResult {
 
   // Apply EMA formula for remaining values
   for (let i = period; i < prices.length; i++) {
-    ema = (prices[i] - ema) * multiplier + ema
+    ema = (prices[i]! - ema) * multiplier + ema
   }
 
   return { value: Math.round(ema * 100) / 100, type: 'ema', period }

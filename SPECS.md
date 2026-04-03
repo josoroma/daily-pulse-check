@@ -1,6 +1,6 @@
 # SPECS.md — Finance Dashboard
 
-> Version: 0.1.0 | Last updated: 2026-03-26
+> Version: 0.1.0 | Last updated: 2026-04-03
 
 ---
 
@@ -20,7 +20,7 @@
 | --------------------------------- | ------- | ---- | ----------- | --------- | ------- |
 | E1: Project Setup                 | 5       | 0    | 0           | 5         | 0       |
 | E2: Authentication & User Profile | 3       | 0    | 0           | 3         | 0       |
-| E3: Market Data Engine            | 4       | 0    | 0           | 4         | 0       |
+| E3: Market Data Engine            | 7       | 0    | 0           | 7         | 0       |
 | E4: Portfolio Tracker             | 4       | 0    | 0           | 4         | 0       |
 | E5: DCA Automation                | 3       | 0    | 0           | 3         | 0       |
 | E6: AI-Powered Insights           | 5       | 0    | 0           | 5         | 0       |
@@ -585,6 +585,143 @@ Feature: Macro Economic Indicators
 - [x] T-3.4.4: Create macro indicators card component in `app/dashboard/market/_components/macro-indicators.tsx`
 - [x] T-3.4.5: Create API route: `app/api/market/macro/[seriesId]/route.ts`
 - [x] T-3.4.6: Write unit tests for FRED data parsing and inflation rate calculation
+
+---
+
+### US-3.5: CoinGecko Enhanced Integration [x]
+
+**As a** user
+**I want** historical cost basis lookups, performance charts, and batch pricing with sparklines for crypto assets
+**So that** I can see richer crypto market data and 7-day trends inline with my portfolio
+
+```gherkin
+Feature: CoinGecko Enhanced Integration
+  As a user
+  I want enhanced crypto market data from CoinGecko
+  So that I can see cost basis, performance charts, and sparklines
+
+  Scenario: Fetch historical price for cost basis
+    Given the CoinGecko API key is configured
+    When the system requests the Bitcoin price on "2026-01-15"
+    Then the response includes coinId, date, and priceUsd
+    And the date is converted from yyyy-MM-dd to dd-MM-yyyy for the API
+
+  Scenario: Fetch market chart for performance
+    Given the CoinGecko API is accessible
+    When the system requests 90 days of market chart data for Bitcoin
+    Then the response includes prices, market caps, and volumes arrays
+    And each data point contains a timestamp and value
+
+  Scenario: Fetch batch market data with sparklines
+    Given the CoinGecko API is accessible
+    When the system requests market data for bitcoin and ethereum
+    Then the response includes current price, 24h/7d/30d changes, and 7-day sparkline
+    And all coins are returned in a single API call
+
+  Scenario: Portfolio positions show 7-day sparklines
+    Given the user has a BTC position
+    When the portfolio page renders
+    Then each crypto position row includes a 7-day price sparkline
+    And the sparkline color reflects positive (green) or negative (red) trend
+
+  Scenario: API route validates parameters
+    Given an authenticated user
+    When requesting historical price without a date parameter
+    Then a 400 error with "date parameter required" is returned
+    When requesting market chart with days > 365
+    Then a 400 error with "days must be between 1 and 365" is returned
+```
+
+#### Tasks
+
+- [x] T-3.5.1: Add `fetchCoinHistoricalPrice(coinId, date)` to `lib/market/crypto.ts` using `/coins/{id}/history`
+- [x] T-3.5.2: Add `fetchCoinMarketChart(coinId, days, interval)` to `lib/market/crypto.ts` using `/coins/{id}/market_chart`
+- [x] T-3.5.3: Add `fetchCoinsMarkets(coinIds)` to `lib/market/crypto.ts` using `/coins/markets` with sparklines and multi-timeframe changes
+- [x] T-3.5.4: Add Zod schemas: `CoinHistoricalPriceSchema`, `CoinMarketChartSchema`, `CoinMarketDataSchema`
+- [x] T-3.5.5: Extend `app/api/market/crypto/[coinId]/route.ts` with `type=historical-price`, `type=market-chart`, `type=markets` endpoints
+- [x] T-3.5.6: Create sparkline component in `app/dashboard/portfolio/_components/sparkline.tsx`
+- [x] T-3.5.7: Integrate sparklines into portfolio positions table (7d column for crypto assets)
+- [x] T-3.5.8: Add `formatDateForCoinGecko()` pure helper and export for testing
+- [x] T-3.5.9: Write unit tests for new schemas, `formatDateForCoinGecko`, and sparkline data validation
+
+---
+
+### US-3.6: Costa Rican Macro Indicators (BCCR) [x] 🎨
+
+**As a** Costa Rica-based investor
+**I want** to see key Costa Rican economic indicators (USD/CRC exchange rates, Monetary Policy Rate, Basic Passive Rate) from the Banco Central de Costa Rica
+**So that** I understand the local macro environment affecting my USD-denominated investments
+
+```gherkin
+Feature: Costa Rican Macro Indicators
+  As a Costa Rica-based investor
+  I want to see BCCR economic indicators
+  So that I understand the local macro environment
+
+  Scenario: Display current exchange rates
+    Given the BCCR SDDE API is accessible
+    When the market page loads
+    Then the USD/CRC sell rate and buy rate are displayed
+    And the date of the latest rate is shown
+
+  Scenario: Display monetary policy rates
+    Given the BCCR SDDE API is accessible
+    When the market page loads
+    Then the Monetary Policy Rate (TPM) is displayed
+    And the Basic Passive Rate (TBP) is displayed
+
+  Scenario: Handle BCCR API unavailability
+    Given the BCCR SDDE API is unreachable
+    When the market page loads
+    Then a fallback message is shown instead of indicators
+```
+
+#### Tasks
+
+- [x] T-3.6.1: Create `lib/market/bccr.ts` with SDDE REST API client, indicator codes (317, 318, 3541, 423), and `fetchBccrIndicator()` function
+- [x] T-3.6.2: Add SDDE response Zod schemas (`SddeResponseSchema`, `SddeSeriesItemSchema`, `SddeIndicadorSchema`)
+- [x] T-3.6.3: Create `app/api/market/bccr/route.ts` API route with auth guard and indicator/history endpoints
+- [x] T-3.6.4: Build `app/dashboard/market/_components/cr-macro-indicators.tsx` card component with skeleton loading
+- [x] T-3.6.5: Integrate BCCR card into market dashboard page
+- [x] T-3.6.6: Write unit tests for BCCR SDDE response parsing, `extractObservations()`, and schema validation
+
+---
+
+### US-3.7: USD/CRC Exchange Rate Chart [x] 🎨
+
+**As a** Costa Rica-based investor
+**I want** a 30-day chart of USD/CRC buy and sell exchange rates
+**So that** I can track colón trends and time my currency conversions
+
+```gherkin
+Feature: USD/CRC Exchange Rate Chart
+  As a Costa Rica-based investor
+  I want a historical exchange rate chart
+  So that I can track colón trends
+
+  Scenario: Display 30-day exchange rate chart
+    Given the BCCR SDDE API returns 30 days of sell and buy rates
+    When the exchange rate chart renders
+    Then both buy (compra) and sell (venta) lines are plotted
+    And the current rate, spread, and 30-day change percentage are shown
+
+  Scenario: Show trend direction
+    Given the current sell rate is lower than 30 days ago
+    When the chart header renders
+    Then a negative percentage badge with a down-trend icon is displayed
+
+  Scenario: Handle missing data gracefully
+    Given the BCCR API returns fewer than 30 days of data
+    When the chart renders
+    Then available data points are plotted without gaps
+```
+
+#### Tasks
+
+- [x] T-3.7.1: Add `fetchExchangeRateHistory(days)` to `lib/market/bccr.ts` fetching both buy and sell rates over time
+- [x] T-3.7.2: Build `app/dashboard/market/_components/exchange-rate-chart.tsx` with Recharts AreaChart, dual lines, spread, and trend badge
+- [x] T-3.7.3: Integrate exchange rate chart into market dashboard page
+- [x] T-3.7.4: Add `ExchangeRatePoint` type and Zod schema for chart data validation
 
 ---
 
@@ -1430,6 +1567,11 @@ Feature: Bitcoin Valuation Models
 - [x] T-8.2.4: Implement Rainbow Price Band chart with logarithmic regression bands
 - [x] T-8.2.5: Build valuation models page at `app/dashboard/bitcoin/valuation/page.tsx`
 - [x] T-8.2.6: Write unit tests for valuation model calculations
+- [x] T-8.2.7: Integrate Blockchain.com Charts API (`market-price?timespan=all`) for full BTC price history (2009–present), replacing CoinGecko 365-day limit for S2F and Rainbow charts
+- [x] T-8.2.8: Replace MVRV realized cap heuristic (`marketCap × 0.65`) with quadratic time-weighted cost-basis model using `estimateRealizedCap(supply, priceHistory)` — produces MVRV ~1.50, within ~5% of on-chain reality
+- [x] T-8.2.9: Optimize valuation page and API route to share fetched `priceHistory` across MVRV, S2F, and Rainbow models (avoid duplicate Blockchain.com calls)
+- [x] T-8.2.10: Add `estimateRealizedCap` unit tests (empty history, quadratic weighting, supply scaling, realistic MVRV range)
+- [x] T-8.2.11: Update InfoTooltips for all 3 valuation charts to reference Blockchain.com full history and quadratic realized cap model
 
 ---
 

@@ -8,6 +8,7 @@ import {
   rainbowBasePrice,
   getRainbowBands,
   getCurrentBand,
+  estimateRealizedCap,
   RAINBOW_BANDS,
 } from '@/lib/bitcoin/valuation'
 
@@ -229,5 +230,72 @@ describe('valuation: RainbowBandSchema', () => {
     }
     const result = RainbowBandSchema.parse(valid)
     expect(result.label).toBe('Hold')
+  })
+})
+
+describe('valuation: estimateRealizedCap', () => {
+  it('returns 0 for empty price history', () => {
+    expect(estimateRealizedCap(20_000_000, [])).toBe(0)
+  })
+
+  it('returns 0 when all prices are zero', () => {
+    const history: Array<[number, number]> = [
+      [1000, 0],
+      [2000, 0],
+    ]
+    expect(estimateRealizedCap(20_000_000, history)).toBe(0)
+  })
+
+  it('returns supply × price for single data point', () => {
+    const supply = 20_000_000
+    const history: Array<[number, number]> = [[1000, 50_000]]
+    expect(estimateRealizedCap(supply, history)).toBe(supply * 50_000)
+  })
+
+  it('weights recent prices higher (quadratic)', () => {
+    const supply = 20_000_000
+    // Early low prices, recent high prices
+    const risingHistory: Array<[number, number]> = [
+      [1000, 100],
+      [2000, 200],
+      [3000, 50_000],
+    ]
+    // Early high prices, recent low prices
+    const fallingHistory: Array<[number, number]> = [
+      [1000, 50_000],
+      [2000, 200],
+      [3000, 100],
+    ]
+    const risingCap = estimateRealizedCap(supply, risingHistory)
+    const fallingCap = estimateRealizedCap(supply, fallingHistory)
+    // Rising history should produce higher realized cap (recent high prices weighted more)
+    expect(risingCap).toBeGreaterThan(fallingCap)
+  })
+
+  it('produces realistic MVRV ratio with synthetic data', () => {
+    // Simulate: supply 20M, current price $100k (market cap $2T)
+    // History: gradually rising from $1k to $100k over 1000 days
+    const supply = 20_000_000
+    const history: Array<[number, number]> = Array.from({ length: 1000 }, (_, i) => [
+      (i + 1) * 86400000,
+      1000 + (i / 999) * 99_000,
+    ])
+    const realizedCap = estimateRealizedCap(supply, history)
+    const marketCap = supply * 100_000
+    const mvrv = marketCap / realizedCap
+    // MVRV should be between 1 and 3 for a steadily rising market
+    expect(mvrv).toBeGreaterThan(1)
+    expect(mvrv).toBeLessThan(3)
+  })
+
+  it('scales linearly with supply', () => {
+    const history: Array<[number, number]> = [
+      [1000, 10_000],
+      [2000, 20_000],
+      [3000, 30_000],
+    ]
+    const cap1 = estimateRealizedCap(10_000_000, history)
+    const cap2 = estimateRealizedCap(20_000_000, history)
+    expect(cap2).toBeCloseTo(cap1 * 2, 0)
   })
 })

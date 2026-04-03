@@ -45,7 +45,7 @@ export function MvrvChart({ data }: MvrvChartProps) {
       <CardHeader>
         <div className="flex items-center gap-1">
           <CardTitle>MVRV Z-Score</CardTitle>
-          <InfoTooltip text="MVRV Z-Score compares Bitcoin's market cap to its realized cap (the value of all coins at the price they last moved). Values below 0 (green) suggest undervaluation; above 6 (red) signals a potential bubble. Note: the realized cap shown here is an approximation (market cap × ~0.65) because true on-chain UTXO data requires a paid Glassnode or CoinMetrics subscription. Shown as a gauge because historical Z-Score time-series data is not available from the free CoinGecko API." />
+          <InfoTooltip text="MVRV Z-Score compares Bitcoin's market cap to its realized cap (the value of all coins at the price they last moved). Values below 0 (green) suggest undervaluation; above 6 (red) signals a potential bubble. Realized cap is estimated using a quadratic time-weighted average of BTC's full price history from Blockchain.com — not true on-chain UTXO data (which requires paid Glassnode/CoinMetrics). Shown as a gauge because historical Z-Score time-series is not available from free APIs." />
         </div>
         <CardDescription>
           Market Value to Realized Value · MVRV Ratio: {data.mvrvRatio.toFixed(2)}
@@ -94,7 +94,7 @@ export function MvrvChart({ data }: MvrvChartProps) {
           <div className="rounded-lg border border-border p-3">
             <p className="text-xs text-muted-foreground flex items-center gap-1">
               Realized Cap
-              <InfoTooltip text="Estimated as ~65% of market cap. True realized cap requires on-chain UTXO data from Glassnode or CoinMetrics (paid)." />
+              <InfoTooltip text="Estimated via quadratic time-weighted average price × supply using full BTC price history from Blockchain.com. True realized cap requires on-chain UTXO data from Glassnode or CoinMetrics (paid)." />
             </p>
             <p className="text-sm font-bold font-mono tabular-nums mt-0.5">
               ${(data.realizedCap / 1e12).toFixed(2)}T

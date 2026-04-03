@@ -18,7 +18,7 @@ async function fetchValuationData() {
   const priceHistory = await fetchBtcPriceHistory().catch(() => undefined)
 
   const [mvrv, s2f, rainbow] = await Promise.allSettled([
-    fetchMvrvZScore(),
+    fetchMvrvZScore(priceHistory),
     fetchS2FData(priceHistory),
     fetchRainbowData(priceHistory),
   ])

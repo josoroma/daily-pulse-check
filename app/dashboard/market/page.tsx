@@ -7,9 +7,19 @@ import {
   fetchDXY,
   type MacroIndicator,
 } from '@/lib/market/macro'
+import {
+  fetchBccrIndicator,
+  fetchExchangeRateHistory,
+  BCCR_INDICATORS,
+  type BccrIndicator,
+  type BccrIndicatorId,
+  type ExchangeRatePoint,
+} from '@/lib/market/bccr'
 import { PriceCards } from './_components/price-cards'
 import { FearGreedGauge } from './_components/fear-greed-gauge'
 import { MacroIndicators } from './_components/macro-indicators'
+import { CrMacroIndicators } from './_components/cr-macro-indicators'
+import { ExchangeRateChart } from './_components/exchange-rate-chart'
 import { ErrorToasts } from '../_components/error-toasts'
 import type { StockPrice } from '@/lib/market/stocks'
 import type { BitcoinPrice } from '@/lib/market/crypto'
@@ -78,9 +88,46 @@ async function fetchMacroData() {
   return { indicators, inflationRate, errors }
 }
 
+interface CrMacroData {
+  indicators: BccrIndicator[]
+  exchangeHistory: ExchangeRatePoint[]
+  errors: string[]
+}
+
+async function fetchCrMacroData(): Promise<CrMacroData> {
+  const errors: string[] = []
+  const indicatorIds = Object.keys(BCCR_INDICATORS) as BccrIndicatorId[]
+
+  const [indicatorResults, historyResult] = await Promise.all([
+    Promise.allSettled(indicatorIds.map((id) => fetchBccrIndicator(id))),
+    fetchExchangeRateHistory(30).catch(() => null),
+  ])
+
+  const indicators: BccrIndicator[] = []
+  for (const result of indicatorResults) {
+    if (result.status === 'fulfilled') indicators.push(result.value)
+  }
+
+  if (indicators.length === 0) {
+    errors.push('Costa Rican macro indicators failed to load')
+  }
+
+  const exchangeHistory = historyResult ?? []
+
+  if (!historyResult) {
+    errors.push('USD/CRC exchange rate history failed to load')
+  }
+
+  return { indicators, exchangeHistory, errors }
+}
+
 export default async function MarketPage() {
-  const [market, macro] = await Promise.all([fetchMarketData(), fetchMacroData()])
-  const errors = [...market.errors, ...macro.errors]
+  const [market, macro, crMacro] = await Promise.all([
+    fetchMarketData(),
+    fetchMacroData(),
+    fetchCrMacroData(),
+  ])
+  const errors = [...market.errors, ...macro.errors, ...crMacro.errors]
 
   return (
     <div className="space-y-6 px-4 py-8">
@@ -103,6 +150,11 @@ export default async function MarketPage() {
       <div className="grid gap-4 md:grid-cols-2">
         <FearGreedGauge data={market.sentiment} />
         <MacroIndicators indicators={macro.indicators} inflationRate={macro.inflationRate} />
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <CrMacroIndicators indicators={crMacro.indicators} />
+        <ExchangeRateChart data={crMacro.exchangeHistory} />
       </div>
     </div>
   )

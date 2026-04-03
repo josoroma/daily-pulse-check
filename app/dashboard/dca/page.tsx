@@ -105,11 +105,11 @@ export default async function DcaPage() {
             </Card>
           ) : (
             analyticsSymbols.map((symbol) => {
-              const txns = transactionsBySymbol[symbol]
+              const txns = transactionsBySymbol[symbol] ?? []
               const returns = calculateDcaReturns(txns)
               const costBasisTrend = calculateCostBasisTrend(txns)
-              const lastPrice = txns.length > 0 ? txns[txns.length - 1].price : 0
-              const firstPrice = txns.length > 0 ? txns[0].price : 0
+              const lastPrice = txns.length > 0 ? txns[txns.length - 1]!.price : 0
+              const firstPrice = txns.length > 0 ? txns[0]!.price : 0
               const currentValue = returns.totalQuantity * lastPrice
               const comparison = calculateLumpSumComparison(txns, lastPrice, firstPrice)
               const assetColor = ASSET_COLORS[symbol] ?? 'hsl(220, 10%, 50%)'

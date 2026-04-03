@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { InfoTooltip } from '@/components/info-tooltip'
 import { updateTargetAllocations } from '../_actions'
 import type { TargetAllocation } from '../_utils'
 
@@ -63,7 +64,12 @@ export function TargetAllocationForm({
     <Card>
       <CardHeader>
         <CardTitle className="text-base">Target Allocation</CardTitle>
-        <CardDescription>Set target percentages for each asset. Must total 100%.</CardDescription>
+        <CardDescription>
+          <span className="flex items-center gap-1">
+            Set target percentages for each asset. Must total 100%.
+            <InfoTooltip text="Define your ideal portfolio split. Once saved, the Drift Indicator will show how far your actual allocation has drifted and suggest trades to rebalance." />
+          </span>
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">

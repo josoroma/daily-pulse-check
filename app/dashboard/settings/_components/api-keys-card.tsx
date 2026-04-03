@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { InfoTooltip } from '@/components/info-tooltip'
 import { saveApiKey, deleteApiKey, testApiKey } from '../_actions'
 
 const SERVICES = [
@@ -115,6 +116,7 @@ export const ApiKeysCard = ({ keyStatuses }: ApiKeysCardProps) => {
         <CardTitle className="flex items-center gap-2">
           <Key className="h-5 w-5 text-amber-500" />
           API Keys
+          <InfoTooltip text="Manage your own API keys for market data and AI providers. Keys are encrypted at rest for security." />
         </CardTitle>
         <CardDescription>
           Optionally provide your own API keys. Keys are encrypted at rest. If not set, shared keys

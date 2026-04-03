@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { InfoTooltip } from '@/components/info-tooltip'
 import { changePassword } from '../_actions'
 
 export const PasswordChangeCard = () => {
@@ -36,6 +37,7 @@ export const PasswordChangeCard = () => {
         <CardTitle className="flex items-center gap-2">
           <Lock className="h-5 w-5 text-amber-500" />
           Change Password
+          <InfoTooltip text="Update your account password to keep your data secure. You'll stay signed in after the change." />
         </CardTitle>
         <CardDescription>Update your account password. You will stay signed in.</CardDescription>
       </CardHeader>

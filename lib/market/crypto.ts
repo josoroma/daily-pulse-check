@@ -188,3 +188,191 @@ export async function fetchUsdToCrc(usdAmount: number): Promise<number> {
 export function convertUsdToCrc(usdAmount: number, rate: number): number {
   return usdAmount * rate
 }
+
+// --- Historical Price (Cost Basis) ---
+
+export const CoinHistoricalPriceSchema = z.object({
+  coinId: z.string(),
+  date: z.string(),
+  priceUsd: z.number().nonnegative(),
+})
+
+export type CoinHistoricalPrice = z.infer<typeof CoinHistoricalPriceSchema>
+
+/**
+ * Fetch the price of a coin on a specific date.
+ * Uses `/coins/{id}/history` for cost basis lookups.
+ * @param coinId CoinGecko coin ID (e.g., 'bitcoin', 'ethereum')
+ * @param date Date in ISO format yyyy-MM-dd (e.g., '2026-01-15')
+ */
+export async function fetchCoinHistoricalPrice(
+  coinId: string,
+  date: string,
+): Promise<CoinHistoricalPrice> {
+  // Convert yyyy-MM-dd to dd-MM-yyyy for CoinGecko
+  const cacheKey = `crypto:${coinId}:history:${date}`
+
+  return getCached<CoinHistoricalPrice>(cacheKey, CacheTTL.DAILY_HISTORY, async () => {
+    const cgDate = formatDateForCoinGecko(date)
+
+    const raw = await fetchFromCoinGecko<{
+      id: string
+      market_data?: {
+        current_price?: { usd?: number }
+      }
+    }>(`/coins/${encodeURIComponent(coinId)}/history`, {
+      date: cgDate,
+      localization: 'false',
+    })
+
+    const priceUsd = raw.market_data?.current_price?.usd
+    if (priceUsd === undefined) {
+      throw new Error(`No price data for ${coinId} on ${date}`)
+    }
+
+    return CoinHistoricalPriceSchema.parse({
+      coinId,
+      date,
+      priceUsd,
+    })
+  })
+}
+
+// --- Market Chart (Performance) ---
+
+export const CoinMarketChartSchema = z.object({
+  coinId: z.string(),
+  prices: z.array(PricePointSchema),
+  marketCaps: z.array(PricePointSchema),
+  volumes: z.array(PricePointSchema),
+})
+
+export type CoinMarketChart = z.infer<typeof CoinMarketChartSchema>
+
+/**
+ * Fetch historical market chart data for a coin.
+ * Uses `/coins/{id}/market_chart` for performance charts.
+ * @param coinId CoinGecko coin ID (e.g., 'bitcoin')
+ * @param days Number of days of history (1, 7, 14, 30, 90, 180, 365, or 'max')
+ * @param interval Data interval: 'daily' for consistent points, omit for auto
+ */
+export async function fetchCoinMarketChart(
+  coinId: string,
+  days: number | 'max' = 90,
+  interval?: 'daily',
+): Promise<CoinMarketChart> {
+  const cacheKey = `crypto:${coinId}:market_chart:${days}:${interval ?? 'auto'}`
+
+  return getCached<CoinMarketChart>(cacheKey, CacheTTL.DAILY_HISTORY, async () => {
+    const params: Record<string, string> = {
+      vs_currency: 'usd',
+      days: days.toString(),
+    }
+    if (interval) params.interval = interval
+
+    const raw = await fetchFromCoinGecko<{
+      prices: Array<[number, number]>
+      market_caps: Array<[number, number]>
+      total_volumes: Array<[number, number]>
+    }>(`/coins/${encodeURIComponent(coinId)}/market_chart`, params)
+
+    return CoinMarketChartSchema.parse({
+      coinId,
+      prices: (raw.prices ?? []).map(([timestamp, price]) => ({ timestamp, price })),
+      marketCaps: (raw.market_caps ?? []).map(([timestamp, price]) => ({ timestamp, price })),
+      volumes: (raw.total_volumes ?? []).map(([timestamp, price]) => ({ timestamp, price })),
+    })
+  })
+}
+
+// --- Batch Market Data with Sparklines ---
+
+export const CoinMarketDataSchema = z.object({
+  id: z.string(),
+  symbol: z.string(),
+  name: z.string(),
+  image: z.string(),
+  currentPrice: z.number(),
+  marketCap: z.number(),
+  marketCapRank: z.number().nullable(),
+  high24h: z.number().nullable(),
+  low24h: z.number().nullable(),
+  priceChange24h: z.number().nullable(),
+  priceChangePercentage24h: z.number().nullable(),
+  priceChangePercentage7d: z.number().nullable(),
+  priceChangePercentage30d: z.number().nullable(),
+  sparkline7d: z.array(z.number()).nullable(),
+})
+
+export type CoinMarketData = z.infer<typeof CoinMarketDataSchema>
+
+/**
+ * Fetch bulk market data for multiple coins with sparklines and multi-timeframe changes.
+ * Uses `/coins/markets` for portfolio dashboards.
+ * @param coinIds Array of CoinGecko coin IDs (e.g., ['bitcoin', 'ethereum'])
+ */
+export async function fetchCoinsMarkets(coinIds: string[]): Promise<CoinMarketData[]> {
+  if (coinIds.length === 0) return []
+
+  const sortedIds = [...coinIds].sort().join(',')
+  const cacheKey = `crypto:markets:${sortedIds}`
+
+  return getCached<CoinMarketData[]>(cacheKey, CacheTTL.REALTIME_PRICE, async () => {
+    const raw = await fetchFromCoinGecko<
+      Array<{
+        id: string
+        symbol: string
+        name: string
+        image: string
+        current_price: number
+        market_cap: number
+        market_cap_rank: number | null
+        high_24h: number | null
+        low_24h: number | null
+        price_change_24h: number | null
+        price_change_percentage_24h: number | null
+        price_change_percentage_7d_in_currency: number | null
+        price_change_percentage_30d_in_currency: number | null
+        sparkline_in_7d?: { price: number[] }
+      }>
+    >('/coins/markets', {
+      vs_currency: 'usd',
+      ids: coinIds.join(','),
+      order: 'market_cap_desc',
+      per_page: '250',
+      page: '1',
+      sparkline: 'true',
+      price_change_percentage: '7d,30d',
+    })
+
+    return raw.map((coin) =>
+      CoinMarketDataSchema.parse({
+        id: coin.id,
+        symbol: coin.symbol,
+        name: coin.name,
+        image: coin.image,
+        currentPrice: coin.current_price,
+        marketCap: coin.market_cap,
+        marketCapRank: coin.market_cap_rank,
+        high24h: coin.high_24h,
+        low24h: coin.low_24h,
+        priceChange24h: coin.price_change_24h,
+        priceChangePercentage24h: coin.price_change_percentage_24h,
+        priceChangePercentage7d: coin.price_change_percentage_7d_in_currency,
+        priceChangePercentage30d: coin.price_change_percentage_30d_in_currency,
+        sparkline7d: coin.sparkline_in_7d?.price ?? null,
+      }),
+    )
+  })
+}
+
+// --- Pure helpers (testable) ---
+
+/**
+ * Convert ISO date (yyyy-MM-dd) to CoinGecko format (dd-MM-yyyy).
+ */
+export function formatDateForCoinGecko(isoDate: string): string {
+  const parts = isoDate.split('-')
+  if (parts.length !== 3) throw new Error(`Invalid ISO date: ${isoDate}`)
+  return `${parts[2]}-${parts[1]}-${parts[0]}`
+}

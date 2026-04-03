@@ -32,6 +32,7 @@ import {
 import { Pencil, Trash2, ArrowUpDown } from 'lucide-react'
 import { deletePosition } from '../_actions'
 import { PositionForm } from './position-form'
+import { Sparkline } from './sparkline'
 import { formatPct, formatQuantity, type PositionWithPnL } from '../_utils'
 import { useCurrency } from '@/app/dashboard/_hooks'
 import { ASSET_COLOR_CLASSES, DEFAULT_ASSET_COLOR } from '../_constants'
@@ -126,6 +127,7 @@ export function PositionsTable({ positions, portfolioId }: PositionsTableProps) 
                 P&L %
               </SortButton>
             </TableHead>
+            <TableHead className="hidden md:table-cell w-[100px]">7d</TableHead>
             <TableHead className="w-[80px]" />
           </TableRow>
         </TableHeader>
@@ -165,6 +167,13 @@ export function PositionsTable({ positions, portfolioId }: PositionsTableProps) 
                   className={`text-right font-mono tabular-nums ${isPnLPositive ? 'text-emerald-500' : 'text-rose-500'}`}
                 >
                   {formatPct(pos.unrealized_pnl_pct)}
+                </TableCell>
+                <TableCell className="hidden md:table-cell">
+                  {pos.sparkline7d && pos.sparkline7d.length > 1 ? (
+                    <Sparkline data={pos.sparkline7d} />
+                  ) : (
+                    <span className="text-xs text-muted-foreground">—</span>
+                  )}
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-1 justify-end">

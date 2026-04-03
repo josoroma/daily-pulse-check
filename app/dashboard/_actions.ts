@@ -196,6 +196,7 @@ async function fetchLivePrices(assets: Array<{ symbol: string; asset_type: strin
 
   for (let i = 0; i < results.length; i++) {
     const result = results[i]
+    if (!result) continue
     if (result.status === 'fulfilled') {
       prices[result.value.symbol] = result.value.price
       if (result.value.isBtc && 'btcData' in result.value) {
@@ -205,7 +206,8 @@ async function fetchLivePrices(assets: Array<{ symbol: string; asset_type: strin
         }
       }
     } else {
-      failedSymbols.push(assets[i].symbol)
+      const asset = assets[i]
+      if (asset) failedSymbols.push(asset.symbol)
     }
   }
 

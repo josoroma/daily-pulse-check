@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { InfoTooltip } from '@/components/info-tooltip'
 import { ArrowUpDown } from 'lucide-react'
 import type { PositionPerformance } from '../_utils'
 import { formatUsd, formatPct } from '../_utils'
@@ -57,7 +58,10 @@ export const PerAssetTable = ({ assets }: PerAssetTableProps) => {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Per-Asset Performance</CardTitle>
+          <div className="flex items-center gap-1">
+            <CardTitle>Per-Asset Performance</CardTitle>
+            <InfoTooltip text="No positions found. Add positions in your portfolio to see per-asset performance metrics including cost basis, current value, P&L, and return percentage." />
+          </div>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -73,7 +77,10 @@ export const PerAssetTable = ({ assets }: PerAssetTableProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Per-Asset Performance</CardTitle>
+        <div className="flex items-center gap-1">
+          <CardTitle>Per-Asset Performance</CardTitle>
+          <InfoTooltip text="Detailed breakdown of each asset's cost basis, current value, unrealized P&L, and return percentage. Click column headers to sort. Helps identify your best and worst performing holdings." />
+        </div>
       </CardHeader>
       <CardContent>
         <Table>

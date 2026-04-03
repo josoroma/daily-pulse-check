@@ -4,6 +4,7 @@ import { useState, useCallback, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { InfoTooltip } from '@/components/info-tooltip'
 import { RefreshCw, Sparkles, Brain, ChevronRight } from 'lucide-react'
 
 type MarketSummaryCardProps = {
@@ -95,6 +96,7 @@ export const MarketSummaryCard = ({ cachedSummary }: MarketSummaryCardProps) => 
         <CardTitle className="flex items-center gap-2 text-base font-semibold">
           <Sparkles className="h-4 w-4 text-amber-500" />
           Daily Market Summary
+          <InfoTooltip text="AI-generated analysis of today's market conditions including stock/crypto prices, sentiment indicators, macro data, and how they might affect your portfolio. Click Refresh to generate a new summary." />
         </CardTitle>
         <Button variant="ghost" size="sm" onClick={handleRefresh} disabled={isStreaming}>
           <RefreshCw className={`h-4 w-4 ${isStreaming ? 'animate-spin' : ''}`} />

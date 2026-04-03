@@ -17,6 +17,7 @@ export interface PositionWithPnL {
   cost_basis: number
   unrealized_pnl: number
   unrealized_pnl_pct: number
+  sparkline7d?: number[] | null
 }
 
 export function calculateUnrealizedPnL(

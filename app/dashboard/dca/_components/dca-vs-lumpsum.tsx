@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { InfoTooltip } from '@/components/info-tooltip'
 import type { LumpSumComparison } from '../_utils'
 import { formatUsd, formatPct } from '../_utils'
 
@@ -26,7 +27,10 @@ export function DcaVsLumpsum({ comparison, symbol }: DcaVsLumpsumProps) {
     <Card>
       <CardHeader>
         <div>
-          <CardTitle>DCA vs Lump Sum — {symbol}</CardTitle>
+          <div className="flex items-center gap-1">
+            <CardTitle>DCA vs Lump Sum — {symbol}</CardTitle>
+            <InfoTooltip text="Side-by-side comparison of your DCA approach versus investing the same total amount on day one. Shows which strategy would have produced better returns for this specific asset and time period." />
+          </div>
           <CardDescription>
             Comparing your DCA strategy against investing the same total on day one.
           </CardDescription>

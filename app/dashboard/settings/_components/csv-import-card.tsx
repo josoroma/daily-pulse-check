@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { Upload, FileSpreadsheet, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { InfoTooltip } from '@/components/info-tooltip'
 import {
   Table,
   TableBody,
@@ -95,6 +96,7 @@ export const CsvImportCard = ({ portfolios }: { portfolios: Portfolio[] }) => {
         <CardTitle className="flex items-center gap-2">
           <FileSpreadsheet className="h-5 w-5 text-emerald-500" />
           Import Positions from CSV
+          <InfoTooltip text="Bulk-import your positions from a CSV file instead of adding them one by one." />
         </CardTitle>
         <CardDescription>
           Upload a CSV file with columns: Symbol, Asset Type (ETF/Crypto), Quantity, Average Buy

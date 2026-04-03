@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { buttonVariants } from '@/components/ui/button'
 import { ArrowDownLeft, ArrowUpRight, Bell, RefreshCw, Activity } from 'lucide-react'
+import { InfoTooltip } from '@/components/info-tooltip'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import type { ActivityItem } from '@/app/dashboard/_utils'
@@ -45,7 +46,10 @@ export const DashboardActivity = ({ items }: DashboardActivityProps) => {
   return (
     <Card className="lg:col-span-4">
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Recent Activity</CardTitle>
+        <div className="flex items-center gap-1">
+          <CardTitle>Recent Activity</CardTitle>
+          <InfoTooltip text="Your latest transactions (buys, sells, DCA executions) and triggered alert notifications, sorted by most recent. Helps you keep track of portfolio actions at a glance." />
+        </div>
         <Link
           href="/dashboard/portfolio"
           className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), 'text-xs')}

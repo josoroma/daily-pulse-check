@@ -2,10 +2,18 @@
 
 import { signInWithGoogle } from '@/app/auth/_actions'
 import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 
 export const OAuthButtons = () => {
+  const handleGoogleSignIn = async () => {
+    const result = await signInWithGoogle()
+    if (result?.error) {
+      toast.error(result.error)
+    }
+  }
+
   return (
-    <form action={signInWithGoogle}>
+    <form action={handleGoogleSignIn}>
       <Button type="submit" variant="outline" className="w-full">
         <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
           <path

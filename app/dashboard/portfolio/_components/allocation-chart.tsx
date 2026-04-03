@@ -2,6 +2,7 @@
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { InfoTooltip } from '@/components/info-tooltip'
 import { formatUsd } from '../_utils'
 import { ASSET_COLORS, ASSET_COLOR_CLASSES, DEFAULT_ASSET_COLOR } from '../_constants'
 
@@ -46,7 +47,10 @@ export function AllocationChart({ data }: AllocationChartProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Asset Allocation</CardTitle>
+        <div className="flex items-center gap-1">
+          <CardTitle>Asset Allocation</CardTitle>
+          <InfoTooltip text="Visual breakdown of how your money is distributed across VOO, QQQ, BTC, and other holdings. Use this to check if your actual allocation matches your investment strategy." />
+        </div>
         <CardDescription>Portfolio distribution by asset</CardDescription>
       </CardHeader>
       <CardContent>

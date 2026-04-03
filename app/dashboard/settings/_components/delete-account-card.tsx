@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { InfoTooltip } from '@/components/info-tooltip'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,6 +46,7 @@ export const DeleteAccountCard = ({ userEmail }: { userEmail: string }) => {
         <CardTitle className="flex items-center gap-2 text-rose-500">
           <AlertTriangle className="h-5 w-5" />
           Danger Zone
+          <InfoTooltip text="Permanently deletes your account, portfolio, transactions, alerts, and all associated data. This cannot be undone. You must type your email to confirm." />
         </CardTitle>
         <CardDescription>
           Permanently delete your account and all associated data. This action cannot be undone.

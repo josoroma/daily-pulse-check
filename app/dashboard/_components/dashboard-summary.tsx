@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { buttonVariants } from '@/components/ui/button'
 import { Sparkles } from 'lucide-react'
+import { InfoTooltip } from '@/components/info-tooltip'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
@@ -24,6 +25,7 @@ export const DashboardSummary = ({ summary }: DashboardSummaryProps) => {
         <CardTitle className="flex items-center gap-2 text-base font-semibold">
           <Sparkles className="h-4 w-4 text-amber-500" />
           AI Briefing
+          <InfoTooltip text="An AI-generated summary of today's market conditions, your portfolio performance, and key events. Refreshed daily from the Insights page using your preferred AI model." />
         </CardTitle>
         <Link
           href="/dashboard/insights"

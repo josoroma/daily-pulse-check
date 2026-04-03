@@ -11,6 +11,7 @@ import {
   Legend,
 } from 'recharts'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { InfoTooltip } from '@/components/info-tooltip'
 import { Skeleton } from '@/components/ui/skeleton'
 
 interface BenchmarkChartProps {
@@ -56,7 +57,10 @@ export const BenchmarkChart = ({ portfolioData, benchmarkData }: BenchmarkChartP
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Portfolio vs Benchmark</CardTitle>
+          <div className="flex items-center gap-1">
+            <CardTitle>Portfolio vs Benchmark</CardTitle>
+            <InfoTooltip text="Cumulative percentage return chart comparing your portfolio against the S&P 500 (VOO). Both series are normalized to start at 0% so you can see relative performance over time." />
+          </div>
           <CardDescription>Performance comparison with S&P 500 (VOO)</CardDescription>
         </CardHeader>
         <CardContent>
@@ -71,7 +75,10 @@ export const BenchmarkChart = ({ portfolioData, benchmarkData }: BenchmarkChartP
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Portfolio vs Benchmark</CardTitle>
+        <div className="flex items-center gap-1">
+          <CardTitle>Portfolio vs Benchmark</CardTitle>
+          <InfoTooltip text="Cumulative percentage return chart comparing your portfolio against the S&P 500 (VOO). Both series are normalized to start at 0% so you can see relative performance over time." />
+        </div>
         <CardDescription>Cumulative return comparison with S&P 500 (VOO)</CardDescription>
       </CardHeader>
       <CardContent>
@@ -109,16 +116,14 @@ export const BenchmarkChart = ({ portfolioData, benchmarkData }: BenchmarkChartP
                 borderRadius: '8px',
                 color: 'hsl(var(--popover-foreground))',
               }}
-              formatter={(value: number, name: string) => [
-                `${value.toFixed(2)}%`,
+              formatter={(value, name) => [
+                `${Number(value ?? 0).toFixed(2)}%`,
                 name === 'portfolio' ? 'Your Portfolio' : 'S&P 500 (VOO)',
               ]}
-              labelFormatter={(label: string) => new Date(label).toLocaleDateString()}
+              labelFormatter={(label) => new Date(String(label)).toLocaleDateString()}
             />
             <Legend
-              formatter={(value: string) =>
-                value === 'portfolio' ? 'Your Portfolio' : 'S&P 500 (VOO)'
-              }
+              formatter={(value) => (value === 'portfolio' ? 'Your Portfolio' : 'S&P 500 (VOO)')}
             />
             <Area
               type="monotone"

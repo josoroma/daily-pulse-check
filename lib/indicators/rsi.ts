@@ -25,7 +25,7 @@ export function calculateRsi(prices: number[], period: number = 14): RsiResult {
   // Calculate price changes
   const changes: number[] = []
   for (let i = 1; i < prices.length; i++) {
-    changes.push(prices[i] - prices[i - 1])
+    changes.push(prices[i]! - prices[i - 1]!)
   }
 
   // Initial average gain and loss (simple average of first `period` changes)
@@ -33,10 +33,11 @@ export function calculateRsi(prices: number[], period: number = 14): RsiResult {
   let avgLoss = 0
 
   for (let i = 0; i < period; i++) {
-    if (changes[i] >= 0) {
-      avgGain += changes[i]
+    const c = changes[i]!
+    if (c >= 0) {
+      avgGain += c
     } else {
-      avgLoss += Math.abs(changes[i])
+      avgLoss += Math.abs(c)
     }
   }
 
@@ -45,7 +46,7 @@ export function calculateRsi(prices: number[], period: number = 14): RsiResult {
 
   // Wilder's smoothing for remaining changes
   for (let i = period; i < changes.length; i++) {
-    const change = changes[i]
+    const change = changes[i]!
     const gain = change >= 0 ? change : 0
     const loss = change < 0 ? Math.abs(change) : 0
 

@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { TrendingUp, TrendingDown, DollarSign, BarChart3 } from 'lucide-react'
+import { InfoTooltip } from '@/components/info-tooltip'
 import { formatUsd, formatPct } from '../_utils'
 
 interface TotalValueCardProps {
@@ -25,7 +26,10 @@ export function TotalValueCard({
       {/* Total Value */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Total Value</CardTitle>
+          <div className="flex items-center gap-1">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Value</CardTitle>
+            <InfoTooltip text="The current market value of all your open positions combined. Multiply each holding's quantity by its latest price." />
+          </div>
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -36,7 +40,10 @@ export function TotalValueCard({
       {/* 24h Change */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">24h Change</CardTitle>
+          <div className="flex items-center gap-1">
+            <CardTitle className="text-sm font-medium text-muted-foreground">24h Change</CardTitle>
+            <InfoTooltip text="How much your total portfolio value moved in the last 24 hours. Reflects combined price changes across all assets." />
+          </div>
           {isDayPositive ? (
             <TrendingUp className="h-4 w-4 text-emerald-500" />
           ) : (
@@ -61,9 +68,12 @@ export function TotalValueCard({
       {/* Unrealized P&L */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">
-            Unrealized P&L
-          </CardTitle>
+          <div className="flex items-center gap-1">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Unrealized P&L
+            </CardTitle>
+            <InfoTooltip text="Your paper profit or loss: current market value minus what you originally paid (cost basis). 'Unrealized' means you haven't sold yet." />
+          </div>
           {isPnLPositive ? (
             <TrendingUp className="h-4 w-4 text-emerald-500" />
           ) : (
@@ -88,7 +98,10 @@ export function TotalValueCard({
       {/* Cost Basis */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Cost Basis</CardTitle>
+          <div className="flex items-center gap-1">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Cost Basis</CardTitle>
+            <InfoTooltip text="The total amount you've invested across all positions. This is what you paid, used as the baseline to calculate profit or loss." />
+          </div>
           <BarChart3 className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>

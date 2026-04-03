@@ -3,6 +3,7 @@
 import { useTheme } from 'next-themes'
 import { Moon, Sun, Monitor, Palette } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { InfoTooltip } from '@/components/info-tooltip'
 
 const THEMES = [
   { value: 'light', label: 'Light', icon: Sun, description: 'Clean and bright interface' },
@@ -19,6 +20,7 @@ export const AppearanceCard = () => {
         <CardTitle className="flex items-center gap-2">
           <Palette className="h-5 w-5 text-sky-500" />
           Appearance
+          <InfoTooltip text="Choose your preferred color theme. Dark mode is recommended for extended use and reduces eye strain. System mode automatically follows your OS light/dark setting." />
         </CardTitle>
         <CardDescription>
           Choose your preferred theme. The dashboard defaults to dark mode.

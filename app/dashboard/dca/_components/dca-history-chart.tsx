@@ -12,6 +12,7 @@ import {
   ReferenceLine,
 } from 'recharts'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { InfoTooltip } from '@/components/info-tooltip'
 import type { CostBasisPoint } from '../_utils'
 import { formatUsd } from '../_utils'
 import { formatDateShort } from '@/lib/date'
@@ -51,7 +52,10 @@ export function DcaHistoryChart({
     <Card>
       <CardHeader>
         <div>
-          <CardTitle>DCA History — {symbol}</CardTitle>
+          <div className="flex items-center gap-1">
+            <CardTitle>DCA History — {symbol}</CardTitle>
+            <InfoTooltip text="Timeline of every DCA purchase for this asset. Dots mark individual buys and the line tracks your evolving average cost basis. The reference line shows the current market price for quick comparison." />
+          </div>
           <CardDescription>
             Each point is a DCA buy. The line tracks your weighted average cost basis.
           </CardDescription>

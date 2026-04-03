@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DollarSign, TrendingUp, TrendingDown, BarChart3, Bitcoin } from 'lucide-react'
+import { InfoTooltip } from '@/components/info-tooltip'
 import { useCurrency } from '@/app/dashboard/_hooks'
 import type { DashboardMetrics } from '@/app/dashboard/_utils'
 
@@ -30,7 +31,10 @@ export const DashboardMetricsCards = ({ metrics }: DashboardMetricsProps) => {
       {/* Total Value */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Total Value</CardTitle>
+          <div className="flex items-center gap-1">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Value</CardTitle>
+            <InfoTooltip text="The combined current market value of all your positions (VOO, QQQ, BTC, and cash). Updates when market data refreshes." />
+          </div>
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -44,7 +48,10 @@ export const DashboardMetricsCards = ({ metrics }: DashboardMetricsProps) => {
       {/* Day Change */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Day Change</CardTitle>
+          <div className="flex items-center gap-1">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Day Change</CardTitle>
+            <InfoTooltip text="How much your portfolio value changed today. Green means gains, red means losses. Percentage shows the relative change from yesterday's close." />
+          </div>
           {isDayPositive ? (
             <TrendingUp className="h-4 w-4 text-emerald-500" />
           ) : (
@@ -71,7 +78,12 @@ export const DashboardMetricsCards = ({ metrics }: DashboardMetricsProps) => {
       {/* Total Return */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Total Return</CardTitle>
+          <div className="flex items-center gap-1">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Return
+            </CardTitle>
+            <InfoTooltip text="Your unrealized profit or loss across all positions. Calculated as current market value minus total cost basis. Does not include realized gains from sold positions." />
+          </div>
           {isPnlPositive ? (
             <TrendingUp className="h-4 w-4 text-emerald-500" />
           ) : (
@@ -98,7 +110,10 @@ export const DashboardMetricsCards = ({ metrics }: DashboardMetricsProps) => {
       {/* BTC Price */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">BTC Price</CardTitle>
+          <div className="flex items-center gap-1">
+            <CardTitle className="text-sm font-medium text-muted-foreground">BTC Price</CardTitle>
+            <InfoTooltip text="Current Bitcoin spot price in USD with 24-hour change. Useful for quick reference since BTC is a core holding. Data from CoinGecko." />
+          </div>
           <Bitcoin className="h-4 w-4 text-orange-500" />
         </CardHeader>
         <CardContent>

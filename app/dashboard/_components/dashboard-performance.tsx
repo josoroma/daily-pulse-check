@@ -12,6 +12,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { buttonVariants } from '@/components/ui/button'
 import { TrendingUp } from 'lucide-react'
+import { InfoTooltip } from '@/components/info-tooltip'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import type { DashboardSnapshot } from '@/app/dashboard/_utils'
@@ -60,7 +61,10 @@ export const DashboardPerformance = ({ data }: DashboardPerformanceProps) => {
     <Card className="lg:col-span-4">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle>Performance</CardTitle>
+          <div className="flex items-center gap-1">
+            <CardTitle>Performance</CardTitle>
+            <InfoTooltip text="Your portfolio's total value over the last 30 days. The chart tracks daily snapshots so you can spot trends and see the impact of market moves on your holdings." />
+          </div>
           {data.length > 1 && (
             <CardDescription>
               {isPositive ? '+' : ''}

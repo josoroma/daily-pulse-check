@@ -24,7 +24,7 @@ export const OnboardingModal = ({ defaultValues }: OnboardingModalProps) => {
 
   return (
     <Dialog open>
-      <DialogContent className="sm:max-w-md" onInteractOutside={(e) => e.preventDefault()}>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold tracking-tight">
             Welcome! Set up your profile

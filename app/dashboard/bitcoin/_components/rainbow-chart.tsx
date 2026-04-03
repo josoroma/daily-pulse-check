@@ -114,7 +114,7 @@ export function RainbowChart({ data }: RainbowChartProps) {
         <div>
           <div className="flex items-center gap-1">
             <CardTitle>Rainbow Price Band</CardTitle>
-            <InfoTooltip text="A logarithmic regression model (log₁₀(price) = 5.84 × log₁₀(days) − 17.01) that divides Bitcoin's price history into color-coded bands — from 'Fire Sale' (deep blue, strongly undervalued) through 'HODL' (green) to 'Maximum Bubble' (dark red). The current band label indicates where today's price sits relative to long-term trends. Note: CoinGecko free tier limits price data to 365 days — the chart shows the last year of prices against the full rainbow model." />
+            <InfoTooltip text="A logarithmic regression model (log₁₀(price) = 5.84 × log₁₀(days) − 17.01) that divides Bitcoin's price history into color-coded bands — from 'Fire Sale' (deep blue, strongly undervalued) through 'HODL' (green) to 'Maximum Bubble' (dark red). The current band label indicates where today's price sits relative to long-term trends. Uses full BTC price history from Blockchain.com (2009–present)." />
           </div>
           <CardDescription>
             Current position:{' '}

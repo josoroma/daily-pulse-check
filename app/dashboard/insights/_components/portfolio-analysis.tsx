@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AiDisclaimer } from './ai-disclaimer'
+import { InfoTooltip } from '@/components/info-tooltip'
 import { Briefcase, Send, User, Bot, Brain, ChevronRight } from 'lucide-react'
 
 type Message = {
@@ -132,6 +133,7 @@ export const PortfolioAnalysis = () => {
         <CardTitle className="flex items-center gap-2 text-base font-semibold">
           <Briefcase className="h-4 w-4 text-sky-500" />
           Portfolio Analysis
+          <InfoTooltip text="Chat with AI about your portfolio. Ask questions about your holdings, risk exposure, diversification, or get personalized investment suggestions based on your actual positions." />
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">

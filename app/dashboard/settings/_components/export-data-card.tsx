@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { Download, Loader2, FileJson } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { InfoTooltip } from '@/components/info-tooltip'
 import { exportAllData } from '../_actions'
 
 export const ExportDataCard = () => {
@@ -16,7 +17,7 @@ export const ExportDataCard = () => {
       const result = await exportAllData()
 
       if ('error' in result) {
-        toast.error(result.error)
+        toast.error(String(result.error))
         return
       }
 
@@ -41,6 +42,7 @@ export const ExportDataCard = () => {
         <CardTitle className="flex items-center gap-2">
           <FileJson className="h-5 w-5 text-sky-500" />
           Export All Data
+          <InfoTooltip text="Download a complete JSON backup of your profile, portfolios, positions, transactions, DCA schedules, alerts, and snapshots. No sensitive data like API keys or passwords is included." />
         </CardTitle>
         <CardDescription>
           Download all your data as a JSON file. Includes profile, portfolios, positions,

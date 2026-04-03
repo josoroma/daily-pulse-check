@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AiDisclaimer } from './ai-disclaimer'
+import { InfoTooltip } from '@/components/info-tooltip'
 import { STARTER_QUESTIONS } from '@/lib/ai/learning-assistant'
 import { GraduationCap, Send, User, Bot, Brain, ChevronRight } from 'lucide-react'
 
@@ -116,6 +117,7 @@ export const LearningChat = () => {
         <CardTitle className="flex items-center gap-2 text-base font-semibold">
           <GraduationCap className="h-4 w-4 text-emerald-500" />
           Learning Assistant
+          <InfoTooltip text="An AI tutor for investing concepts. Ask about DCA strategies, ETF vs individual stocks, crypto fundamentals, risk management, or any financial topic you want to learn about." />
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">

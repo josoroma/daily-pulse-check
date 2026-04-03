@@ -12,9 +12,16 @@ export {
   fetchUsdCrcRate,
   fetchUsdToCrc,
   convertUsdToCrc,
+  fetchCoinHistoricalPrice,
+  fetchCoinMarketChart,
+  fetchCoinsMarkets,
+  formatDateForCoinGecko,
   type BitcoinPrice,
   type BitcoinHistory,
   type PricePoint,
+  type CoinHistoricalPrice,
+  type CoinMarketChart,
+  type CoinMarketData,
 } from './crypto'
 export {
   fetchCryptoFearGreed,

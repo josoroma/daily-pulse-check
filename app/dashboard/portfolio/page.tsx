@@ -1,5 +1,6 @@
 import { fetchPrice } from '@/lib/market/stocks'
-import { fetchBitcoinPrice } from '@/lib/market/crypto'
+import { fetchBitcoinPrice, fetchCoinsMarkets } from '@/lib/market/crypto'
+import type { CoinMarketData } from '@/lib/market/crypto'
 import {
   getOrCreatePortfolio,
   getPositions,
@@ -22,31 +23,72 @@ import { ErrorToasts } from '../_components/error-toasts'
 
 async function fetchCurrentPrices(symbols: Array<{ symbol: string; asset_type: string }>) {
   const prices: Record<string, number> = {}
+  const sparklines: Record<string, number[] | null> = {}
   const failedSymbols: string[] = []
 
-  const results = await Promise.allSettled(
-    symbols.map(async ({ symbol, asset_type }) => {
-      if (asset_type === 'Crypto') {
-        const coinId = CRYPTO_COIN_IDS[symbol]
-        if (!coinId) return { symbol, price: 0 }
-        const data = await fetchBitcoinPrice()
-        return { symbol, price: data.priceUsd }
-      }
+  const cryptoSymbols = symbols.filter(({ asset_type }) => asset_type === 'Crypto')
+  const etfSymbols = symbols.filter(({ asset_type }) => asset_type === 'ETF')
+
+  // Fetch crypto data in batch with sparklines
+  const cryptoCoinIds = cryptoSymbols
+    .map(({ symbol }) => CRYPTO_COIN_IDS[symbol])
+    .filter((id): id is string => Boolean(id))
+
+  const [cryptoResult, ...etfResults] = await Promise.allSettled([
+    cryptoCoinIds.length > 0
+      ? fetchCoinsMarkets(cryptoCoinIds)
+      : Promise.resolve([] as CoinMarketData[]),
+    ...etfSymbols.map(async ({ symbol }) => {
       const data = await fetchPrice(symbol)
       return { symbol, price: data.price }
     }),
-  )
+  ])
 
-  for (let i = 0; i < results.length; i++) {
-    const result = results[i]
-    if (result.status === 'fulfilled') {
-      prices[result.value.symbol] = result.value.price
-    } else {
-      failedSymbols.push(symbols[i].symbol)
+  // Process crypto batch results
+  if (cryptoResult.status === 'fulfilled') {
+    const coinIdToSymbol = new Map<string, string>()
+    for (const { symbol } of cryptoSymbols) {
+      const coinId = CRYPTO_COIN_IDS[symbol]
+      if (coinId) coinIdToSymbol.set(coinId, symbol)
+    }
+    for (const coin of cryptoResult.value as CoinMarketData[]) {
+      const sym = coinIdToSymbol.get(coin.id)
+      if (sym) {
+        prices[sym] = coin.currentPrice
+        sparklines[sym] = coin.sparkline7d
+      }
+    }
+  } else {
+    // Fallback: try individual Bitcoin fetch
+    for (const { symbol } of cryptoSymbols) {
+      try {
+        const data = await fetchBitcoinPrice()
+        prices[symbol] = data.priceUsd
+      } catch {
+        failedSymbols.push(symbol)
+      }
     }
   }
 
-  return { prices, failedSymbols }
+  // Check for missing crypto symbols
+  for (const { symbol } of cryptoSymbols) {
+    if (!(symbol in prices)) failedSymbols.push(symbol)
+  }
+
+  // Process ETF results
+  for (let i = 0; i < etfSymbols.length; i++) {
+    const result = etfResults[i]
+    if (!result) continue
+    if (result.status === 'fulfilled') {
+      const val = result.value as { symbol: string; price: number }
+      prices[val.symbol] = val.price
+    } else {
+      const sym = etfSymbols[i]
+      if (sym) failedSymbols.push(sym.symbol)
+    }
+  }
+
+  return { prices, sparklines, failedSymbols }
 }
 
 export default async function PortfolioPage() {
@@ -93,7 +135,11 @@ export default async function PortfolioPage() {
       rawPositions.map((p) => [p.symbol, { symbol: p.symbol, asset_type: p.asset_type }]),
     ).values(),
   )
-  const { prices: currentPrices, failedSymbols } = await fetchCurrentPrices(uniqueAssets)
+  const {
+    prices: currentPrices,
+    sparklines,
+    failedSymbols,
+  } = await fetchCurrentPrices(uniqueAssets)
   const errors: string[] =
     failedSymbols.length > 0 ? [`Live price failed for: ${failedSymbols.join(', ')}`] : []
 
@@ -118,6 +164,7 @@ export default async function PortfolioPage() {
       cost_basis: costBasis,
       unrealized_pnl: pnl,
       unrealized_pnl_pct: pnlPct,
+      sparkline7d: sparklines[p.symbol] ?? null,
     }
   })
 

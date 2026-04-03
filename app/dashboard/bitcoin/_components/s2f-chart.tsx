@@ -86,7 +86,7 @@ export function S2FChart({ data }: S2FChartProps) {
         <div>
           <div className="flex items-center gap-1">
             <CardTitle>Stock-to-Flow Model</CardTitle>
-            <InfoTooltip text="The Stock-to-Flow model measures scarcity by dividing existing supply (stock) by annual production (flow). A higher S2F means greater scarcity. The green line is the model's predicted price; the orange line is the actual BTC price. Pickaxe icons mark halving events. Caveat: coefficients are from PlanB's 2019 regression and have increasingly diverged from spot price since the 2021 cycle — treat as educational context, not a forecast. CoinGecko free tier limits price data to 365 days." />
+            <InfoTooltip text="The Stock-to-Flow model measures scarcity by dividing existing supply (stock) by annual production (flow). A higher S2F means greater scarcity. The green line is the model's predicted price; the orange line is the actual BTC price. Pickaxe icons mark halving events. Uses full BTC price history from Blockchain.com (2009–present). Caveat: coefficients are from PlanB's 2019 regression and have increasingly diverged from spot price since the 2021 cycle — treat as educational context, not a forecast." />
           </div>
           <CardDescription>
             Current S2F: {data.currentS2F.toFixed(1)} · Model Price: $

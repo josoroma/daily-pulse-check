@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { InfoTooltip } from '@/components/info-tooltip'
 import { updateNotificationPreferences } from '../_actions'
 
 type NotificationPrefs = {
@@ -51,6 +52,7 @@ export const NotificationPreferencesCard = ({
         <CardTitle className="flex items-center gap-2">
           <Bell className="h-5 w-5" />
           Notification Channels
+          <InfoTooltip text="Control how you receive alert notifications. In-app notifications are always enabled. Add email or Telegram for real-time alerts when price targets are hit." />
         </CardTitle>
         <CardDescription>
           Choose how you receive alert notifications. In-app notifications are always enabled.

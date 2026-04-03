@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { InfoTooltip } from '@/components/info-tooltip'
 import { Activity, CheckCircle2, Database, Loader2, Server, XCircle } from 'lucide-react'
 
 type DiagnosticsPanelProps = {
@@ -142,6 +143,7 @@ export const DiagnosticsPanel = ({ provider, model }: DiagnosticsPanelProps) => 
           <CardTitle className="flex items-center gap-2 text-base font-semibold">
             <Activity className="h-4 w-4 text-sky-500" />
             System Diagnostics
+            <InfoTooltip text="Test connectivity to your database and AI model to verify everything is working correctly." />
           </CardTitle>
           <p className="text-sm text-muted-foreground">
             Test connectivity to your database and AI model ({provider}/{model})

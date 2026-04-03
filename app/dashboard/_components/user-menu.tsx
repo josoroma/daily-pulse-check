@@ -6,6 +6,7 @@ import { userAtom, profileAtom } from '@/app/dashboard/_atoms'
 import { logout } from '@/app/auth/_actions'
 import { getDisplayName, getInitials } from '@/app/auth/_utils'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { toast } from 'sonner'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +29,13 @@ export const UserMenu = () => {
 
   const displayName = getDisplayName(profile?.display_name, user?.email)
   const initials = getInitials(displayName)
+
+  const handleLogout = async () => {
+    const result = await logout()
+    if (result?.error) {
+      toast.error(result.error)
+    }
+  }
 
   return (
     <SidebarFooter>
@@ -64,7 +72,7 @@ export const UserMenu = () => {
                 </a>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <form action={logout}>
+              <form action={handleLogout}>
                 <DropdownMenuItem>
                   <button type="submit" className="flex w-full items-center">
                     <LogOut className="mr-2 h-4 w-4" />

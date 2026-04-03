@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { InfoTooltip } from '@/components/info-tooltip'
 import { MONTHS } from '../_constants'
 import type { MonthlyReport, YearlyReport } from '../_utils'
 import { formatUsd, formatPct } from '../_utils'
@@ -35,7 +36,7 @@ export const ReportViewer = ({
 
   const monthlyChartData =
     yearlyReport?.monthlyReturns.map((m) => ({
-      name: MONTHS[m.month - 1].slice(0, 3),
+      name: (MONTHS[m.month - 1] ?? `M${m.month}`).slice(0, 3),
       return: m.returnPct,
     })) ?? []
 
@@ -45,7 +46,10 @@ export const ReportViewer = ({
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Performance Reports</CardTitle>
+            <div className="flex items-center gap-1">
+              <CardTitle>Performance Reports</CardTitle>
+              <InfoTooltip text="Monthly and yearly performance summaries showing your returns, invested amounts, and growth. Switch between monthly detail cards and yearly bar charts to review your investing track record." />
+            </div>
             <CardDescription>Track your investing discipline and results over time</CardDescription>
           </div>
           <div className="flex gap-2">
@@ -119,7 +123,10 @@ const YearlyReportView = ({
     {/* Month-by-month chart */}
     <Card>
       <CardHeader>
-        <CardTitle>Month-by-Month Returns</CardTitle>
+        <div className="flex items-center gap-1">
+          <CardTitle>Month-by-Month Returns</CardTitle>
+          <InfoTooltip text="Bar chart showing each month's percentage return for the selected year. Green bars are positive months, red bars are negative. Helps visualize seasonal patterns in your investment returns." />
+        </div>
         <CardDescription>{report.year} monthly performance breakdown</CardDescription>
       </CardHeader>
       <CardContent>
@@ -140,7 +147,7 @@ const YearlyReportView = ({
                   borderRadius: '8px',
                   color: 'hsl(var(--popover-foreground))',
                 }}
-                formatter={(value: number) => [`${value.toFixed(2)}%`, 'Return']}
+                formatter={(value) => [`${Number(value ?? 0).toFixed(2)}%`, 'Return']}
               />
               <Bar dataKey="return" fill="hsl(220, 70%, 55%)" radius={[4, 4, 0, 0]} />
             </BarChart>

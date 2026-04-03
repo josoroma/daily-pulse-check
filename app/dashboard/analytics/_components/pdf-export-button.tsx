@@ -81,7 +81,7 @@ export const PdfExportButton = ({
           startY: yPos,
           head: [['Month', 'Starting', 'Ending', 'Deposits', 'Withdrawals', 'Return %', 'DCA %']],
           body: monthlyReports.map((r) => [
-            MONTHS[r.month - 1],
+            MONTHS[r.month - 1] ?? `Month ${r.month}`,
             formatUsd(r.startingValue),
             formatUsd(r.endingValue),
             formatUsd(r.netDeposits),

@@ -4,6 +4,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { buttonVariants } from '@/components/ui/button'
 import { PieChartIcon } from 'lucide-react'
+import { InfoTooltip } from '@/components/info-tooltip'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import {
@@ -50,7 +51,10 @@ export const DashboardAllocationChart = ({ data }: DashboardAllocationProps) => 
     return (
       <Card className="lg:col-span-3">
         <CardHeader>
-          <CardTitle>Allocation</CardTitle>
+          <div className="flex items-center gap-1">
+            <CardTitle>Allocation</CardTitle>
+            <InfoTooltip text="How your portfolio is distributed across assets. Shows each holding's percentage of total value so you can check if you're balanced according to your strategy." />
+          </div>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center h-[200px] text-center">
@@ -75,7 +79,10 @@ export const DashboardAllocationChart = ({ data }: DashboardAllocationProps) => 
   return (
     <Card className="lg:col-span-3">
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Allocation</CardTitle>
+        <div className="flex items-center gap-1">
+          <CardTitle>Allocation</CardTitle>
+          <InfoTooltip text="How your portfolio is distributed across assets. Shows each holding's percentage of total value so you can check if you're balanced according to your strategy." />
+        </div>
         <Link
           href="/dashboard/portfolio"
           className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), 'text-xs')}

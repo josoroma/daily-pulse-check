@@ -30,6 +30,7 @@
 | E10: Settings & Data Management   | 2       | 0    | 0           | 2         | 0       |
 | E11: Dashboard Home               | 3       | 0    | 0           | 3         | 0       |
 | E12: Luma Theme & Visual Polish   | 1       | 0    | 0           | 1         | 0       |
+| E13: Cron Jobs & Automation       | 3       | 0    | 0           | 3         | 0       |
 
 ---
 
@@ -2071,6 +2072,108 @@ Feature: Luma Theme
 
 ---
 
+## E13: Cron Jobs & Automation
+
+### US-13.1: Portfolio Snapshot Cron [x]
+
+**Route**: `app/api/cron/portfolio-snapshot/route.ts`
+**Schedule**: `0 2 * * *` (02:00 UTC / 8:00 PM Costa Rica)
+
+As a user, I want a daily automated snapshot of my portfolio's total value so that I can track historical performance over time.
+
+#### Acceptance Criteria
+
+```gherkin
+Feature: Portfolio Snapshot Cron
+
+  Scenario: Record daily portfolio snapshot
+    Given the cron job runs at 02:00 UTC
+    When there are active positions
+    Then a snapshot is upserted into portfolio_snapshots for each portfolio
+    And each snapshot includes total_value and positions_data JSONB
+
+  Scenario: No positions exist
+    Given the cron job runs
+    When no positions are found
+    Then no snapshots are created and processed=0 is returned
+
+  Scenario: Unauthorized access
+    Given a request without a valid CRON_SECRET
+    When the cron endpoint is called
+    Then a 401 Unauthorized response is returned
+```
+
+#### Tasks
+
+- [x] T-13.1.1: Create `app/api/cron/portfolio-snapshot/route.ts` with edge runtime, auth check, and admin client
+- [x] T-13.1.2: Fetch positions grouped by portfolio, resolve live prices via `fetchPrice` and `fetchBitcoinPrice`
+- [x] T-13.1.3: Upsert snapshots into `portfolio_snapshots` with `(portfolio_id, snapshot_date)` conflict handling
+
+### US-13.2: Market Pre-fetch Cron [x]
+
+**Route**: `app/api/cron/market-prefetch/route.ts`
+**Schedule**: `*/5 * * * *` (every 5 minutes)
+
+As a user, I want market data pre-warmed in the cache so that dashboard pages load instantly.
+
+#### Acceptance Criteria
+
+```gherkin
+Feature: Market Pre-fetch Cron
+
+  Scenario: Warm cache for core watchlist
+    Given the cron job runs every 5 minutes
+    When the endpoint is called
+    Then VOO, QQQ, BTC, and Fear & Greed data are fetched
+    And the cache is populated for subsequent dashboard requests
+
+  Scenario: Partial failure
+    Given one external API is unavailable
+    When the cron runs
+    Then the other data sources are still fetched
+    And the response indicates which sources succeeded/failed
+```
+
+#### Tasks
+
+- [x] T-13.2.1: Create `app/api/cron/market-prefetch/route.ts` with edge runtime and auth check
+- [x] T-13.2.2: Call `fetchPrice('VOO')`, `fetchPrice('QQQ')`, `fetchBitcoinPrice()`, `fetchCryptoFearGreed()` via `Promise.allSettled()`
+
+### US-13.3: Cache Cleanup Cron [x]
+
+**Route**: `app/api/cron/cache-cleanup/route.ts`
+**Schedule**: `0 3 * * *` (03:00 UTC / 9:00 PM Costa Rica)
+
+As a system operator, I want stale data automatically purged so that storage stays lean and queries stay fast.
+
+#### Acceptance Criteria
+
+```gherkin
+Feature: Cache Cleanup Cron
+
+  Scenario: Delete stale market cache
+    Given market_cache rows older than 7 days exist
+    When the cron runs
+    Then those rows are deleted
+
+  Scenario: Purge old notifications
+    Given read notifications older than 30 days exist
+    When the cron runs
+    Then those read notifications are deleted
+
+  Scenario: Purge old AI summaries
+    Given ai_summaries older than 90 days exist
+    When the cron runs
+    Then those old summaries are deleted
+```
+
+#### Tasks
+
+- [x] T-13.3.1: Create `app/api/cron/cache-cleanup/route.ts` with edge runtime, auth, and admin client
+- [x] T-13.3.2: Delete stale rows from `market_cache` (7d), `api_request_counts` (30d), `notifications` (read, 30d), `ai_summaries` (90d)
+
+---
+
 ## Architecture Overview
 
 ```
@@ -2243,5 +2346,6 @@ lib/
 
 | Date       | Change                                                                                            | Author |
 | ---------- | ------------------------------------------------------------------------------------------------- | ------ |
+| 2026-04-03 | Added E13: Cron Jobs & Automation — portfolio snapshot, market pre-fetch, cache cleanup           | @dev   |
 | 2026-03-31 | Added E12: Luma Theme & Visual Polish — shadcn/ui Luma-inspired dark mode, rounded geometry       | @dev   |
 | 2026-03-17 | Initial SPECS: 10 epics, 31 user stories, full Gherkin acceptance criteria, architecture overview | @dev   |

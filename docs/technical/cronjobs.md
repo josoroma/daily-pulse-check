@@ -15,6 +15,7 @@
 - [Cache Architecture](#cache-architecture)
 - [Periodicity Reference](#periodicity-reference)
 - [Local Setup](#local-setup)
+- [Local Development Setup](#local-development-setup)
 - [Vercel Production Setup](#vercel-production-setup)
 - [Environment Variables](#environment-variables)
 
@@ -164,9 +165,9 @@ Currently, **3 cron routes exist** but **no scheduler is configured** (no `verce
 
 ---
 
-## Missing Cron Jobs (Should Exist)
+## More Cron Jobs
 
-### 4. Portfolio Snapshot — `app/api/cron/portfolio-snapshot/route.ts` ✅ Implemented
+### 4. Portfolio Snapshot — `app/api/cron/portfolio-snapshot/route.ts`
 
 | Property     | Value                                                                           |
 | ------------ | ------------------------------------------------------------------------------- |
@@ -212,7 +213,7 @@ Currently, **3 cron routes exist** but **no scheduler is configured** (no `verce
 
 ---
 
-### 5. Market Data Pre-fetch — `app/api/cron/market-prefetch/route.ts` ✅ Implemented
+### 5. Market Data Pre-fetch — `app/api/cron/market-prefetch/route.ts`
 
 | Property     | Value                                                                               |
 | ------------ | ----------------------------------------------------------------------------------- |
@@ -243,7 +244,7 @@ Currently, **3 cron routes exist** but **no scheduler is configured** (no `verce
 
 ---
 
-### 6. Cache Cleanup — `app/api/cron/cache-cleanup/route.ts` ✅ Implemented
+### 6. Cache Cleanup — `app/api/cron/cache-cleanup/route.ts`
 
 | Property     | Value                                           |
 | ------------ | ----------------------------------------------- |
@@ -521,11 +522,11 @@ The only potential addition would be a migration to enable `pg_cron` for databas
 | Cron Job           | Status          | User Impact                             | Priority |
 | ------------------ | --------------- | --------------------------------------- | -------- |
 | Alert Evaluation   | ✅ Route exists | Critical — alerts don't fire without it | **P0**   |
-| Portfolio Snapshot | ✅ Implemented  | Critical — analytics empty without it   | **P0**   |
+| Portfolio Snapshot | ✅ Route exists | Critical — analytics empty without it   | **P0**   |
 | AI Daily Summary   | ✅ Route exists | High — morning briefing is blank        | **P1**   |
 | DCA Reminders      | ✅ Route exists | Medium — investment reminders           | **P1**   |
-| Market Pre-fetch   | ✅ Implemented  | Low-Medium — first load latency         | **P2**   |
-| Cache Cleanup      | ✅ Implemented  | Low — DB hygiene                        | **P3**   |
+| Market Pre-fetch   | ✅ Route exists | Low-Medium — first load latency         | **P2**   |
+| Cache Cleanup      | ✅ Route exists | Low — DB hygiene                        | **P3**   |
 
 ---
 
@@ -684,12 +685,12 @@ exchange:usd_crc
 
 | Cron Job               | Cron Expression     | Schedule (UTC)                    | Costa Rica Time            | Status          |
 | ---------------------- | ------------------- | --------------------------------- | -------------------------- | --------------- |
-| **Market Pre-fetch**   | `*/15 9-21 * * 1-5` | Every 15 min, Mon–Fri 9 AM – 9 PM | 3 AM – 3 PM (market hours) | ✅ Implemented  |
+| **Market Pre-fetch**   | `*/15 9-21 * * 1-5` | Every 15 min, Mon–Fri 9 AM – 9 PM | 3 AM – 3 PM (market hours) | ✅ Route exists |
 | **Alert Evaluation**   | `*/5 * * * *`       | Every 5 minutes                   | Every 5 minutes            | ✅ Route exists |
 | **AI Daily Summary**   | `0 12 * * *`        | 12:00 PM UTC                      | 6:00 AM CR                 | ✅ Route exists |
 | **DCA Reminders**      | `0 13 * * *`        | 1:00 PM UTC                       | 7:00 AM CR                 | ✅ Route exists |
-| **Portfolio Snapshot** | `0 2 * * *`         | 2:00 AM UTC (next day)            | 8:00 PM CR                 | ✅ Implemented  |
-| **Cache Cleanup**      | `0 10 * * *`        | 10:00 AM UTC                      | 4:00 AM CR                 | ✅ Implemented  |
+| **Portfolio Snapshot** | `0 2 * * *`         | 2:00 AM UTC (next day)            | 8:00 PM CR                 | ✅ Route exists |
+| **Cache Cleanup**      | `0 10 * * *`        | 10:00 AM UTC                      | 4:00 AM CR                 | ✅ Route exists |
 
 ### API Budget Analysis (Twelve Data — 750 req/day)
 
@@ -726,8 +727,8 @@ supabase start
 The simplest approach — call cron endpoints directly:
 
 ```bash
-# Set your cron secret (must match .env.local CRON_SECRET)
-export CRON_SECRET="your-local-cron-secret"
+# Must match .env.local CRON_SECRET
+export CRON_SECRET="$(grep CRON_SECRET .env.local | cut -d= -f2)"
 
 # AI Daily Summary
 curl -X POST http://localhost:3000/api/cron/ai-summary \
@@ -750,7 +751,7 @@ brew install watch
 
 # Run alert evaluation every 5 minutes
 watch -n 300 'curl -s -X POST http://localhost:3000/api/cron/alert-evaluation \
-  -H "Authorization: Bearer your-local-cron-secret" | jq .'
+  -H "Authorization: Bearer $CRON_SECRET" | jq .'
 ```
 
 ### Option C: crontab (Persistent Local Scheduler)
@@ -762,13 +763,13 @@ crontab -e
 # Add these entries (adjust paths and secrets):
 
 # Alert Evaluation — every 5 min
-*/5 * * * * curl -s -X POST http://localhost:3000/api/cron/alert-evaluation -H "Authorization: Bearer your-local-cron-secret" >> /tmp/cron-alerts.log 2>&1
+*/5 * * * * curl -s -X POST http://localhost:3000/api/cron/alert-evaluation -H "Authorization: Bearer $CRON_SECRET" >> /tmp/cron-alerts.log 2>&1
 
 # AI Summary — daily at 6 AM local
-0 6 * * * curl -s -X POST http://localhost:3000/api/cron/ai-summary -H "Authorization: Bearer your-local-cron-secret" >> /tmp/cron-ai.log 2>&1
+0 6 * * * curl -s -X POST http://localhost:3000/api/cron/ai-summary -H "Authorization: Bearer $CRON_SECRET" >> /tmp/cron-ai.log 2>&1
 
 # DCA Reminders — daily at 7 AM local
-0 7 * * * curl -s -X POST http://localhost:3000/api/cron/dca-reminders -H "Authorization: Bearer your-local-cron-secret" >> /tmp/cron-dca.log 2>&1
+0 7 * * * curl -s -X POST http://localhost:3000/api/cron/dca-reminders -H "Authorization: Bearer $CRON_SECRET" >> /tmp/cron-dca.log 2>&1
 ```
 
 ### Option D: Node.js Script with `node-cron`
@@ -860,6 +861,143 @@ SELECT cron.schedule(
 > [extensions]
 > pg_cron = "enabled"
 > ```
+
+---
+
+## Local Development Setup
+
+For local development, cron jobs won't run automatically — you need to trigger them manually or set up a local scheduler.
+
+### Quick: Manual Trigger via curl
+
+With the dev server running (`npm run dev`), call any cron endpoint directly:
+
+```bash
+# Must match .env.local CRON_SECRET
+export CRON_SECRET="$(grep CRON_SECRET .env.local | cut -d= -f2)"
+
+# Portfolio Snapshot
+curl -s http://localhost:3000/api/cron/portfolio-snapshot \
+  -H "Authorization: Bearer $CRON_SECRET" | jq .
+
+# Market Pre-fetch
+curl -s http://localhost:3000/api/cron/market-prefetch \
+  -H "Authorization: Bearer $CRON_SECRET" | jq .
+
+# Cache Cleanup
+curl -s http://localhost:3000/api/cron/cache-cleanup \
+  -H "Authorization: Bearer $CRON_SECRET" | jq .
+
+# Alert Evaluation
+curl -s http://localhost:3000/api/cron/alert-evaluation \
+  -H "Authorization: Bearer $CRON_SECRET" | jq .
+
+# AI Daily Summary
+curl -s http://localhost:3000/api/cron/ai-summary \
+  -H "Authorization: Bearer $CRON_SECRET" | jq .
+
+# DCA Reminders
+curl -s http://localhost:3000/api/cron/dca-reminders \
+  -H "Authorization: Bearer $CRON_SECRET" | jq .
+```
+
+### Repeated: Watch Mode
+
+```bash
+brew install watch
+
+# Run alert evaluation every 5 minutes
+watch -n 300 'curl -s http://localhost:3000/api/cron/alert-evaluation \
+  -H "Authorization: Bearer $CRON_SECRET" | jq .'
+
+# Run market pre-fetch every 5 minutes
+watch -n 300 'curl -s http://localhost:3000/api/cron/market-prefetch \
+  -H "Authorization: Bearer $CRON_SECRET" | jq .'
+```
+
+### Persistent: Local crontab
+
+```bash
+crontab -e
+```
+
+```cron
+# Alert Evaluation — every 5 min
+*/5 * * * * curl -s http://localhost:3000/api/cron/alert-evaluation -H "Authorization: Bearer $CRON_SECRET" >> /tmp/cron-alerts.log 2>&1
+
+# Market Pre-fetch — every 5 min
+*/5 * * * * curl -s http://localhost:3000/api/cron/market-prefetch -H "Authorization: Bearer $CRON_SECRET" >> /tmp/cron-prefetch.log 2>&1
+
+# AI Summary — daily at 6 AM local
+0 6 * * * curl -s http://localhost:3000/api/cron/ai-summary -H "Authorization: Bearer $CRON_SECRET" >> /tmp/cron-ai.log 2>&1
+
+# DCA Reminders — daily at 7 AM local
+0 7 * * * curl -s http://localhost:3000/api/cron/dca-reminders -H "Authorization: Bearer $CRON_SECRET" >> /tmp/cron-dca.log 2>&1
+
+# Portfolio Snapshot — daily at 8 PM local
+0 20 * * * curl -s http://localhost:3000/api/cron/portfolio-snapshot -H "Authorization: Bearer $CRON_SECRET" >> /tmp/cron-snapshot.log 2>&1
+
+# Cache Cleanup — daily at 9 PM local
+0 21 * * * curl -s http://localhost:3000/api/cron/cache-cleanup -H "Authorization: Bearer $CRON_SECRET" >> /tmp/cron-cleanup.log 2>&1
+```
+
+### Scripted: Node.js Scheduler
+
+Run all crons in a single process alongside the dev server:
+
+```bash
+npm install -D node-cron
+```
+
+```typescript
+// scripts/local-cron.ts
+import cron from 'node-cron'
+
+const BASE = 'http://localhost:3000/api/cron'
+const SECRET = process.env.CRON_SECRET || 'local-dev-secret'
+const headers = { Authorization: `Bearer ${SECRET}` }
+
+const jobs = [
+  { name: 'alert-evaluation', schedule: '*/5 * * * *' },
+  { name: 'market-prefetch', schedule: '*/5 * * * *' },
+  { name: 'ai-summary', schedule: '0 6 * * *' },
+  { name: 'dca-reminders', schedule: '0 7 * * *' },
+  { name: 'portfolio-snapshot', schedule: '0 20 * * *' },
+  { name: 'cache-cleanup', schedule: '0 21 * * *' },
+]
+
+for (const job of jobs) {
+  cron.schedule(job.schedule, async () => {
+    const ts = new Date().toISOString()
+    try {
+      const res = await fetch(`${BASE}/${job.name}`, { headers })
+      console.log(`[${ts}] ${job.name} → ${res.status}`, await res.json())
+    } catch (err) {
+      console.error(`[${ts}] ${job.name} → FAILED`, err)
+    }
+  })
+  console.log(`Scheduled: ${job.name} (${job.schedule})`)
+}
+
+console.log('\nLocal cron scheduler running. Ctrl+C to stop.')
+```
+
+```bash
+npx tsx scripts/local-cron.ts
+```
+
+### Verify Cron Responses
+
+All cron endpoints return JSON with a consistent shape:
+
+| Endpoint             | Key Fields                                        |
+| -------------------- | ------------------------------------------------- |
+| `portfolio-snapshot` | `{ processed, snapshots, date }`                  |
+| `market-prefetch`    | `{ prefetched, total, summary }`                  |
+| `cache-cleanup`      | `{ cleaned, total, summary, cutoffs }`            |
+| `alert-evaluation`   | `{ processed, triggered, notifications, errors }` |
+| `ai-summary`         | `{ processed, generated, skipped, errors }`       |
+| `dca-reminders`      | `{ processed, reminders }`                        |
 
 ---
 

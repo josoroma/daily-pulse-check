@@ -1,6 +1,6 @@
 # Local Development Setup Guide
 
-> Last updated: 2026-04-03
+> Last updated: 2026-04-04
 
 ## Table of Contents
 
@@ -17,9 +17,11 @@
 - [Database Schema](#database-schema)
 - [AI Models](#ai-models)
 - [External APIs Reference](#external-apis-reference)
+- [API Routes](#api-routes)
 - [Development Commands](#development-commands)
 - [Project Configuration Files](#project-configuration-files)
 - [Troubleshooting](#troubleshooting)
+- [Related Documentation](#related-documentation)
 
 ---
 
@@ -399,11 +401,12 @@ REASONING_MODELS = Set(['qwen3.5:9b'])
 
 #### AI Features
 
-| Feature                     | Route                  | Trigger                                    |
+| Feature                     | Route / Endpoint       | Trigger                                    |
 | --------------------------- | ---------------------- | ------------------------------------------ |
-| **Market Summary**          | `/dashboard/insights`  | Cached daily (cron) + on-demand regenerate |
-| **Portfolio Analysis**      | `/dashboard/insights`  | On-demand (streams on page mount)          |
-| **Learning Chat**           | `/dashboard/insights`  | User-initiated Q&A                         |
+| **Market Summary**          | `/api/ai/summary`      | Cached daily (cron) + on-demand regenerate |
+| **Portfolio Analysis**      | `/api/ai/portfolio`    | On-demand (streams on page mount)          |
+| **Learning Chat**           | `/api/ai/learn`        | User-initiated Q&A                         |
+| **Health Check**            | `/api/ai/health`       | Provider connectivity diagnostics          |
 | **Daily AI Summary** (cron) | `/api/cron/ai-summary` | Scheduled daily                            |
 
 All AI responses stream via NDJSON (`lib/ai/stream.ts`) with `{ type: 'reasoning' | 'text' | 'error', text }` events.
@@ -582,6 +585,65 @@ External API
 
 ---
 
+## API Routes
+
+The app exposes **18 API route handlers** across four categories:
+
+### AI Routes (`/api/ai/`)
+
+| Route               | Method | Purpose                            |
+| ------------------- | ------ | ---------------------------------- |
+| `/api/ai/health`    | GET    | AI provider connectivity check     |
+| `/api/ai/summary`   | POST   | Stream market summary (NDJSON)     |
+| `/api/ai/portfolio` | POST   | Stream portfolio analysis (NDJSON) |
+| `/api/ai/learn`     | POST   | Stream learning chat response      |
+| `/api/ai/test`      | POST   | AI model test endpoint             |
+
+### Cron Routes (`/api/cron/`)
+
+All cron routes use `GET`, require `Authorization: Bearer $CRON_SECRET`, and use `createAdminClient()` (service role, bypasses RLS). See [cronjobs.md](cronjobs.md) for architecture details.
+
+| Route                          | Purpose                                     |
+| ------------------------------ | ------------------------------------------- |
+| `/api/cron/market-prefetch`    | Cache warming — VOO, QQQ, BTC, Fear & Greed |
+| `/api/cron/portfolio-snapshot` | Daily portfolio value snapshots             |
+| `/api/cron/alert-evaluation`   | Evaluate price/indicator alerts, dispatch   |
+| `/api/cron/dca-reminders`      | Check DCA schedules, create notifications   |
+| `/api/cron/ai-summary`         | Generate AI market summaries per user       |
+| `/api/cron/cache-cleanup`      | Garbage-collect stale cache entries         |
+
+### Market Routes (`/api/market/`)
+
+| Route                           | Method | Purpose                                   |
+| ------------------------------- | ------ | ----------------------------------------- |
+| `/api/market/price/[symbol]`    | GET    | Live stock/ETF price (Twelve Data)        |
+| `/api/market/history/[symbol]`  | GET    | Price history OHLCV (Twelve Data)         |
+| `/api/market/crypto/[coinId]`   | GET    | Crypto price + market cap                 |
+| `/api/market/sentiment`         | GET    | Fear & Greed index                        |
+| `/api/market/macro/[seriesId]`  | GET    | FRED macro indicators                     |
+| `/api/market/bccr`              | GET    | Costa Rica central bank rates             |
+| `/api/market/exchange-rate`     | GET    | USD/CRC exchange rate                     |
+| `/api/market/bitcoin/onchain`   | GET    | On-chain metrics (Mempool)                |
+| `/api/market/bitcoin/valuation` | GET    | BTC valuation models (S2F, Rainbow, MVRV) |
+
+### Database Routes (`/api/db/`)
+
+| Route          | Method | Purpose                    |
+| -------------- | ------ | -------------------------- |
+| `/api/db/test` | GET    | Database connectivity test |
+
+### Dashboard Subroutes
+
+Some dashboard routes have nested subroutes:
+
+| Route                          | Purpose                                       |
+| ------------------------------ | --------------------------------------------- |
+| `/dashboard/analytics/tax`     | Tax report generation and export              |
+| `/dashboard/bitcoin/valuation` | Bitcoin valuation models (S2F, Rainbow, MVRV) |
+| `/dashboard/settings/data`     | Data management (import/export)               |
+
+---
+
 ## Development Commands
 
 ### Daily Workflow
@@ -622,15 +684,26 @@ ollama run qwen3.5:9b    # Interactive test
 
 ### Testing Cron Jobs
 
+There are **6 cron endpoints** (see [cronjobs.md](cronjobs.md) for full details):
+
 ```bash
 # Manually trigger cron endpoints
-curl -X POST http://localhost:3000/api/cron/ai-summary \
+curl -X POST http://localhost:3000/api/cron/market-prefetch \
+  -H "Authorization: Bearer $CRON_SECRET"
+
+curl -X POST http://localhost:3000/api/cron/portfolio-snapshot \
   -H "Authorization: Bearer $CRON_SECRET"
 
 curl -X POST http://localhost:3000/api/cron/alert-evaluation \
   -H "Authorization: Bearer $CRON_SECRET"
 
 curl -X POST http://localhost:3000/api/cron/dca-reminders \
+  -H "Authorization: Bearer $CRON_SECRET"
+
+curl -X POST http://localhost:3000/api/cron/ai-summary \
+  -H "Authorization: Bearer $CRON_SECRET"
+
+curl -X POST http://localhost:3000/api/cron/cache-cleanup \
   -H "Authorization: Bearer $CRON_SECRET"
 ```
 
@@ -784,3 +857,32 @@ DELETE FROM api_request_counts;
 ### Encryption errors for API keys
 
 `ENCRYPTION_SECRET` must be at least **32 characters**. The app uses the first 32 chars as the AES-256-GCM key. If you change this value, previously encrypted API keys become unreadable — users will need to re-enter them.
+
+---
+
+## Related Documentation
+
+### Technical Docs (`docs/technical/`)
+
+| Document                       | Content                                                   |
+| ------------------------------ | --------------------------------------------------------- |
+| [cronjobs.md](cronjobs.md)     | Cron job architecture, database tables, cache, scheduling |
+| [runtimeEnv.md](runtimeEnv.md) | Runtime environment variable patterns in Next.js          |
+| [claude.md](claude.md)         | AI assistant project context and conventions              |
+
+### Route Docs (`docs/routes/`)
+
+Each dashboard route has a dedicated documentation file:
+
+| Document                                         | Route                  |
+| ------------------------------------------------ | ---------------------- |
+| [alerts.md](../routes/alerts.md)                 | `/dashboard/alerts`    |
+| [analytics.md](../routes/analytics.md)           | `/dashboard/analytics` |
+| [authentication.md](../routes/authentication.md) | `/auth/*`              |
+| [bitcoin.md](../routes/bitcoin.md)               | `/dashboard/bitcoin`   |
+| [dashboard.md](../routes/dashboard.md)           | `/dashboard`           |
+| [dca.md](../routes/dca.md)                       | `/dashboard/dca`       |
+| [insights.md](../routes/insights.md)             | `/dashboard/insights`  |
+| [market.md](../routes/market.md)                 | `/dashboard/market`    |
+| [portfolio.md](../routes/portfolio.md)           | `/dashboard/portfolio` |
+| [settings.md](../routes/settings.md)             | `/dashboard/settings`  |

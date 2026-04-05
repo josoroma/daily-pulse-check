@@ -1,6 +1,6 @@
 # SPECS.md — Finance Dashboard
 
-> Version: 0.1.0 | Last updated: 2026-04-03
+> Version: 0.1.0 | Last updated: 2026-04-04
 
 ---
 
@@ -31,6 +31,7 @@
 | E11: Dashboard Home               | 3       | 0    | 0           | 3         | 0       |
 | E12: Luma Theme & Visual Polish   | 1       | 0    | 0           | 1         | 0       |
 | E13: Cron Jobs & Automation       | 3       | 0    | 0           | 3         | 0       |
+| E14: Demo Seed & Stakeholder Data | 1       | 0    | 0           | 1         | 0       |
 
 ---
 
@@ -2174,6 +2175,73 @@ Feature: Cache Cleanup Cron
 
 ---
 
+## E14: Demo Seed & Stakeholder Data
+
+### US-14.1: Demo User with 15-Day Historical Data [x]
+
+**File**: `supabase/seed.sql`
+**Docs**: `docs/technical/demoUserSeedDemo.md`
+
+As a stakeholder reviewer, I want a fully populated demo account so that I can explore all dashboard features with realistic data.
+
+#### Acceptance Criteria
+
+```gherkin
+Feature: Demo Seed Data
+
+  Scenario: Demo user can log in
+    Given the database has been seeded via `supabase db reset`
+    When I log in with pablo+demo@josoroma.com / Demosthenes.579
+    Then I am redirected to the dashboard
+
+  Scenario: Dashboard shows portfolio data
+    Given the demo user is logged in
+    When I view the dashboard
+    Then I see portfolio value, allocations chart, and 15-day performance chart
+    And I see today's AI market summary
+    And I see recent activity with transactions and notifications
+
+  Scenario: Portfolio has 3 positions with transactions
+    Given the demo user is logged in
+    When I navigate to /dashboard/portfolio
+    Then I see 3 positions: VOO, QQQ, BTC
+    And I see 12 transactions spanning March 20 to April 3
+
+  Scenario: DCA schedules are active
+    Given the demo user is logged in
+    When I navigate to /dashboard/dca
+    Then I see 3 active weekly DCA schedules
+
+  Scenario: Alerts include active and triggered
+    Given the demo user is logged in
+    When I navigate to /dashboard/alerts
+    Then I see 5 active alerts and 1 triggered alert
+
+  Scenario: AI summaries exist for all 15 days
+    Given the demo user is logged in
+    When I view the insights page
+    Then I can see AI market summaries for each day from March 20 to April 3
+
+  Scenario: Seed is idempotent
+    Given I run `supabase db reset` twice
+    Then the seed applies cleanly both times with no errors
+```
+
+#### Tasks
+
+- [x] T-14.1.1: Create `supabase/seed.sql` with demo user (auth.users + auth.identities + profiles)
+- [x] T-14.1.2: Seed portfolio, 3 positions, and 12 transactions (Buy/DCA/Sell mix)
+- [x] T-14.1.3: Seed 3 DCA schedules (VOO weekly Mon, QQQ weekly Wed, BTC weekly Fri)
+- [x] T-14.1.4: Seed 6 alerts (5 active + 1 triggered) across price, RSI, and MVRV conditions
+- [x] T-14.1.5: Seed 15 portfolio snapshots with realistic daily price evolution
+- [x] T-14.1.6: Seed 15 AI summaries with day-specific market commentary
+- [x] T-14.1.7: Seed 8 notifications (DCA reminders, price alert, system messages)
+- [x] T-14.1.8: Seed market cache entries for instant dashboard load
+- [x] T-14.1.9: Create `docs/technical/demoUserSeedDemo.md` implementation plan
+- [x] T-14.1.10: Verify seed with `supabase db reset` — all tables populated correctly
+
+---
+
 ## Architecture Overview
 
 ```
@@ -2346,6 +2414,7 @@ lib/
 
 | Date       | Change                                                                                            | Author |
 | ---------- | ------------------------------------------------------------------------------------------------- | ------ |
+| 2026-04-04 | Added E14: Demo Seed & Stakeholder Data — demo user with 15 days of portfolio, AI, alerts data    | @dev   |
 | 2026-04-03 | Added E13: Cron Jobs & Automation — portfolio snapshot, market pre-fetch, cache cleanup           | @dev   |
 | 2026-03-31 | Added E12: Luma Theme & Visual Polish — shadcn/ui Luma-inspired dark mode, rounded geometry       | @dev   |
 | 2026-03-17 | Initial SPECS: 10 epics, 31 user stories, full Gherkin acceptance criteria, architecture overview | @dev   |

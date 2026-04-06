@@ -1,6 +1,6 @@
 -- =============================================================================
--- DEMO SEED: pablo+demo@josoroma.com / demo
--- 15 days of realistic data (2026-03-20 → 2026-04-03)
+-- DEMO SEED: pablo+demo@josoroma.com / Demosthenes.579
+-- 15 days of rolling data (CURRENT_DATE - 14 → CURRENT_DATE)
 -- Run via: supabase db reset (auto-detected from config.toml)
 -- =============================================================================
 
@@ -32,11 +32,11 @@ insert into auth.users (
   'authenticated', 'authenticated',
   'pablo+demo@josoroma.com',
   '$2a$10$JGQZUjvE526t5jR/BAq.z.HghleRvZFS/IMDA8QRzTbXE.CTGV4La',
-  '2026-03-20T06:00:00Z',
+  (CURRENT_DATE - 14) + TIME '06:00:00',
   '{"provider":"email","providers":["email"]}',
   '{"full_name":"Pablo Demo"}',
-  '2026-03-20T06:00:00Z',
-  '2026-03-20T06:00:00Z',
+  (CURRENT_DATE - 14) + TIME '06:00:00',
+  (CURRENT_DATE - 14) + TIME '06:00:00',
   '', '',
   '', '', '',
   '', '', '',
@@ -54,9 +54,9 @@ insert into auth.identities (
   jsonb_build_object('sub', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'email', 'pablo+demo@josoroma.com'),
   'email',
   'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0',
-  '2026-03-20T06:00:00Z',
-  '2026-03-20T06:00:00Z',
-  '2026-03-20T06:00:00Z'
+  (CURRENT_DATE - 14) + TIME '06:00:00',
+  (CURRENT_DATE - 14) + TIME '06:00:00',
+  (CURRENT_DATE - 14) + TIME '06:00:00'
 );
 
 -- ============================================================
@@ -67,8 +67,8 @@ update public.profiles set
   base_currency = 'USD',
   country = 'CR',
   risk_tolerance = 'Medium-High',
-  ai_provider = 'openai',
-  ai_model = 'gpt-4.1-mini',
+  ai_provider = 'ollama',
+  ai_model = 'qwen3.5:9b',
   notification_email_enabled = true,
   notification_telegram_enabled = false
 where id = 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0';
@@ -96,35 +96,35 @@ insert into public.positions (id, user_id, portfolio_id, asset_type, symbol, qua
 -- 5. TRANSACTIONS (13 entries across 15 days)
 -- ============================================================
 insert into public.transactions (id, user_id, position_id, type, quantity, price, fee, executed_at, notes) values
-  -- Day 1 (Mar 20): Initial purchases
-  ('c1000001-c100-4c10-ac10-c10000010001', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b1b1b1b1-b100-4b10-ab10-b1b1b1b1b1b1', 'Buy', 10.00,  478.50, 0.00, '2026-03-20T14:30:00Z', 'Initial VOO position'),
-  ('c1000002-c100-4c10-ac10-c10000020002', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b2b2b2b2-b200-4b20-ab20-b2b2b2b2b2b2', 'Buy',  7.00,  492.30, 0.00, '2026-03-20T14:35:00Z', 'Initial QQQ position'),
-  ('c1000003-c100-4c10-ac10-c10000030003', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b3b3b3b3-b300-4b30-ab30-b3b3b3b3b3b3', 'Buy',  0.10, 67200.00, 1.50, '2026-03-20T15:00:00Z', 'Initial BTC purchase'),
+  -- Day 1 (CURRENT_DATE - 14): Initial purchases
+  ('c1000001-c100-4c10-ac10-c10000010001', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b1b1b1b1-b100-4b10-ab10-b1b1b1b1b1b1', 'Buy', 10.00,  478.50, 0.00, (CURRENT_DATE - 14) + TIME '14:30:00', 'Initial VOO position'),
+  ('c1000002-c100-4c10-ac10-c10000020002', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b2b2b2b2-b200-4b20-ab20-b2b2b2b2b2b2', 'Buy',  7.00,  492.30, 0.00, (CURRENT_DATE - 14) + TIME '14:35:00', 'Initial QQQ position'),
+  ('c1000003-c100-4c10-ac10-c10000030003', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b3b3b3b3-b300-4b30-ab30-b3b3b3b3b3b3', 'Buy',  0.10, 67200.00, 1.50, (CURRENT_DATE - 14) + TIME '15:00:00', 'Initial BTC purchase'),
 
-  -- Week 1 DCA (Mar 24 Mon, Mar 26 Wed, Mar 28 Fri)
-  ('c1000004-c100-4c10-ac10-c10000040004', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b1b1b1b1-b100-4b10-ab10-b1b1b1b1b1b1', 'DCA',  0.42,  483.10, 0.00, '2026-03-24T14:30:00Z', 'Weekly DCA — $200'),
-  ('c1000005-c100-4c10-ac10-c10000050005', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b2b2b2b2-b200-4b20-ab20-b2b2b2b2b2b2', 'DCA',  0.30,  498.75, 0.00, '2026-03-26T14:30:00Z', 'Weekly DCA — $150'),
-  ('c1000006-c100-4c10-ac10-c10000060006', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b3b3b3b3-b300-4b30-ab30-b3b3b3b3b3b3', 'DCA',  0.0015, 69100.00, 0.75, '2026-03-28T15:00:00Z', 'Weekly DCA — $100'),
+  -- Week 1 DCA (day -10 Mon, day -8 Wed, day -6 Fri)
+  ('c1000004-c100-4c10-ac10-c10000040004', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b1b1b1b1-b100-4b10-ab10-b1b1b1b1b1b1', 'DCA',  0.42,  483.10, 0.00, (CURRENT_DATE - 10) + TIME '14:30:00', 'Weekly DCA — $200'),
+  ('c1000005-c100-4c10-ac10-c10000050005', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b2b2b2b2-b200-4b20-ab20-b2b2b2b2b2b2', 'DCA',  0.30,  498.75, 0.00, (CURRENT_DATE - 8) + TIME '14:30:00', 'Weekly DCA — $150'),
+  ('c1000006-c100-4c10-ac10-c10000060006', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b3b3b3b3-b300-4b30-ab30-b3b3b3b3b3b3', 'DCA',  0.0015, 69100.00, 0.75, (CURRENT_DATE - 6) + TIME '15:00:00', 'Weekly DCA — $100'),
 
-  -- BTC partial sell (Mar 30 — take small profit)
-  ('c1000007-c100-4c10-ac10-c10000070007', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b3b3b3b3-b300-4b30-ab30-b3b3b3b3b3b3', 'Sell', 0.005, 71800.00, 1.00, '2026-03-30T16:00:00Z', 'Small take-profit — testing sell flow'),
+  -- BTC partial sell (day -4 — take small profit)
+  ('c1000007-c100-4c10-ac10-c10000070007', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b3b3b3b3-b300-4b30-ab30-b3b3b3b3b3b3', 'Sell', 0.005, 71800.00, 1.00, (CURRENT_DATE - 4) + TIME '16:00:00', 'Small take-profit — testing sell flow'),
 
-  -- Week 2 DCA (Mar 31 Mon, Apr 2 Wed)
-  ('c1000008-c100-4c10-ac10-c10000080008', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b1b1b1b1-b100-4b10-ab10-b1b1b1b1b1b1', 'DCA',  0.41,  489.20, 0.00, '2026-03-31T14:30:00Z', 'Weekly DCA — $200'),
-  ('c1000009-c100-4c10-ac10-c10000090009', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b2b2b2b2-b200-4b20-ab20-b2b2b2b2b2b2', 'DCA',  0.29,  505.40, 0.00, '2026-04-02T14:30:00Z', 'Weekly DCA — $150'),
+  -- Week 2 DCA (day -3 Mon, day -1 Wed)
+  ('c1000008-c100-4c10-ac10-c10000080008', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b1b1b1b1-b100-4b10-ab10-b1b1b1b1b1b1', 'DCA',  0.41,  489.20, 0.00, (CURRENT_DATE - 3) + TIME '14:30:00', 'Weekly DCA — $200'),
+  ('c1000009-c100-4c10-ac10-c10000090009', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b2b2b2b2-b200-4b20-ab20-b2b2b2b2b2b2', 'DCA',  0.29,  505.40, 0.00, (CURRENT_DATE - 1) + TIME '14:30:00', 'Weekly DCA — $150'),
 
   -- Additional buys mid-range
-  ('c1000010-c100-4c10-ac10-c10000100010', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b1b1b1b1-b100-4b10-ab10-b1b1b1b1b1b1', 'Buy',  4.17,  481.60, 0.00, '2026-03-22T14:30:00Z', 'Adding to VOO on dip'),
-  ('c1000011-c100-4c10-ac10-c10000110011', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b2b2b2b2-b200-4b20-ab20-b2b2b2b2b2b2', 'Buy',  2.71,  499.80, 0.00, '2026-03-22T14:35:00Z', 'Adding QQQ'),
-  ('c1000012-c100-4c10-ac10-c10000120012', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b3b3b3b3-b300-4b30-ab30-b3b3b3b3b3b3', 'DCA', 0.0435, 68750.00, 1.00, '2026-04-03T15:00:00Z', 'Weekly DCA — $100 (Fri)');
+  ('c1000010-c100-4c10-ac10-c10000100010', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b1b1b1b1-b100-4b10-ab10-b1b1b1b1b1b1', 'Buy',  4.17,  481.60, 0.00, (CURRENT_DATE - 12) + TIME '14:30:00', 'Adding to VOO on dip'),
+  ('c1000011-c100-4c10-ac10-c10000110011', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b2b2b2b2-b200-4b20-ab20-b2b2b2b2b2b2', 'Buy',  2.71,  499.80, 0.00, (CURRENT_DATE - 12) + TIME '14:35:00', 'Adding QQQ'),
+  ('c1000012-c100-4c10-ac10-c10000120012', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'b3b3b3b3-b300-4b30-ab30-b3b3b3b3b3b3', 'DCA', 0.0435, 68750.00, 1.00, CURRENT_DATE + TIME '15:00:00', 'Weekly DCA — $100 (Fri)');
 
 -- ============================================================
 -- 6. DCA SCHEDULES (3 active)
 -- ============================================================
 insert into public.dca_schedules (id, user_id, portfolio_id, symbol, asset_type, amount, frequency, day_of_week, is_active, next_execution_at) values
-  ('d1d1d1d1-d1d1-4d1d-ad1d-d1d1d1d10001', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', 'VOO', 'ETF',    200.00, 'Weekly', 1, true, '2026-04-07T14:30:00Z'),
-  ('d2d2d2d2-d2d2-4d2d-ad2d-d2d2d2d20002', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', 'QQQ', 'ETF',    150.00, 'Weekly', 3, true, '2026-04-09T14:30:00Z'),
-  ('d3d3d3d3-d3d3-4d3d-ad3d-d3d3d3d30003', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', 'BTC', 'Crypto', 100.00, 'Weekly', 5, true, '2026-04-11T15:00:00Z');
+  ('d1d1d1d1-d1d1-4d1d-ad1d-d1d1d1d10001', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', 'VOO', 'ETF',    200.00, 'Weekly', 1, true, (CURRENT_DATE + 4) + TIME '14:30:00'),
+  ('d2d2d2d2-d2d2-4d2d-ad2d-d2d2d2d20002', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', 'QQQ', 'ETF',    150.00, 'Weekly', 3, true, (CURRENT_DATE + 6) + TIME '14:30:00'),
+  ('d3d3d3d3-d3d3-4d3d-ad3d-d3d3d3d30003', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', 'BTC', 'Crypto', 100.00, 'Weekly', 5, true, (CURRENT_DATE + 8) + TIME '15:00:00');
 
 -- ============================================================
 -- 7. ALERTS (5 active + 1 triggered)
@@ -136,8 +136,8 @@ insert into public.alerts (id, user_id, symbol, asset_type, condition, threshold
   ('e3e3e3e3-e3e3-4e3e-ae3e-e3e3e3e30003', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'VOO', 'ETF',    'above',           520, true,  'active',    '{}',                                    '{in_app,email}', null),
   ('e4e4e4e4-e4e4-4e4e-ae4e-e4e4e4e40004', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'QQQ', 'ETF',    'rsi_above',        70, true,  'active',    '{"rsi_period": 14}',                    '{in_app}',       null),
   ('e5e5e5e5-e5e5-4e5e-ae5e-e5e5e5e50005', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'BTC', 'Crypto', 'mvrv_above',      3.5, true,  'active',    '{}',                                    '{in_app,email}', null),
-  -- Triggered alert (5 days ago)
-  ('e6e6e6e6-e6e6-4e6e-ae6e-e6e6e6e60006', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'VOO', 'ETF',    'below',           450, false, 'triggered', '{}',                                    '{in_app}',       '2026-03-30T14:00:00Z');
+  -- Triggered alert (4 days ago)
+  ('e6e6e6e6-e6e6-4e6e-ae6e-e6e6e6e60006', 'd0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'VOO', 'ETF',    'below',           450, false, 'triggered', '{}',                                    '{in_app}',       (CURRENT_DATE - 4) + TIME '14:00:00');
 
 -- ============================================================
 -- 8. PORTFOLIO SNAPSHOTS (15 days)
@@ -145,58 +145,58 @@ insert into public.alerts (id, user_id, symbol, asset_type, condition, threshold
 -- VOO ~$478→$502, QQQ ~$492→$512, BTC ~$67K→$84K
 -- ============================================================
 insert into public.portfolio_snapshots (user_id, portfolio_id, snapshot_date, total_value, positions_data) values
-  -- Mar 20: Opening day — 10 VOO @ ~478, 7 QQQ @ ~492, 0.10 BTC @ ~67,200
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', '2026-03-20', 15977.00, '[{"symbol":"VOO","asset_type":"ETF","quantity":10,"price":478.50,"value":4785.00},{"symbol":"QQQ","asset_type":"ETF","quantity":7,"price":492.30,"value":3446.10},{"symbol":"BTC","asset_type":"Crypto","quantity":0.10,"price":67460.00,"value":6746.00}]'),
+  -- Day -14: Opening day — 10 VOO @ ~478, 7 QQQ @ ~492, 0.10 BTC @ ~67,200
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', CURRENT_DATE - 14, 15977.00, '[{"symbol":"VOO","asset_type":"ETF","quantity":10,"price":478.50,"value":4785.00},{"symbol":"QQQ","asset_type":"ETF","quantity":7,"price":492.30,"value":3446.10},{"symbol":"BTC","asset_type":"Crypto","quantity":0.10,"price":67460.00,"value":6746.00}]'),
 
-  -- Mar 21: Slight uptick
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', '2026-03-21', 16148.50, '[{"symbol":"VOO","asset_type":"ETF","quantity":10,"price":481.20,"value":4812.00},{"symbol":"QQQ","asset_type":"ETF","quantity":7,"price":494.50,"value":3461.50},{"symbol":"BTC","asset_type":"Crypto","quantity":0.10,"price":68750.00,"value":6875.00}]'),
+  -- Day -13: Slight uptick
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', CURRENT_DATE - 13, 16148.50, '[{"symbol":"VOO","asset_type":"ETF","quantity":10,"price":481.20,"value":4812.00},{"symbol":"QQQ","asset_type":"ETF","quantity":7,"price":494.50,"value":3461.50},{"symbol":"BTC","asset_type":"Crypto","quantity":0.10,"price":68750.00,"value":6875.00}]'),
 
-  -- Mar 22: Added more positions (now 14.17 VOO, 9.71 QQQ, 0.10 BTC)
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', '2026-03-22', 18023.75, '[{"symbol":"VOO","asset_type":"ETF","quantity":14.17,"price":483.80,"value":6855.45},{"symbol":"QQQ","asset_type":"ETF","quantity":9.71,"price":497.10,"value":4826.84},{"symbol":"BTC","asset_type":"Crypto","quantity":0.10,"price":69414.60,"value":6941.46}]'),
+  -- Day -12: Added more positions (now 14.17 VOO, 9.71 QQQ, 0.10 BTC)
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', CURRENT_DATE - 12, 18023.75, '[{"symbol":"VOO","asset_type":"ETF","quantity":14.17,"price":483.80,"value":6855.45},{"symbol":"QQQ","asset_type":"ETF","quantity":9.71,"price":497.10,"value":4826.84},{"symbol":"BTC","asset_type":"Crypto","quantity":0.10,"price":69414.60,"value":6941.46}]'),
 
-  -- Mar 23: Weekend, slight crypto rally
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', '2026-03-23', 18215.30, '[{"symbol":"VOO","asset_type":"ETF","quantity":14.17,"price":484.50,"value":6865.37},{"symbol":"QQQ","asset_type":"ETF","quantity":9.71,"price":498.20,"value":4837.52},{"symbol":"BTC","asset_type":"Crypto","quantity":0.10,"price":71124.10,"value":7112.41}]'),
+  -- Day -11: Weekend, slight crypto rally
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', CURRENT_DATE - 11, 18215.30, '[{"symbol":"VOO","asset_type":"ETF","quantity":14.17,"price":484.50,"value":6865.37},{"symbol":"QQQ","asset_type":"ETF","quantity":9.71,"price":498.20,"value":4837.52},{"symbol":"BTC","asset_type":"Crypto","quantity":0.10,"price":71124.10,"value":7112.41}]'),
 
-  -- Mar 24: DCA VOO (now 14.59 VOO), small dip
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', '2026-03-24', 18089.60, '[{"symbol":"VOO","asset_type":"ETF","quantity":14.59,"price":481.90,"value":7031.02},{"symbol":"QQQ","asset_type":"ETF","quantity":9.71,"price":495.30,"value":4809.36},{"symbol":"BTC","asset_type":"Crypto","quantity":0.10,"price":69492.20,"value":6949.22}]'),
+  -- Day -10: DCA VOO (now 14.59 VOO), small dip
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', CURRENT_DATE - 10, 18089.60, '[{"symbol":"VOO","asset_type":"ETF","quantity":14.59,"price":481.90,"value":7031.02},{"symbol":"QQQ","asset_type":"ETF","quantity":9.71,"price":495.30,"value":4809.36},{"symbol":"BTC","asset_type":"Crypto","quantity":0.10,"price":69492.20,"value":6949.22}]'),
 
-  -- Mar 25: Bearish day — tech selloff
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', '2026-03-25', 17684.20, '[{"symbol":"VOO","asset_type":"ETF","quantity":14.59,"price":477.40,"value":6965.07},{"symbol":"QQQ","asset_type":"ETF","quantity":9.71,"price":488.60,"value":4744.31},{"symbol":"BTC","asset_type":"Crypto","quantity":0.10,"price":66748.20,"value":6674.82}]'),
+  -- Day -9: Bearish day — tech selloff
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', CURRENT_DATE - 9, 17684.20, '[{"symbol":"VOO","asset_type":"ETF","quantity":14.59,"price":477.40,"value":6965.07},{"symbol":"QQQ","asset_type":"ETF","quantity":9.71,"price":488.60,"value":4744.31},{"symbol":"BTC","asset_type":"Crypto","quantity":0.10,"price":66748.20,"value":6674.82}]'),
 
-  -- Mar 26: Recovery begins, DCA QQQ (now 10.01 QQQ)
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', '2026-03-26', 17892.40, '[{"symbol":"VOO","asset_type":"ETF","quantity":14.59,"price":479.80,"value":6999.88},{"symbol":"QQQ","asset_type":"ETF","quantity":10.01,"price":491.70,"value":4921.92},{"symbol":"BTC","asset_type":"Crypto","quantity":0.10,"price":67706.00,"value":6770.60}]'),
+  -- Day -8: Recovery begins, DCA QQQ (now 10.01 QQQ)
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', CURRENT_DATE - 8, 17892.40, '[{"symbol":"VOO","asset_type":"ETF","quantity":14.59,"price":479.80,"value":6999.88},{"symbol":"QQQ","asset_type":"ETF","quantity":10.01,"price":491.70,"value":4921.92},{"symbol":"BTC","asset_type":"Crypto","quantity":0.10,"price":67706.00,"value":6770.60}]'),
 
-  -- Mar 27: Continued recovery
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', '2026-03-27', 18124.70, '[{"symbol":"VOO","asset_type":"ETF","quantity":14.59,"price":482.60,"value":7040.73},{"symbol":"QQQ","asset_type":"ETF","quantity":10.01,"price":496.40,"value":4968.96},{"symbol":"BTC","asset_type":"Crypto","quantity":0.10,"price":69150.10,"value":6915.01}]'),
+  -- Day -7: Continued recovery
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', CURRENT_DATE - 7, 18124.70, '[{"symbol":"VOO","asset_type":"ETF","quantity":14.59,"price":482.60,"value":7040.73},{"symbol":"QQQ","asset_type":"ETF","quantity":10.01,"price":496.40,"value":4968.96},{"symbol":"BTC","asset_type":"Crypto","quantity":0.10,"price":69150.10,"value":6915.01}]'),
 
-  -- Mar 28: DCA BTC (now 0.1015 BTC), BTC rallies
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', '2026-03-28', 18543.80, '[{"symbol":"VOO","asset_type":"ETF","quantity":14.59,"price":485.30,"value":7080.53},{"symbol":"QQQ","asset_type":"ETF","quantity":10.01,"price":499.80,"value":5003.00},{"symbol":"BTC","asset_type":"Crypto","quantity":0.1015,"price":73503.10,"value":7460.56}]'),
+  -- Day -6: DCA BTC (now 0.1015 BTC), BTC rallies
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', CURRENT_DATE - 6, 18543.80, '[{"symbol":"VOO","asset_type":"ETF","quantity":14.59,"price":485.30,"value":7080.53},{"symbol":"QQQ","asset_type":"ETF","quantity":10.01,"price":499.80,"value":5003.00},{"symbol":"BTC","asset_type":"Crypto","quantity":0.1015,"price":73503.10,"value":7460.56}]'),
 
-  -- Mar 29: Strong day, new portfolio high
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', '2026-03-29', 18812.50, '[{"symbol":"VOO","asset_type":"ETF","quantity":14.59,"price":488.10,"value":7121.45},{"symbol":"QQQ","asset_type":"ETF","quantity":10.01,"price":503.20,"value":5037.03},{"symbol":"BTC","asset_type":"Crypto","quantity":0.1015,"price":75408.40,"value":7654.02}]'),
+  -- Day -5: Strong day, new portfolio high
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', CURRENT_DATE - 5, 18812.50, '[{"symbol":"VOO","asset_type":"ETF","quantity":14.59,"price":488.10,"value":7121.45},{"symbol":"QQQ","asset_type":"ETF","quantity":10.01,"price":503.20,"value":5037.03},{"symbol":"BTC","asset_type":"Crypto","quantity":0.1015,"price":75408.40,"value":7654.02}]'),
 
-  -- Mar 30: Sold 0.005 BTC (now 0.0965 BTC), slight pullback
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', '2026-03-30', 18341.20, '[{"symbol":"VOO","asset_type":"ETF","quantity":14.59,"price":486.70,"value":7101.05},{"symbol":"QQQ","asset_type":"ETF","quantity":10.01,"price":501.60,"value":5021.02},{"symbol":"BTC","asset_type":"Crypto","quantity":0.0965,"price":74288.10,"value":7168.81}]'),
+  -- Day -4: Sold 0.005 BTC (now 0.0965 BTC), slight pullback
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', CURRENT_DATE - 4, 18341.20, '[{"symbol":"VOO","asset_type":"ETF","quantity":14.59,"price":486.70,"value":7101.05},{"symbol":"QQQ","asset_type":"ETF","quantity":10.01,"price":501.60,"value":5021.02},{"symbol":"BTC","asset_type":"Crypto","quantity":0.0965,"price":74288.10,"value":7168.81}]'),
 
-  -- Mar 31: DCA VOO (now 15.00 VOO), stabilizing
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', '2026-03-31', 18625.40, '[{"symbol":"VOO","asset_type":"ETF","quantity":15.00,"price":490.80,"value":7362.00},{"symbol":"QQQ","asset_type":"ETF","quantity":10.01,"price":504.50,"value":5050.05},{"symbol":"BTC","asset_type":"Crypto","quantity":0.0965,"price":76308.80,"value":7363.80}]'),
+  -- Day -3: DCA VOO (now 15.00 VOO), stabilizing
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', CURRENT_DATE - 3, 18625.40, '[{"symbol":"VOO","asset_type":"ETF","quantity":15.00,"price":490.80,"value":7362.00},{"symbol":"QQQ","asset_type":"ETF","quantity":10.01,"price":504.50,"value":5050.05},{"symbol":"BTC","asset_type":"Crypto","quantity":0.0965,"price":76308.80,"value":7363.80}]'),
 
-  -- Apr 1: Small gains
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', '2026-04-01', 18876.30, '[{"symbol":"VOO","asset_type":"ETF","quantity":15.00,"price":493.20,"value":7398.00},{"symbol":"QQQ","asset_type":"ETF","quantity":10.01,"price":507.80,"value":5083.08},{"symbol":"BTC","asset_type":"Crypto","quantity":0.0965,"price":78192.40,"value":7545.57}]'),
+  -- Day -2: Small gains
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', CURRENT_DATE - 2, 18876.30, '[{"symbol":"VOO","asset_type":"ETF","quantity":15.00,"price":493.20,"value":7398.00},{"symbol":"QQQ","asset_type":"ETF","quantity":10.01,"price":507.80,"value":5083.08},{"symbol":"BTC","asset_type":"Crypto","quantity":0.0965,"price":78192.40,"value":7545.57}]'),
 
-  -- Apr 2: DCA QQQ (now 10.30 QQQ), mild pullback
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', '2026-04-02', 18744.80, '[{"symbol":"VOO","asset_type":"ETF","quantity":15.00,"price":491.40,"value":7371.00},{"symbol":"QQQ","asset_type":"ETF","quantity":10.30,"price":504.90,"value":5200.47},{"symbol":"BTC","asset_type":"Crypto","quantity":0.0965,"price":76510.60,"value":7383.27}]'),
+  -- Day -1: DCA QQQ (now 10.30 QQQ), mild pullback
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', CURRENT_DATE - 1, 18744.80, '[{"symbol":"VOO","asset_type":"ETF","quantity":15.00,"price":491.40,"value":7371.00},{"symbol":"QQQ","asset_type":"ETF","quantity":10.30,"price":504.90,"value":5200.47},{"symbol":"BTC","asset_type":"Crypto","quantity":0.0965,"price":76510.60,"value":7383.27}]'),
 
-  -- Apr 3: DCA BTC (now 0.14 BTC), recovery
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', '2026-04-03', 19218.60, '[{"symbol":"VOO","asset_type":"ETF","quantity":15.00,"price":494.60,"value":7419.00},{"symbol":"QQQ","asset_type":"ETF","quantity":10.30,"price":508.40,"value":5236.52},{"symbol":"BTC","asset_type":"Crypto","quantity":0.14,"price":79522.00,"value":11133.08}]');
+  -- Day 0 (today): DCA BTC (now 0.14 BTC), recovery
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'a1a1a1a1-a1a1-4a1a-ba1a-a1a1a1a1a1a1', CURRENT_DATE, 19218.60, '[{"symbol":"VOO","asset_type":"ETF","quantity":15.00,"price":494.60,"value":7419.00},{"symbol":"QQQ","asset_type":"ETF","quantity":10.30,"price":508.40,"value":5236.52},{"symbol":"BTC","asset_type":"Crypto","quantity":0.14,"price":79522.00,"value":11133.08}]');
 
 -- ============================================================
 -- 9. AI SUMMARIES (15 days of market commentary)
 -- ============================================================
 insert into public.ai_summaries (user_id, summary_date, content, model_used) values
 
-('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', '2026-03-20',
-'## Market Summary — March 20, 2026
+('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', CURRENT_DATE - 14,
+'## Market Summary — Day 1
 
 **Markets opened mixed** as investors digest the latest Fed commentary. The S&P 500 edged up 0.3% while the Nasdaq gained 0.5% on renewed AI optimism.
 
@@ -212,12 +212,12 @@ insert into public.ai_summaries (user_id, summary_date, content, model_used) val
 - **Fear & Greed**: 52 (Neutral)
 
 ### Portfolio Impact
-Your portfolio is positioned well for a rate-cutting cycle. VOO and QQQ benefit from lower rates, while BTC historically rallies 6-12 months post-halving (April 2024). Consider maintaining your DCA schedule through this consolidation phase.', 'openai/gpt-4.1-mini'),
+Your portfolio is positioned well for a rate-cutting cycle. VOO and QQQ benefit from lower rates, while BTC historically rallies 6-12 months post-halving (April 2024). Consider maintaining your DCA schedule through this consolidation phase.', 'ollama/qwen3.5:9b'),
 
-('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', '2026-03-21',
-'## Market Summary — March 21, 2026
+('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', CURRENT_DATE - 13,
+'## Market Summary — Day 2
 
-**Strong Friday session** — all three major indices closed higher. Tech sector led gains with the Nasdaq up 0.8%.
+**Strong session** — all three major indices closed higher. Tech sector led gains with the Nasdaq up 0.8%.
 
 ### Key Metrics
 - **VOO**: $481.20 (+0.6%) — Breaking out of a 3-day consolidation range
@@ -229,17 +229,17 @@ Your portfolio is positioned well for a rate-cutting cycle. VOO and QQQ benefit 
 - **Fear & Greed**: 55 (Neutral)
 
 ### Portfolio Impact
-Solid week overall. Your BTC position is approaching your cost basis — the DCA strategy is working as designed. Monitor the $70K resistance level for BTC; a breakout could signal the next leg up.', 'openai/gpt-4.1-mini'),
+Solid week overall. Your BTC position is approaching your cost basis — the DCA strategy is working as designed. Monitor the $70K resistance level for BTC; a breakout could signal the next leg up.', 'ollama/qwen3.5:9b'),
 
-('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', '2026-03-22',
-'## Market Summary — March 22, 2026
+('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', CURRENT_DATE - 12,
+'## Market Summary — Day 3
 
-**Weekend update** — Crypto markets remain active. BTC pushed above $69K overnight on ETF inflow data from Friday.
+**Weekend update** — Crypto markets remain active. BTC pushed above $69K overnight on ETF inflow data.
 
 ### Key Metrics
 - **VOO**: $483.80 (markets closed — last close)
 - **QQQ**: $497.10 (markets closed — last close)
-- **BTC**: $69,415 (+1.0%) — ETF net inflows hit $420M on Friday
+- **BTC**: $69,415 (+1.0%) — ETF net inflows hit $420M
 
 ### Notable Developments
 - BlackRock IBIT saw largest single-day inflow in 3 months
@@ -247,10 +247,10 @@ Solid week overall. Your BTC position is approaching your cost basis — the DCA
 - Costa Rica colón strengthened to ₡508/USD
 
 ### Portfolio Impact
-Good day to add to positions during weekend calm. Your portfolio crossed $18K — the added VOO and QQQ positions are building a strong cost-basis foundation.', 'openai/gpt-4.1-mini'),
+Good day to add to positions during weekend calm. Your portfolio crossed $18K — the added VOO and QQQ positions are building a strong cost-basis foundation.', 'ollama/qwen3.5:9b'),
 
-('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', '2026-03-23',
-'## Market Summary — March 23, 2026
+('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', CURRENT_DATE - 11,
+'## Market Summary — Day 4
 
 **Bitcoin surges** past $71K as weekend momentum builds. Altcoin market follows with broad-based gains.
 
@@ -265,10 +265,10 @@ Good day to add to positions during weekend calm. Your portfolio crossed $18K �
 - Mining difficulty at all-time high — network health strong
 
 ### Portfolio Impact
-Your BTC allocation is now the largest contributor to daily P&L swings. The MVRV Z-Score at 1.8 suggests we''re not in overheated territory yet. Your $95K alert for BTC has room to run.', 'openai/gpt-4.1-mini'),
+Your BTC allocation is now the largest contributor to daily P&L swings. The MVRV Z-Score at 1.8 suggests we''re not in overheated territory yet. Your $95K alert for BTC has room to run.', 'ollama/qwen3.5:9b'),
 
-('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', '2026-03-24',
-'## Market Summary — March 24, 2026
+('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', CURRENT_DATE - 10,
+'## Market Summary — Day 5
 
 **Monday pullback** — Profit-taking after a strong weekend for crypto. Equities opened slightly lower on geopolitical concerns.
 
@@ -283,10 +283,10 @@ Your BTC allocation is now the largest contributor to daily P&L swings. The MVRV
 - **Fear & Greed**: 48 (Neutral)
 
 ### Portfolio Impact
-Your DCA executed today — $200 into VOO at $483.10. Good entry near the weekly low. The pullback is healthy; no reason to change strategy.', 'openai/gpt-4.1-mini'),
+Your DCA executed today — $200 into VOO at $483.10. Good entry near the weekly low. The pullback is healthy; no reason to change strategy.', 'ollama/qwen3.5:9b'),
 
-('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', '2026-03-25',
-'## Market Summary — March 25, 2026
+('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', CURRENT_DATE - 9,
+'## Market Summary — Day 6
 
 **Tech selloff deepens** — Nasdaq dropped 1.4% on disappointing cloud earnings and renewed tariff concerns.
 
@@ -301,10 +301,10 @@ Your DCA executed today — $200 into VOO at $483.10. Good entry near the weekly
 - **Fear & Greed**: 38 (Fear)
 
 ### Portfolio Impact
-Portfolio dipped to ~$17,684 — largest single-day decline this period. This is normal volatility; your diversified allocation cushions the blow. The Fear & Greed drop to 38 is actually a historically good buying signal.', 'openai/gpt-4.1-mini'),
+Portfolio dipped to ~$17,684 — largest single-day decline this period. This is normal volatility; your diversified allocation cushions the blow. The Fear & Greed drop to 38 is actually a historically good buying signal.', 'ollama/qwen3.5:9b'),
 
-('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', '2026-03-26',
-'## Market Summary — March 26, 2026
+('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', CURRENT_DATE - 8,
+'## Market Summary — Day 7
 
 **Bounce-back Wednesday** — Markets rebounded from yesterday''s selloff. Bargain hunting in tech names.
 
@@ -318,10 +318,10 @@ Portfolio dipped to ~$17,684 — largest single-day decline this period. This is
 - **Fear & Greed**: 42 (Fear)
 
 ### Portfolio Impact
-Your DCA into QQQ today at $498.75 caught prices near the weekly low. The recovery pattern looks constructive — markets tend to V-bounce from these shallow pullbacks in bull trends.', 'openai/gpt-4.1-mini'),
+Your DCA into QQQ today at $498.75 caught prices near the weekly low. The recovery pattern looks constructive — markets tend to V-bounce from these shallow pullbacks in bull trends.', 'ollama/qwen3.5:9b'),
 
-('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', '2026-03-27',
-'## Market Summary — March 27, 2026
+('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', CURRENT_DATE - 7,
+'## Market Summary — Day 8
 
 **Steady gains** — Markets continued their recovery. Tech sector outperformed with AI infrastructure spending reports.
 
@@ -335,10 +335,10 @@ Your DCA into QQQ today at $498.75 caught prices near the weekly low. The recove
 - **Fear & Greed**: 47 (Neutral)
 
 ### Portfolio Impact
-Portfolio recovering nicely — nearly back to pre-selloff levels. The 3-day dip-and-recovery pattern is textbook bull market behavior. Your DCA schedule is performing exactly as designed — buying more during dips.', 'openai/gpt-4.1-mini'),
+Portfolio recovering nicely — nearly back to pre-selloff levels. The 3-day dip-and-recovery pattern is textbook bull market behavior. Your DCA schedule is performing exactly as designed — buying more during dips.', 'ollama/qwen3.5:9b'),
 
-('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', '2026-03-28',
-'## Market Summary — March 28, 2026
+('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', CURRENT_DATE - 6,
+'## Market Summary — Day 9
 
 **Crypto leads Friday rally** — Bitcoin broke through $73K as institutional demand surges. Equities closed the week higher.
 
@@ -353,10 +353,10 @@ Portfolio recovering nicely — nearly back to pre-selloff levels. The 3-day dip
 - Hash rate: New ATH — miners bullish
 
 ### Portfolio Impact
-Your BTC DCA today added 0.0015 BTC at $69,100 — you caught it before the late-day surge. Portfolio hit a new high at $18,543. The VOO $450 alert you had? That triggered during the Mar 25 dip. Consider resetting it.', 'openai/gpt-4.1-mini'),
+Your BTC DCA today added 0.0015 BTC at $69,100 — you caught it before the late-day surge. Portfolio hit a new high at $18,543. The VOO $450 alert you had? That triggered during the Day 6 dip. Consider resetting it.', 'ollama/qwen3.5:9b'),
 
-('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', '2026-03-29',
-'## Market Summary — March 29, 2026
+('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', CURRENT_DATE - 5,
+'## Market Summary — Day 10
 
 **Weekend euphoria** — Bitcoin continues its rally past $75K. Crypto Twitter is buzzing but on-chain metrics still support the move.
 
@@ -371,10 +371,10 @@ Your BTC DCA today added 0.0015 BTC at $69,100 — you caught it before the late
 - Exchange outflows accelerating — accumulation trend
 
 ### Portfolio Impact
-Your portfolio hit a new all-time high at $18,812! BTC is now your best-performing asset since inception. The MVRV Z-Score at 2.3 still has room before the 3.5 danger zone where your alert is set.', 'openai/gpt-4.1-mini'),
+Your portfolio hit a new all-time high at $18,812! BTC is now your best-performing asset since inception. The MVRV Z-Score at 2.3 still has room before the 3.5 danger zone where your alert is set.', 'ollama/qwen3.5:9b'),
 
-('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', '2026-03-30',
-'## Market Summary — March 30, 2026
+('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', CURRENT_DATE - 4,
+'## Market Summary — Day 11
 
 **Profit-taking day** — After a massive week, some traders are taking chips off the table. BTC pulled back 1.5%.
 
@@ -388,10 +388,10 @@ Your portfolio hit a new all-time high at $18,812! BTC is now your best-performi
 - Weekend volume: Lower than yesterday — not a panic sell
 
 ### Portfolio Impact
-You took a small profit — sold 0.005 BTC at $71,800. Smart risk management. Portfolio at $18,341 after the rebalance. The slight pullback is normal after a 10%+ weekly BTC rally.', 'openai/gpt-4.1-mini'),
+You took a small profit — sold 0.005 BTC at $71,800. Smart risk management. Portfolio at $18,341 after the rebalance. The slight pullback is normal after a 10%+ weekly BTC rally.', 'ollama/qwen3.5:9b'),
 
-('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', '2026-03-31',
-'## Market Summary — March 31, 2026
+('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', CURRENT_DATE - 3,
+'## Market Summary — Day 12
 
 **Q1 closing session** — Markets ended the quarter on a positive note. S&P 500 posted a 4.2% quarterly gain.
 
@@ -404,20 +404,20 @@ You took a small profit — sold 0.005 BTC at $71,800. Smart risk management. Po
 - S&P 500: +4.2%
 - Nasdaq 100: +5.8%
 - Bitcoin: +18.4%
-- Your portfolio: +12.3% 🎯
+- Your portfolio: +12.3%
 
 ### Portfolio Impact
-Your VOO DCA executed today — $200 at $489.20. Excellent quarter! Your portfolio outperformed the S&P 500 by 8 percentage points, largely thanks to the BTC allocation. Q2 setup looks favorable with rate cuts on the horizon.', 'openai/gpt-4.1-mini'),
+Your VOO DCA executed today — $200 at $489.20. Excellent quarter! Your portfolio outperformed the S&P 500 by 8 percentage points, largely thanks to the BTC allocation. Q2 setup looks favorable with rate cuts on the horizon.', 'ollama/qwen3.5:9b'),
 
-('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', '2026-04-01',
-'## Market Summary — April 1, 2026
+('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', CURRENT_DATE - 2,
+'## Market Summary — Day 13
 
 **Q2 starts strong** — Markets rally on ISM Manufacturing data beating expectations. Risk appetite returns.
 
 ### Key Metrics
 - **VOO**: $493.20 (+0.5%) — Testing $495 resistance
 - **QQQ**: $507.80 (+0.7%) — Semis leading the charge
-- **BTC**: $78,192 (+2.5%) — March into uncharted territory
+- **BTC**: $78,192 (+2.5%) — Marching into uncharted territory
 
 ### Macro Landscape
 - **ISM Manufacturing**: 52.8 (expansion!) — First time above 50 in 4 months
@@ -425,12 +425,12 @@ Your VOO DCA executed today — $200 at $489.20. Excellent quarter! Your portfol
 - **Fear & Greed**: 68 (Greed)
 
 ### Portfolio Impact
-Portfolio pushing toward $19K — your allocation strategy is delivering. The 40/30/30 split across VOO/QQQ/BTC captured gains from both the equity rally and BTC breakout. Keep the DCA running; momentum is your friend here.', 'openai/gpt-4.1-mini'),
+Portfolio pushing toward $19K — your allocation strategy is delivering. The 40/30/30 split across VOO/QQQ/BTC captured gains from both the equity rally and BTC breakout. Keep the DCA running; momentum is your friend here.', 'ollama/qwen3.5:9b'),
 
-('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', '2026-04-02',
-'## Market Summary — April 2, 2026
+('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', CURRENT_DATE - 1,
+'## Market Summary — Day 14
 
-**Mild pullback** — Markets gave back some gains ahead of Friday''s jobs report. Normal pre-NFP positioning.
+**Mild pullback** — Markets gave back some gains ahead of the jobs report. Normal pre-NFP positioning.
 
 ### Key Metrics
 - **VOO**: $491.40 (-0.4%) — Consolidating below $495
@@ -443,10 +443,10 @@ Portfolio pushing toward $19K — your allocation strategy is delivering. The 40
 - **JOLTS**: 7.8M openings — Labor market softening gradually
 
 ### Portfolio Impact
-Your QQQ DCA executed today at $505.40. Portfolio at $18,744 — a minor dip but still well above where you started. The pre-jobs-report pullback is a pattern we see every month; usually resolved positively.', 'openai/gpt-4.1-mini'),
+Your QQQ DCA executed today at $505.40. Portfolio at $18,744 — a minor dip but still well above where you started. The pre-jobs-report pullback is a pattern we see every month; usually resolved positively.', 'ollama/qwen3.5:9b'),
 
-('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', '2026-04-03',
-'## Market Summary — April 3, 2026
+('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', CURRENT_DATE,
+'## Market Summary — Today
 
 **Markets treading water** ahead of tomorrow''s Non-Farm Payrolls report. BTC showing strength while equities consolidate.
 
@@ -461,27 +461,27 @@ Your QQQ DCA executed today at $505.40. Portfolio at $18,744 — a minor dip but
 - Network fees spiking — high demand for block space
 
 ### Portfolio Impact
-BTC DCA executed today — 0.0435 BTC at $68,750. Position now at 0.14 BTC. Portfolio recovered to $19,218 — new high! Your BTC allocation is driving outperformance. All 5 active alerts remain untriggered; the market is in a sweet spot between fear and excessive greed.', 'openai/gpt-4.1-mini');
+BTC DCA executed today — 0.0435 BTC at $68,750. Position now at 0.14 BTC. Portfolio recovered to $19,218 — new high! Your BTC allocation is driving outperformance. All 5 active alerts remain untriggered; the market is in a sweet spot between fear and excessive greed.', 'ollama/qwen3.5:9b');
 
 -- ============================================================
 -- 10. NOTIFICATIONS (8 entries — mix of types and read states)
 -- ============================================================
 insert into public.notifications (user_id, type, title, body, read, related_id, created_at) values
   -- System welcome
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'system', 'Welcome to Finance Dashboard!', 'Your portfolio is set up and ready. Start by reviewing your positions and setting alerts.', true, null, '2026-03-20T06:05:00Z'),
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'system', 'Welcome to Finance Dashboard!', 'Your portfolio is set up and ready. Start by reviewing your positions and setting alerts.', true, null, (CURRENT_DATE - 14) + TIME '06:05:00'),
 
   -- DCA reminders
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'dca_reminder', 'DCA Reminder: VOO', 'Time to invest $200.00 in VOO', true, 'd1d1d1d1-d1d1-4d1d-ad1d-d1d1d1d10001', '2026-03-24T20:00:00Z'),
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'dca_reminder', 'DCA Reminder: QQQ', 'Time to invest $150.00 in QQQ', true, 'd2d2d2d2-d2d2-4d2d-ad2d-d2d2d2d20002', '2026-03-26T20:00:00Z'),
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'dca_reminder', 'DCA Reminder: BTC', 'Time to invest $100.00 in BTC', true, 'd3d3d3d3-d3d3-4d3d-ad3d-d3d3d3d30003', '2026-03-28T20:00:00Z'),
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'dca_reminder', 'DCA Reminder: VOO', 'Time to invest $200.00 in VOO', true, 'd1d1d1d1-d1d1-4d1d-ad1d-d1d1d1d10001', (CURRENT_DATE - 10) + TIME '20:00:00'),
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'dca_reminder', 'DCA Reminder: QQQ', 'Time to invest $150.00 in QQQ', true, 'd2d2d2d2-d2d2-4d2d-ad2d-d2d2d2d20002', (CURRENT_DATE - 8) + TIME '20:00:00'),
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'dca_reminder', 'DCA Reminder: BTC', 'Time to invest $100.00 in BTC', true, 'd3d3d3d3-d3d3-4d3d-ad3d-d3d3d3d30003', (CURRENT_DATE - 6) + TIME '20:00:00'),
 
   -- Triggered alert notification
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'price_alert', 'Alert: VOO ↓', 'VOO dropped below $450.00 — current price: $448.20', true, 'e6e6e6e6-e6e6-4e6e-ae6e-e6e6e6e60006', '2026-03-30T14:00:00Z'),
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'price_alert', 'Alert: VOO ↓', 'VOO dropped below $450.00 — current price: $448.20', true, 'e6e6e6e6-e6e6-4e6e-ae6e-e6e6e6e60006', (CURRENT_DATE - 4) + TIME '14:00:00'),
 
   -- Recent unread notifications
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'dca_reminder', 'DCA Reminder: VOO', 'Time to invest $200.00 in VOO', false, 'd1d1d1d1-d1d1-4d1d-ad1d-d1d1d1d10001', '2026-03-31T20:00:00Z'),
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'dca_reminder', 'DCA Reminder: QQQ', 'Time to invest $150.00 in QQQ', false, 'd2d2d2d2-d2d2-4d2d-ad2d-d2d2d2d20002', '2026-04-02T20:00:00Z'),
-  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'system', 'Weekly Portfolio Digest', 'Your portfolio gained +5.2% this week. BTC was the top performer at +8.4%. All DCA schedules executed on time.', false, null, '2026-04-03T08:00:00Z');
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'dca_reminder', 'DCA Reminder: VOO', 'Time to invest $200.00 in VOO', false, 'd1d1d1d1-d1d1-4d1d-ad1d-d1d1d1d10001', (CURRENT_DATE - 3) + TIME '20:00:00'),
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'dca_reminder', 'DCA Reminder: QQQ', 'Time to invest $150.00 in QQQ', false, 'd2d2d2d2-d2d2-4d2d-ad2d-d2d2d2d20002', (CURRENT_DATE - 1) + TIME '20:00:00'),
+  ('d0d0d0d0-de00-4de0-ade0-d0d0d0d0d0d0', 'system', 'Weekly Portfolio Digest', 'Your portfolio gained +5.2% this week. BTC was the top performer at +8.4%. All DCA schedules executed on time.', false, null, CURRENT_DATE + TIME '08:00:00');
 
 -- ============================================================
 -- 11. MARKET CACHE (warm cache for instant dashboard load)

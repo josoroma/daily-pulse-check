@@ -242,11 +242,11 @@ describe('calculateCostBasisTrend', () => {
     const trend = calculateCostBasisTrend(txns)
 
     expect(trend).toHaveLength(3)
-    expect(trend[0].averageCostBasis).toBe(100) // Only first buy
-    expect(trend[1].averageCostBasis).toBe(150) // (1000 + 2000) / 20
-    expect(trend[2].averageCostBasis).toBe(150) // (1000 + 2000 + 1500) / 30
-    expect(trend[2].totalInvested).toBe(4500)
-    expect(trend[2].totalQuantity).toBe(30)
+    expect(trend[0]!.averageCostBasis).toBe(100) // Only first buy
+    expect(trend[1]!.averageCostBasis).toBe(150) // (1000 + 2000) / 20
+    expect(trend[2]!.averageCostBasis).toBe(150) // (1000 + 2000 + 1500) / 30
+    expect(trend[2]!.totalInvested).toBe(4500)
+    expect(trend[2]!.totalQuantity).toBe(30)
   })
 })
 

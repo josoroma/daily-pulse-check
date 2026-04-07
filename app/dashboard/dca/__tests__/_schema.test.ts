@@ -33,7 +33,7 @@ describe('CreateDcaScheduleSchema', () => {
     })
     expect(result.success).toBe(false)
     if (!result.success) {
-      expect(result.error.issues[0].message).toContain('Day of week is required')
+      expect(result.error.issues[0]!.message).toContain('Day of week is required')
     }
   })
 
@@ -70,7 +70,7 @@ describe('CreateDcaScheduleSchema', () => {
     })
     expect(result.success).toBe(false)
     if (!result.success) {
-      expect(result.error.issues[0].message).toContain('Day of month is required')
+      expect(result.error.issues[0]!.message).toContain('Day of month is required')
     }
   })
 

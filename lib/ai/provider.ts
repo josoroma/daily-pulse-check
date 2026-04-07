@@ -6,7 +6,7 @@ export const AI_PROVIDERS = ['openai', 'ollama'] as const
 export type AiProvider = (typeof AI_PROVIDERS)[number]
 
 export const OPENAI_MODELS = ['gpt-4.1-mini'] as const
-export const OLLAMA_MODELS = ['qwen3.5:9b', 'gemma4:27b'] as const
+export const OLLAMA_MODELS = ['qwen3.5:9b', 'gemma4:26b'] as const
 
 export type OpenAiModel = (typeof OPENAI_MODELS)[number]
 export type OllamaModel = (typeof OLLAMA_MODELS)[number]

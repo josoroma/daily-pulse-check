@@ -4,6 +4,10 @@
 
 Built with Next.js 15 (App Router), TypeScript strict, Tailwind CSS v4, shadcn/ui, Supabase, Vercel AI SDK, and Recharts.
 
+![Dashboard Home](docs/images/dashboard.png)
+
+![Markets Data](docs/images/markets.png)
+
 ---
 
 ## Table of Contents

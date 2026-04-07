@@ -20,6 +20,8 @@
 | **E10**: Settings & Data Management   | Settings       | `app/dashboard/settings/`                                       |
 | **E11**: Dashboard Home               | Dashboard      | `app/dashboard/`                                                |
 | **E12**: Luma Theme & Visual Polish   | Theme          | `app/globals.css`                                               |
+| **E13**: Cron Jobs & Automation       | Cron           | `app/api/cron/`                                                 |
+| **E14**: Demo Seed & Stakeholder Data | Seed           | `supabase/seed.sql`                                             |
 
 ---
 
@@ -71,6 +73,10 @@ Each user story maps to a route segment with its colocated files:
 | **US-11.2**: Dashboard Charts & AI          | `app/dashboard/`                                 | `_components/dashboard-performance.tsx`, `dashboard-allocation.tsx`, `dashboard-summary.tsx` |
 | **US-11.3**: Recent Activity Feed           | `app/dashboard/`                                 | `_components/dashboard-activity.tsx`, `page.tsx`                                             |
 | **US-12.1**: Luma Theme & Visual Polish     | `app/`                                           | `globals.css` — CSS variables, radius, shadows                                               |
+| **US-13.1**: Portfolio Snapshot Cron        | `app/api/cron/portfolio-snapshot/`               | `route.ts` — daily snapshot at 02:00 UTC                                                     |
+| **US-13.2**: Market Pre-fetch Cron          | `app/api/cron/market-prefetch/`                  | `route.ts` — every 5 min cache warm                                                          |
+| **US-13.3**: Cache Cleanup Cron             | `app/api/cron/cache-cleanup/`                    | `route.ts` — daily stale data purge at 03:00 UTC                                             |
+| **US-14.1**: Demo User with Historical Data | `supabase/`                                      | `seed.sql`, `docs/technical/demoUserSeedDemo.md`                                             |
 
 ---
 
@@ -78,20 +84,22 @@ Each user story maps to a route segment with its colocated files:
 
 Each task type maps to a specific file within its route segment:
 
-| Task Type              | Target File                 | Example                                                                                      |
-| ---------------------- | --------------------------- | -------------------------------------------------------------------------------------------- |
-| Schema/validation task | `_schema.ts`                | `T-4.1.1: Define PositionSchema` → `app/dashboard/portfolio/_schema.ts`                      |
-| CRUD/mutation task     | `_actions.ts`               | `T-4.1.2: Implement position CRUD` → `app/dashboard/portfolio/_actions.ts`                   |
-| UI component task      | `_components/<name>.tsx`    | `T-4.1.3: Build positions table` → `app/dashboard/portfolio/_components/positions-table.tsx` |
-| Calculation/logic task | `_utils.ts`                 | `T-4.2.1: Calculate P&L` → `app/dashboard/portfolio/_utils.ts`                               |
-| State management task  | `_atoms.ts`                 | `T-4.1.4: Add filter state` → `app/dashboard/portfolio/_atoms.ts`                            |
-| Hook/form logic task   | `_hooks.ts`                 | `T-4.1.5: Position form hook` → `app/dashboard/portfolio/_hooks.ts`                          |
-| Testing task           | `__tests__/<name>.test.ts`  | `T-4.2.2: Test P&L` → `app/dashboard/portfolio/__tests__/_utils.test.ts`                     |
-| DB migration task      | `supabase/migrations/`      | `T-1.3.1: Create tables` → `supabase/migrations/...`                                         |
-| External API task      | `lib/<domain>/<file>.ts`    | `T-3.1.1: Twelve Data client` → `lib/market/stocks.ts`                                       |
-| AI prompt task         | `lib/ai/<file>.ts`          | `T-6.1.1: Market summary prompt` → `lib/ai/market-summary.ts`                                |
-| API route task         | `app/api/<domain>/route.ts` | `T-3.6.3: BCCR API route` → `app/api/market/bccr/route.ts`                                   |
-| CSS/theme task         | `app/globals.css`           | `T-12.1.1: Update dark mode CSS variables` → `app/globals.css`                               |
+| Task Type              | Target File                    | Example                                                                                      |
+| ---------------------- | ------------------------------ | -------------------------------------------------------------------------------------------- |
+| Schema/validation task | `_schema.ts`                   | `T-4.1.1: Define PositionSchema` → `app/dashboard/portfolio/_schema.ts`                      |
+| CRUD/mutation task     | `_actions.ts`                  | `T-4.1.2: Implement position CRUD` → `app/dashboard/portfolio/_actions.ts`                   |
+| UI component task      | `_components/<name>.tsx`       | `T-4.1.3: Build positions table` → `app/dashboard/portfolio/_components/positions-table.tsx` |
+| Calculation/logic task | `_utils.ts`                    | `T-4.2.1: Calculate P&L` → `app/dashboard/portfolio/_utils.ts`                               |
+| State management task  | `_atoms.ts`                    | `T-4.1.4: Add filter state` → `app/dashboard/portfolio/_atoms.ts`                            |
+| Hook/form logic task   | `_hooks.ts`                    | `T-4.1.5: Position form hook` → `app/dashboard/portfolio/_hooks.ts`                          |
+| Testing task           | `__tests__/<name>.test.ts`     | `T-4.2.2: Test P&L` → `app/dashboard/portfolio/__tests__/_utils.test.ts`                     |
+| DB migration task      | `supabase/migrations/`         | `T-1.3.1: Create tables` → `supabase/migrations/...`                                         |
+| External API task      | `lib/<domain>/<file>.ts`       | `T-3.1.1: Twelve Data client` → `lib/market/stocks.ts`                                       |
+| AI prompt task         | `lib/ai/<file>.ts`             | `T-6.1.1: Market summary prompt` → `lib/ai/market-summary.ts`                                |
+| API route task         | `app/api/<domain>/route.ts`    | `T-3.6.3: BCCR API route` → `app/api/market/bccr/route.ts`                                   |
+| CSS/theme task         | `app/globals.css`              | `T-12.1.1: Update dark mode CSS variables` → `app/globals.css`                               |
+| Cron job task          | `app/api/cron/<name>/route.ts` | `T-13.1.1: Portfolio snapshot cron` → `app/api/cron/portfolio-snapshot/route.ts`             |
+| Seed data task         | `supabase/seed.sql`            | `T-14.1.1: Create demo user seed` → `supabase/seed.sql`                                      |
 
 ---
 

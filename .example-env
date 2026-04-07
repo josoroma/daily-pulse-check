@@ -1,0 +1,32 @@
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54331
+NEXT_PUBLIC_SUPABASE_ANON_KEY=SUPABASE-ANON-KEY
+
+# Google OAuth (for Supabase Auth)
+# Export these as shell env vars before `supabase start` when enabling Google OAuth:
+# export SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID=GOOGLE-CLIENT-ID
+# export SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET=GOOGLE-CLIENT-SECRET
+
+# Twelve Data (Stock prices)
+TWELVE_DATA_API_KEY=TWELVE-KEY
+
+# CoinGecko (Crypto prices) — free tier, no key required by default
+# https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&ids=bitcoin&x_cg_demo_api_key=COINGECKO-TOKEN
+COINGECKO_API_KEY=COINGECKO-KEY
+
+# FRED (Macro indicators)
+FRED_API_KEY=FRED-KEY
+
+# Alternative.me (Fear & Greed Index) — no key required
+
+# OpenAI (Vercel AI SDK)
+OPENAI_API_KEY=OPENAI-KEY
+
+# Telegram Bot (Notifications)
+TELEGRAM_BOT_TOKEN=TELEGRAM-BOT-TOKEN
+TELEGRAM_CHAT_ID=TELEGRAM-CHAT-ID
+
+# https://sdd.bccr.fi.cr/es/IndicadoresEconomicos/Inicio/MiPerfil
+BCCR_SDDE_TOKEN=BCCR-SDDE-TOKEN
+
+CRON_SECRET=CRON-SECRET-TOKEN

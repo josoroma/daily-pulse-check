@@ -140,36 +140,18 @@ style: |
 
 ---
 
-# Why a Harness?
+# Why a Harness? · The Five Concepts
 
-Without structure, an LLM agent **drifts** — invents files, breaks conventions, skips tests, marks work done that isn't.
+Without structure an LLM agent **drifts**. A harness binds it to a single source of truth and **two-sided enforcement**: the `specs-workflow` rule upstream, git hooks downstream.
 
-A _harness_ turns the agent into a **reliable contributor** by binding it to:
+| Concept    | Source            | When                                     | Modifies code? |
+| ---------- | ----------------- | ---------------------------------------- | -------------- |
+| **Rules**  | `.claude/rules/`  | Auto on file edit (glob match)           | No — guidance  |
+| **Skills** | `.claude/skills/` | Invoked: `/implement-item US-4.1`        | **Yes**        |
+| **Agents** | `.claude/agents/` | Invoked, fresh context, restricted tools | Read-only      |
+| **Hooks**  | `.husky/` (git)   | `pre-commit`, `commit-msg`, `pre-push`   | No — gates     |
 
-- A **single source of truth** for scope (`SPECS.md`)
-- A **single source of truth** for conventions (`CLAUDE.md`)
-- **Path-scoped guardrails** that auto-load (rules)
-- **Named, file-modifying recipes** with phases (skills)
-- **Read-only specialists** with restricted tools (agents)
-- **Git gates** that block bad code from reaching `main`
-
-> Result: _one prompt per story_ → audited, typed, tested, design-system-compliant change.
-
----
-
-# The Five Concepts
-
-| Concept     | Source            | When                                     | Modifies code? |
-| ----------- | ----------------- | ---------------------------------------- | -------------- |
-| **Rules**   | `.claude/rules/`  | Auto on file edit (glob match)           | No — guidance  |
-| **Skills**  | `.claude/skills/` | Invoked: `/implement-item US-4.1`        | **Yes**        |
-| **Agents**  | `.claude/agents/` | Invoked, fresh context, restricted tools | Read-only      |
-| **Hooks**   | `.husky/` (git)   | `pre-commit`, `commit-msg`, `pre-push`   | No — gates     |
-| **Plugins** | _(none)_          | n/a                                      | n/a            |
-
-<br>
-
-> Composable, file-grounded, auditable. No magic.
+> Composable, file-grounded, auditable. _One prompt per story_ → audited, typed, tested change.
 
 ---
 
@@ -192,8 +174,6 @@ CLAUDE.md                              ← how to build it
 .husky/                                ← what cannot reach origin
    pre-commit · commit-msg · pre-push
 ```
-
-Upstream: `specs-workflow` rule. Downstream: git hooks. **Two-sided enforcement.**
 
 ---
 
@@ -420,42 +400,38 @@ Epic (E1..E14)            ← route group / domain
 
 ---
 
-# Flow A — Implement Existing Story
+# Flow A — Implement an Existing Story
 
 ```
 plan-item US-4.1
-   ↓ docs/agents/item-implementation-plan-<ts>.md
+   ↓ docs/agents/item-implementation-plan-<ts>.md  (fresh context, file-grounded)
+   ↓ dependency graph 🟢/🟡/🔴 · complexity S/M/L/XL · files per contract
 
 /implement-item US-4.1
    ↓ Phase 1 Plan → 2 Implement → 3 Validate → 4 Complete
-   ↓ Gherkin Validation Report + commit suggestion
+   ↓ Gherkin Validation Report + Conventional Commit suggestion
 
 review-item US-4.1
    ↓ docs/agents/item-reviewed-<ts>.md
    ↓ ✅ PASS · ⚠️ PASS WITH NOTES · ❌ NEEDS CHANGES
 
-/update-specs            (only on inconsistencies)
-
 git commit && git push
    ↓ pre-commit · commit-msg · pre-push
 ```
 
+> **Plan ≠ Implement**: decouples thinking from doing, gives reviewers an artifact to compare against.
+
 ---
 
-# Flow B — Add Item Mid-Flight
+# Flow B — Add Item · Flow C — Document Feature
 
 ```
 /add-item add US-4.5 CSV position import to E4
    ↓ Parse → Assign ID → 🎨 detect → Generate
    ↓ Diff preview → Apply
    ↓ SPECS.md + Progress Summary updated
-
-plan-item US-4.5
-/implement-item US-4.5
-review-item US-4.5
+   ↓ then: plan-item → /implement-item → review-item
 ```
-
-# Flow C — Document a Feature
 
 ```
 document-feature portfolio
@@ -463,23 +439,6 @@ document-feature portfolio
    ↓ docs/routes/portfolio.md
      (Architecture · Pages · Flows · Models · DB · Tests · Tree · Limits)
 ```
-
----
-
-# Why Plan-then-Implement?
-
-`plan-item` runs in a **fresh context**, read-only, file-grounded. Produces:
-
-- Dependency graph: 🟢 ready · 🟡 depends · 🔴 blocked
-- Complexity matrix: **S/M/L/XL** × **Low/Med/High**
-- Files to create/modify per route segment contract
-- Gherkin → checklist conversion
-
-`/implement-item` then **locates the most recent matching plan** and treats it as the **implementation contract**. Deviations are reported in `Plan Deviations`.
-
-> Decouples _thinking_ from _doing_.
-> Gives reviewers an artifact to compare against.
-> Keeps the agent honest.
 
 ---
 
@@ -492,47 +451,36 @@ document-feature portfolio
 | `US-X.Y`         | **User Story** / PBI     | `[US-4.1]` · `SpecId = US-4.1`   |
 | `T-X.Y.Z`        | **Task**                 | `[T-4.1.1]` · `SpecId = T-4.1.1` |
 | Gherkin scenario | **Test Case** / AC field | one per `Scenario:`              |
-| `[!]` blocked    | Tag `blocked` + comment  | —                                |
-| 🎨 marker        | Tag `frontend-design`    | —                                |
+
+| SPECS.md | Agile             | Scrum            |
+| -------- | ----------------- | ---------------- |
+| `[ ]`    | New / To Do       | New / Approved   |
+| `[~]`    | Active            | Committed        |
+| `[x]`    | Closed / Resolved | Done             |
+| `[!]`    | Blocked + Active  | Blocked + Cmtted |
 
 > **`SpecId` (custom string field)** is the single linking key.
-> The _only_ trustworthy correlator between ADO and the repo.
 
 ---
 
-# ADO Status Mapping
+# ADO Loop · Branch Policies
 
-| SPECS.md | Agile                | Scrum                   |
-| -------- | -------------------- | ----------------------- |
-| `[ ]`    | New / To Do          | New / Approved          |
-| `[~]`    | Active               | Committed               |
-| `[x]`    | Closed / Resolved    | Done                    |
-| `[!]`    | Blocked tag + Active | Blocked tag + Committed |
+**Planning loop**
 
-### Recommended ADO Branch Policies
-
-- ✅ Min 1 reviewer · pairs with `review-item` artifact
-- ✅ Linked work item required · enforces `SpecId`
-- ✅ Build pipeline green · catches what `tsc --noEmit` misses
-- ✅ Comment resolution required · 🟠 Major findings get addressed
-- ✅ Squash merge · one commit per Story = clean history
-
----
-
-# Planning Loop with ADO
-
-1. **PM grooms** Epic / Story in ADO with `SpecId` placeholders
-2. `/add-item` **mirrors** to `SPECS.md` — same ID
-3. `plan-item US-4.1` → plan file → attach URL to ADO Discussion
+1. PM grooms Epic / Story in ADO with `SpecId` placeholder
+2. `/add-item` mirrors to `SPECS.md` — same ID
+3. `plan-item US-4.1` → plan file → attach URL to Discussion
 4. PR title: `feat(portfolio): US-4.1 manual position entry` + `AB#<id>`
 
-# Code Review Loop with ADO
+**Code-review loop**
 
 1. PR opens, links `AB#<id>`
-2. `review-item US-4.1` → review file committed/attached
-3. **Verdict gates merge**: ✅ approve · ⚠️ approve + new tasks · ❌ block
-4. `pre-push` last gate before remote · build pipeline last gate before merge
-5. On merge: ADO auto-closes · CI runs `/update-specs` (optional)
+2. `review-item US-4.1` → review file attached
+3. Verdict gates merge: ✅ approve · ⚠️ approve + tasks · ❌ block
+4. `pre-push` last gate before remote · pipeline last gate before merge
+5. On merge: ADO auto-closes · CI may run `/update-specs`
+
+> **Recommended policies:** min 1 reviewer · linked work item required · build green · comment resolution required · squash merge.
 
 ---
 
@@ -613,52 +561,6 @@ document-feature portfolio
 - [ ] `SpecId` on every work item
 - [ ] Branch policies enforced
 - [ ] PR template has `AB#` + `SpecId`
-
-</div>
-
-</div>
-
----
-
-# What This Buys You
-
-<br>
-
-<div class="columns">
-
-<div>
-
-### For PM
-
-- Backlog **always** matches code state
-- Every PR traceable to a Story
-- Verdict-gated merges
-- Real progress, not vibes
-
-### For Tech Lead
-
-- Conventions enforced **automatically**
-- Plan + review artifacts per change
-- Severity-ranked findings
-- Nothing reaches `main` untested
-
-</div>
-
-<div>
-
-### For Engineer
-
-- _One prompt per story_
-- Pre-mapped files & dependencies
-- Self-review before human review
-- Conventional commit auto-suggested
-
-### For Reviewer
-
-- File-grounded findings only
-- Plan as comparison baseline
-- Severity ladder = clear priorities
-- Less time chasing convention drift
 
 </div>
 

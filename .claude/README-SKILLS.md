@@ -1,43 +1,79 @@
-# Skills Reference
+# Claude Configuration Reference
 
-> How to use the 8 workflow skills for spec-driven development.
+> All Claude-side automation for the Finance Dashboard: **rules**, **skills**, **agents**, **hooks**, and **plugins**.
+
+---
+
+## Concepts at a Glance
+
+| Concept     | Where it lives                                                    | When it runs                                                                  | Modifies files?     |
+| ----------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------- | ------------------- |
+| **Rules**   | `.claude/rules/*.md`                                              | Auto-loaded into context whenever you edit a file matching the rule's `paths` | Indirect (guidance) |
+| **Skills**  | `.claude/skills/<name>/SKILL.md`                                  | Invoked explicitly by name (e.g. `/implement-item US-4.1`)                    | Yes                 |
+| **Agents**  | `.claude/agents/<name>.md`                                        | Invoked explicitly by name; run with restricted tools and a fresh context     | Read-only or scoped |
+| **Hooks**   | (Claude Code hooks: not configured) — git hooks live in `.husky/` | Local git lifecycle (`pre-commit`, `commit-msg`, `pre-push`)                  | Indirect (gates)    |
+| **Plugins** | (none)                                                            | n/a — no Claude Code plugin manifest in this repo                             | n/a                 |
+
+---
+
+## Available Rules (`.claude/rules/`)
+
+Rules are markdown files with a YAML frontmatter `paths:` glob. When you edit a matching file, the rule body is auto-loaded as context.
+
+| Rule             | Applies to                                                        |
+| ---------------- | ----------------------------------------------------------------- |
+| `code-style`     | `app/**/*.{ts,tsx}`, `lib/**/*.{ts,tsx}`                          |
+| `database`       | `supabase/migrations/**`, `lib/supabase/**`, `app/**/_schema.ts`  |
+| `dates`          | `app/**/*.{ts,tsx}`, `lib/**/*.{ts,tsx}`                          |
+| `design`         | `app/**/*.tsx`, `app/**/_components/**`                           |
+| `security`       | `lib/supabase/**`, `app/**/_actions.ts`, `app/api/**`, `proxy.ts` |
+| `specs-workflow` | `SPECS.md`, `CLAUDE.md`                                           |
+| `testing`        | `app/**/__tests__/**`, `app/**/*.test.ts`, `lib/**/__tests__/**`  |
 
 ---
 
 ## Available Skills
 
-| Skill               | Purpose                                                                            | Modifies Files?     |
-| ------------------- | ---------------------------------------------------------------------------------- | ------------------- |
-| `/plan-item`        | Plan implementation before writing code                                            | No (read-only)      |
-| `/add-item`         | Add new epics, stories, or tasks to SPECS.md with 🎨 detection                     | Yes (with approval) |
-| `/implement-item`   | Implement an epic or user story end-to-end with 🎨 detection                       | Yes                 |
-| `/review-item`      | Code review against conventions and acceptance criteria                            | No (read-only)      |
-| `/update-specs`     | Apply controlled updates to SPECS.md or CLAUDE.md                                  | Yes (with approval) |
-| `/frontend-design`  | Create distinctive UI components with project design system                        | Yes                 |
-| `/capture-prompts`  | Capture, improve, and persist session prompts with derived tasks                   | Yes (append-only)   |
-| `/document-feature` | Generate structured technical docs for a dashboard feature/route in `docs/routes/` | Yes                 |
+| Skill              | Purpose                                                          | Modifies Files?     |
+| ------------------ | ---------------------------------------------------------------- | ------------------- |
+| `/add-item`        | Add new epics, stories, or tasks to SPECS.md with 🎨 detection   | Yes (with approval) |
+| `/implement-item`  | Implement an epic or user story end-to-end with 🎨 detection     | Yes                 |
+| `/update-specs`    | Apply controlled updates to SPECS.md or CLAUDE.md                | Yes (with approval) |
+| `/frontend-design` | Create distinctive UI components with project design system      | Yes                 |
+| `/capture-prompts` | Capture, improve, and persist session prompts with derived tasks | Yes (append-only)   |
+
+## Available Agents (`.claude/agents/`)
+
+| Agent              | Purpose                                                             | Output                                                |
+| ------------------ | ------------------------------------------------------------------- | ----------------------------------------------------- |
+| `plan-item`        | Plan an epic, story, task, or free-text scope from SPECS.md         | `docs/agents/item-implementation-plan-{timestamp}.md` |
+| `review-item`      | Audit implementation vs SPECS + latest plan + CLAUDE.md conventions | `docs/agents/item-reviewed-{timestamp}.md`            |
+| `document-feature` | Generate technical reference docs for a dashboard feature/route     | `docs/routes/{camelCaseName}.md`                      |
+| `code-reviewer`    | Generic read-only reviewer used internally by `review-item`         | Inline findings                                       |
 
 ---
 
 ## Workflow: Implementing a Feature
 
 ```
-1. /plan-item US-4.1       → Understand scope, dependencies, file list
+1. plan-item US-4.1        → Writes docs/agents/item-implementation-plan-<ts>.md
 2. /add-item               → Add missing stories or tasks discovered during planning
-3. /implement-item US-4.1  → Write code, run tests, update SPECS.md
-4. /review-item US-4.1     → Audit against conventions and Gherkin criteria
+3. /implement-item US-4.1  → Reads latest matching plan + SPECS section, implements, updates SPECS.md
+4. review-item US-4.1      → Reads latest matching plan + SPECS section, writes docs/agents/item-reviewed-<ts>.md
 5. /update-specs           → Fix any status inconsistencies found in review
 ```
 
 ---
 
-## Skill Details
+## Skill & Agent Details
 
-### `/plan-item <ID>`
+### `plan-item` agent
 
 **When to use**: Before starting any implementation work.
 
-**Input**: Epic ID (`E1`) or User Story ID (`US-1.1`)
+**Input**: Epic ID (`E1`), User Story ID (`US-1.1`), Task ID (`T-1.1.1`), or free-text initiative.
+
+**Behavior**: Read-only. Loads SPECS.md + CLAUDE.md + architecture docs, then writes a timestamped plan to `docs/agents/item-implementation-plan-{YYYY-MM-DD-HH-MM-SS}.md`. Announces the file path before writing.
 
 **Output**:
 
@@ -48,8 +84,9 @@
 - Key architectural decisions
 - Files to create/modify per the route segment contract
 - Gherkin acceptance criteria checklist
+- Open questions and suggested first action
 
-**Example**: `/plan-item US-4.1` → Plans the Position CRUD story for `app/portfolio/`
+**Example**: `plan-item US-4.1` → Writes `docs/agents/item-implementation-plan-2026-04-20-09-15-32.md` for the Position CRUD story.
 
 ---
 
@@ -61,9 +98,11 @@
 
 **🎨 detection**: Checks the story header for the `🎨` marker. If present, applies `/frontend-design` guidelines for all `.tsx` component work.
 
+**Plan context**: Before Phase 1, locates the most recent matching `docs/agents/item-implementation-plan-*.md`. If found, follows it as the implementation contract and reports the plan path in the final summary. If no matching plan exists, implements from SPECS.md alone and says so.
+
 **Phases**:
 
-1. **Plan** — Read tasks, identify files, check dependencies, detect 🎨 marker
+1. **Plan** — Read tasks, load matching plan if any, identify files, check dependencies, detect 🎨 marker
 2. **Implement** — Write code per colocated architecture (+ design system if 🎨), update SPECS.md `[~]`
 3. **Validate** — Run lint + tests, verify Gherkin criteria (+ design checklist if 🎨)
 4. **Complete** — Mark tasks `[x]`, update Progress Summary, suggest commit
@@ -79,26 +118,44 @@
 
 ---
 
-### `/review-item <ID>`
+### `review-item` agent
 
 **When to use**: After implementation, before merging.
 
-**Input**: Epic ID (`E1`) or User Story ID (`US-1.1`)
+**Input**: Epic ID (`E1`), User Story ID (`US-1.1`), Task ID (`T-1.1.1`), or free-text scope.
 
-**Runs as**: `code-reviewer` agent (read-only, forked context)
+**Behavior**: Read-only. Loads SPECS.md + CLAUDE.md + architecture docs and the most recent matching `docs/agents/item-implementation-plan-*.md` (announces which plan it used, or that none was found). Writes a timestamped review to `docs/agents/item-reviewed-{YYYY-MM-DD-HH-MM-SS}.md`.
 
 **Checklist**:
 
-1. SPECS Compliance — Gherkin scenario-by-scenario verification
-2. Convention Compliance — Architecture, naming, imports, exports
-3. Code Quality — Error handling, loading/empty states, type safety
-4. Security Audit — RLS, auth, validation, no exposed secrets
-5. Test Coverage — Tests exist, pass, cover edge cases
-6. SPECS.md Consistency — Status markers match actual state
+1. SPECS Compliance — Gherkin scenario-by-scenario verification with file:line evidence
+2. Plan Adherence — Deviations from the selected implementation plan
+3. Convention Compliance — Architecture, naming, imports, exports
+4. Code Quality — Error handling, loading/empty states, type safety
+5. Security Audit — RLS, auth, validation, no exposed secrets
+6. Test Coverage — Tests exist, pass, cover edge cases
+7. SPECS.md Consistency — Status markers match actual state
+8. Frontend Design (only if 🎨) — palette, tabular numbers, states, responsive
 
-**Output**: Verdict (✅ PASS / ⚠️ PASS WITH NOTES / ❌ NEEDS CHANGES) with file:line references
+**Severity**: 🔴 Critical, 🟠 Major, 🟡 Minor, 🔵 Info — every finding cites `path/to/file.ts:LN`.
 
-**Example**: `/review-item US-4.1` → Reviews the portfolio implementation
+**Output**: Verdict (✅ PASS / ⚠️ PASS WITH NOTES / ❌ NEEDS CHANGES) plus the review file path and the plan path it used.
+
+**Example**: `review-item US-4.1` → Writes `docs/agents/item-reviewed-2026-04-20-10-42-11.md`.
+
+---
+
+### `document-feature` agent
+
+**When to use**: When generating reference documentation for a dashboard feature/route.
+
+**Input**: Feature name (e.g. `portfolio`, `bitcoin`, `dca`, `market`, `alerts`, `insights`, `analytics`, `settings`, `authentication`).
+
+**Behavior**: Read-only on application code. Reads the route segment, related `app/api/` routes, `lib/` modules, `supabase/migrations/`, and `__tests__/`. Announces the output path before writing.
+
+**Output**: `docs/routes/<camelCaseName>.md` with sections — Architecture, Pages & Navigation, User Flows, Models/Cron/Actions/APIs, Database Schema, Testing, File Tree, Known Limitations.
+
+**Example**: `document-feature portfolio` → Writes `docs/routes/portfolio.md`.
 
 ---
 
@@ -210,3 +267,27 @@
 - Confirmation: item ID, parent, 🎨 status with reason
 
 **Example**: `/add-item add US-4.5 CSV position import to E4` → Adds a new story with Gherkin criteria, tasks, and 🎨 marker under E4
+
+---
+
+## Hooks
+
+No Claude Code hooks (`PreToolUse`, `PostToolUse`, `UserPromptSubmit`, etc.) are configured for this repo.
+
+Local **git hooks** are managed by `husky` and live in `.husky/`:
+
+| Hook         | What it runs                                                                 |
+| ------------ | ---------------------------------------------------------------------------- |
+| `pre-commit` | `lint-staged` — runs ESLint and Prettier on staged `*.{ts,tsx,md}` files     |
+| `commit-msg` | `commitlint` against `commitlint.config.mjs` — enforces Conventional Commits |
+| `pre-push`   | `npm test` — blocks pushes when Vitest fails                                 |
+
+These gate code quality outside of any Claude session and are the primary safety net for commits and pushes.
+
+---
+
+## Plugins
+
+No Claude Code plugin manifest (`.claude/plugins/` or marketplace install) is configured for this repo. The `frontend-design` skill is **inspired by** Anthropic's official frontend-design plugin but ships as a local skill, not as an installed plugin.
+
+If plugins are added later, document them here with: source (marketplace name or URL), version pin, and which skills/agents they replace or augment.

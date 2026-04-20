@@ -65,13 +65,15 @@ The PDD and SPECS together informed `CLAUDE.md` — the project instructions fil
 - **Tech stack rules** — no `any`, no `@ts-ignore`, Server Components by default
 - **Testing strategy** — colocated `__tests__/`, Vitest, pure-function focus
 
-### 4. `.claude/` → Skills, Rules & Agents
+### 4. `.claude/` — Rules, Skills & Agents
 
 The architecture and conventions were further codified into reusable automation:
 
-- **Rules** (7 files) — enforced automatically on every code edit (code-style, database, dates, design, security, specs-workflow, testing)
-- **Skills** (8 workflows) — structured patterns invoked by name: `plan-item`, `implement-item`, `review-item`, `frontend-design`, `document-feature`, `add-item`, `update-specs`, `capture-prompts`
-- **Agents** (1 agent) — `code-reviewer` for read-only audits against conventions and acceptance criteria
+- **Rules** (7 files in `.claude/rules/`) — path-scoped instructions auto-loaded on every code edit (code-style, database, dates, design, security, specs-workflow, testing)
+- **Skills** (5 workflows in `.claude/skills/`) — structured, file-modifying patterns invoked by name: `implement-item`, `frontend-design`, `add-item`, `update-specs`, `capture-prompts`
+- **Agents** (4 in `.claude/agents/`) — read-only, tool-restricted assistants: `plan-item`, `review-item`, `document-feature`, `code-reviewer`
+- **Hooks** — no Claude Code hooks are configured. Git hooks live in `.husky/` (`commit-msg`, `pre-commit`, `pre-push`) and enforce commit conventions and lint/tests
+- **Plugins** — no Claude Code plugin manifest is configured for this repo
 
 The result: an LLM agent can pick up any user story, plan the work, implement it following project conventions, run tests, validate Gherkin scenarios, and update the SPECS status — all driven by the document chain.
 
@@ -112,9 +114,9 @@ The result: an LLM agent can pick up any user story, plan the work, implement it
 │   ├── migrations/                   # 8 SQL migrations
 │   └── seed.sql                      # Demo data (see Demo Data section)
 └── .claude/
-    ├── rules/                        # 7 auto-enforced coding rules
-    ├── skills/                       # 8 workflow skills
-    └── agents/                       # 1 code-review agent
+    ├── rules/                        # 7 path-scoped coding rules (auto-loaded)
+    ├── skills/                       # 5 file-modifying workflow skills
+    └── agents/                       # 4 read-only agents (plan, review, document, code-reviewer)
 ```
 
 ---
@@ -270,8 +272,8 @@ For implementation details, see [docs/technical/demoUserSeedDemo.md](docs/techni
 | File                                                             | Purpose                                                |
 | ---------------------------------------------------------------- | ------------------------------------------------------ |
 | [.claude/README-ARCHITECTURE.md](.claude/README-ARCHITECTURE.md) | Architecture contract — colocated features, shared lib |
-| [.claude/README-SPECS.md](.claude/README-SPECS.md)               | Spec → code mapping (epics to routes)                  |
-| [.claude/README-SKILLS.md](.claude/README-SKILLS.md)             | Skills reference (8 workflow skills)                   |
+| [.claude/README-SPECS.md](.claude/README-SPECS.md)               | Spec → code mapping (epics, stories, tasks to routes)  |
+| [.claude/README-SKILLS.md](.claude/README-SKILLS.md)             | Skills, agents, hooks, and plugins reference           |
 
 **Rules** (auto-enforced on code edits):
 
@@ -285,18 +287,28 @@ For implementation details, see [docs/technical/demoUserSeedDemo.md](docs/techni
 | Specs Workflow | [.claude/rules/specs-workflow.md](.claude/rules/specs-workflow.md) |
 | Testing        | [.claude/rules/testing.md](.claude/rules/testing.md)               |
 
-**Skills** (invoked by name for structured workflows):
+**Skills** (file-modifying workflows, invoked by name):
 
-| Skill              | Purpose                                                             |
-| ------------------ | ------------------------------------------------------------------- |
-| `plan-item`        | Plan an epic or user story before implementation                    |
-| `implement-item`   | Implement end-to-end: code, tests, Gherkin validation, SPECS update |
-| `review-item`      | Read-only code review against conventions and acceptance criteria   |
-| `frontend-design`  | Create production-grade UI components with shadcn/ui + Tailwind     |
-| `document-feature` | Generate technical docs for a route/feature                         |
-| `add-item`         | Add new epic, story, or task to SPECS.md                            |
-| `update-specs`     | Apply controlled updates to SPECS.md or CLAUDE.md                   |
-| `capture-prompts`  | Persist session prompts and derive actionable tasks                 |
+| Skill             | Purpose                                                             |
+| ----------------- | ------------------------------------------------------------------- |
+| `implement-item`  | Implement end-to-end: code, tests, Gherkin validation, SPECS update |
+| `frontend-design` | Create production-grade UI components with shadcn/ui + Tailwind     |
+| `add-item`        | Add new epic, story, or task to SPECS.md                            |
+| `update-specs`    | Apply controlled updates to SPECS.md or CLAUDE.md                   |
+| `capture-prompts` | Persist session prompts and derive actionable tasks                 |
+
+**Agents** (read-only, tool-restricted, invoked by name):
+
+| Agent              | Purpose                                                                        | Output                                                |
+| ------------------ | ------------------------------------------------------------------------------ | ----------------------------------------------------- |
+| `plan-item`        | Plan an epic, story, task, or free-text scope before implementation            | `docs/agents/item-implementation-plan-{timestamp}.md` |
+| `review-item`      | Audit implementation against SPECS, the latest plan, and CLAUDE.md conventions | `docs/agents/item-reviewed-{timestamp}.md`            |
+| `document-feature` | Generate technical reference docs for a dashboard route                        | `docs/routes/{camelCaseName}.md`                      |
+| `code-reviewer`    | Generic code-review agent used internally by `review-item`                     | Inline findings                                       |
+
+**Hooks**: No Claude Code hooks are configured. Git hooks under `.husky/` run `lint-staged` on `pre-commit`, `commitlint` on `commit-msg`, and tests on `pre-push`.
+
+**Plugins**: No Claude Code plugin manifest is configured for this repo.
 
 **Agents**:
 

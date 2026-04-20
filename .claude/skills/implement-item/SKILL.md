@@ -11,14 +11,26 @@ You are a senior developer implementing work for the Finance Dashboard project.
 ## Context
 
 Read these files first:
-- @SPECS.md — full project specifications with epics, user stories, tasks, and Gherkin criteria
+
+- @SPECS.md — extract only the section for `$ARGUMENTS` (epic, user story, or task) plus its Gherkin criteria; do not load unrelated sections
 - @CLAUDE.md — project conventions, tech stack, and colocated architecture
 - @.claude/README-ARCHITECTURE.md — route segment contract and naming rules
 - @.claude/README-SPECS.md — how epics/stories/tasks map to route files
 
+### Plan Context (required when available)
+
+Look in `docs/agents/` for files matching `item-implementation-plan-*.md`:
+
+1. Pick the most recent file (highest `YYYY-MM-DD-HH-MM-SS` timestamp) whose body targets `$ARGUMENTS` (matches the item ID or free-text title).
+2. If a matching plan exists, read it in full and treat it as the authoritative implementation contract — file list, ordering, key decisions, and acceptance checklist.
+3. If no relevant plan exists, proceed using SPECS.md alone and note that no plan was used.
+4. Before starting Phase 1, tell the user:
+   - Which plan file you are using (full path), **or**
+   - That no matching plan was found and you are implementing from SPECS.md only.
+
 ## Your Task
 
-Implement `$ARGUMENTS` from SPECS.md. Determine whether it is an **Epic** (e.g. `E1`) or a **User Story** (e.g. `US-1.1`).
+Implement `$ARGUMENTS` from SPECS.md (and the selected plan, if any). Determine whether it is an **Epic** (e.g. `E1`), a **User Story** (e.g. `US-1.1`), a **Task** (e.g. `T-1.1.1`), or a free-text scope.
 
 - **Epic**: Implement all user stories and their tasks in order.
 - **User Story**: Implement all tasks for that story.
@@ -28,11 +40,14 @@ Implement `$ARGUMENTS` from SPECS.md. Determine whether it is an **Epic** (e.g. 
 Check if the user story header contains the `🎨` marker (e.g. `### US-4.2: Portfolio Overview Dashboard [ ] 🎨`).
 
 If `🎨` is present, this story requires the `/frontend-design` skill for all UI component work:
+
 - **Before** creating any `.tsx` component file, apply the `/frontend-design` skill guidelines — design thinking, project color palette, metric card patterns, chart containers, table conventions, loading/empty/error states, responsive breakpoints, and the implementation checklist.
 - Use the design system defined in the skill: emerald/rose for gains/losses, asset-specific colors (VOO=blue, QQQ=purple, BTC=orange, Cash=teal), `tabular-nums font-mono` for financial numbers, shadcn/ui components, dark-first theme.
 - Every component must pass the `/frontend-design` implementation checklist before the task is marked complete.
+  f a plan file was selected, follow its `Files Affected`, `Implementation Order`, and `Key Decisions` sections; deviations must be called out in the final summary
 
-If `🎨` is **not** present, the story is backend/infrastructure only — skip design system concerns.
+3. Identify which files to create or modify (use the architecture in CLAUDE.md)
+   4f `🎨` is **not** present, the story is backend/infrastructure only — skip design system concerns.
 
 ## Implementation Workflow
 
@@ -96,6 +111,7 @@ Or:
 ### SPECS.md Update
 
 Update the Progress Summary table with new counts:
+
 - Recalculate Todo, In Progress, Completed, Blocked for affected epics
 
 ### Commit Message
@@ -111,23 +127,42 @@ type(scope): description
 
 ### Implementation Summary
 
-Provide a detailed summary:
+, and explicitly restate which plan file (if any) was used as context:
 
 ```markdown
 ## Implementation Summary: [Item ID]
 
+### Plan Used
+
+- docs/agents/item-implementation-plan-<timestamp>.md ← exact path, or "none — implemented from SPECS.md only"
+
 ### Files Created
+
 - path/to/file.ts — purpose
 
 ### Files Modified
+
 - path/to/file.ts — what changed
 
+### Plan Deviations
+
+- <Any file, ordering, or decision that diverged from the plan, with rationale> ← omit section if no plan was used
+
 ### Key Decisions Made
+
 - Decision and rationale
 
 ### Test Coverage
+
 - What was tested and results
 
 ### Remaining Work
+
 - Any follow-up tasks or known issues
+```
+
+After printing the summary, send a short chat-level confirmation to the user stating the plan path that was consumed (or that none was used).ny follow-up tasks or known issues
+
+```
+
 ```

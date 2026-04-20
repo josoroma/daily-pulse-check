@@ -193,7 +193,7 @@ Allowed commit scopes (from `commitlint.config.mjs`): `setup`, `auth`, `portfoli
 
 [CLAUDE.md](../CLAUDE.md) is the project instructions file the agent loads on every session. It declares:
 
-- **Tech stack invariants** — Next.js 15 App Router (never `pages/`), TypeScript strict (no `any`/`@ts-ignore`/`as unknown as`), Tailwind v4 (utility-only), shadcn/ui first, Jotai colocated, RHF + Zod, Supabase + RLS, Vercel AI SDK, Recharts, date-fns + `@date-fns/tz`, Vitest.
+- **Tech stack invariants** — Next.js 16.2.1 App Router (never `pages/`), TypeScript strict (no `any`/`@ts-ignore`/`as unknown as`), Tailwind v4 (utility-only), shadcn/ui first, Jotai colocated, RHF + Zod, Supabase + RLS, Vercel AI SDK, Recharts, date-fns + `@date-fns/tz`, Vitest.
 - **The Route Segment Contract** — the canonical folder shape for every `app/<route>/`:
   - Required: `page.tsx`, `_actions.ts`, `_schema.ts`, `_components/`, `__tests__/`
   - Optional: `layout.tsx`, `loading.tsx`, `error.tsx`, `_types.ts`, `_hooks.ts`, `_atoms.ts`, `_constants.ts`, `_utils.ts`

@@ -6,7 +6,7 @@ _How a small `.claude/` folder, one `CLAUDE.md`, and a numbered `SPECS.md` turne
 
 We have all seen the demo: an AI agent writes a feature in 30 seconds. We have also all seen the next morning: the file lives in the wrong folder, the migration has no RLS policy, the dates are in UTC instead of Costa Rica time, and there is no test.
 
-After shipping a personal finance dashboard end-to-end with Claude Code (Next.js 15, TypeScript strict, Supabase, Vercel AI SDK), I converged on a pattern that fixes this. I call it the **harness**. It is five small files that turn an LLM from a creative junior into a reliable senior engineer that never forgets the conventions.
+After shipping a personal finance dashboard end-to-end with Claude Code (Next.js 16.2.1, TypeScript strict, Supabase, Vercel AI SDK), I converged on a pattern that fixes this. I call it the **harness**. It is five small files that turn an LLM from a creative junior into a reliable senior engineer that never forgets the conventions.
 
 Here is what it looks like.
 
@@ -193,6 +193,6 @@ Five small things. The result is an AI pair-programmer I can actually trust on a
 
 If you are building with Claude Code, Cursor, or any agentic IDE — try writing your `SPECS.md` first. Then write the rules that protect it. The model will meet you there.
 
-_— Built while shipping a personal finance dashboard for VOO / QQQ / Bitcoin tracking. Stack: Next.js 15, TypeScript strict, Supabase, Vercel AI SDK, Tailwind v4, shadcn/ui._
+_— Built while shipping a personal finance dashboard for VOO / QQQ / Bitcoin tracking. Stack: Next.js 16.2.1, TypeScript strict, Supabase, Vercel AI SDK, Tailwind v4, shadcn/ui._
 
 #AI #SoftwareEngineering #ClaudeCode #SpecDrivenDevelopment #NextJS #TypeScript #DeveloperProductivity #LLM #AgenticAI

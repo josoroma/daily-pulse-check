@@ -2,7 +2,7 @@
 
 > Personal finance command center for a self-directed VOO / QQQ / Bitcoin investor based in Costa Rica.
 
-Built with Next.js 15 (App Router), TypeScript strict, Tailwind CSS v4, shadcn/ui, Supabase, Vercel AI SDK, and Recharts.
+Built with Next.js 16.2.1 (App Router), TypeScript strict, Tailwind CSS v4, shadcn/ui, Supabase, Vercel AI SDK, and Recharts.
 
 ![Dashboard Home](docs/images/dashboard.png)
 

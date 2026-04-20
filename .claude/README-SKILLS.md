@@ -233,7 +233,7 @@ Rules are markdown files with a YAML frontmatter `paths:` glob. When you edit a 
 
 - No semantic drift — original intent preserved exactly
 - No added assumptions or features not in the original prompt
-- Terminology normalized to project conventions (shadcn/ui, Supabase, Next.js 15)
+- Terminology normalized to project conventions (shadcn/ui, Supabase, Next.js 16.2.1)
 
 **Example**: `/capture-prompts all` → Captures all session prompts into README-PROMPTS.md
 

@@ -161,7 +161,7 @@ The allocation is intentionally simple — three liquid, globally accessible ass
 
 | #       | Feature Area               | Description                                                                                               | Route                               |
 | ------- | -------------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------- |
-| **E1**  | Project Foundation         | Next.js 15 + TypeScript strict + Tailwind v4 + shadcn/ui + Supabase + Vitest                              | — (infrastructure)                  |
+| **E1**  | Project Foundation         | Next.js 16.2.1 + TypeScript strict + Tailwind v4 + shadcn/ui + Supabase + Vitest                          | — (infrastructure)                  |
 | **E2**  | Authentication & Profile   | Email/password + Google OAuth, profile onboarding, sidebar layout                                         | `(auth)/`, `profile/`, `dashboard/` |
 | **E3**  | Market Data Engine         | Real-time + historical prices for VOO, QQQ, BTC. Sentiment indices. Macro indicators.                     | `market/`, `api/market/`            |
 | **E4**  | Portfolio Tracker          | Manual position entry, overview dashboard, transaction history, target allocation + drift alerts          | `portfolio/`                        |

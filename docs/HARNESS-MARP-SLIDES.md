@@ -339,7 +339,7 @@ Loaded on every session. Declares:
 
 **Stack invariants**
 
-- Next.js 15 App Router (no `pages/`)
+- Next.js 16.2.1 App Router (no `pages/`)
 - TypeScript strict (no `any`)
 - Tailwind v4 utility-only
 - shadcn/ui first

@@ -31,7 +31,7 @@ Rewrite each extracted prompt to:
 - **Improve** clarity, precision, and conciseness.
 - **Preserve** the original intent exactly — no semantic drift, no added assumptions.
 - **Upgrade** wording to professional, developer-grade English.
-- **Normalize** project terminology (e.g., "shadcn" → "shadcn/ui", "supabase" → "Supabase", "next" → "Next.js 15").
+- **Normalize** project terminology (e.g., "shadcn" → "shadcn/ui", "supabase" → "Supabase", "next" → "Next.js 16.2.1").
 - **Remove** filler phrases ("I want you to", "Can you please", "I think we should") — use direct imperative form.
 
 **Quality constraints**:

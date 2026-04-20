@@ -6,11 +6,11 @@
 
 ## Project Overview
 
-Personal finance dashboard for a Costa Rica-based software developer tracking VOO, QQQ, and Bitcoin investments. Built with Next.js 15 App Router, TypeScript strict, Supabase, and Vercel AI SDK.
+Personal finance dashboard for a Costa Rica-based software developer tracking VOO, QQQ, and Bitcoin investments. Built with Next.js 16.2.1 App Router, TypeScript strict, Supabase, and Vercel AI SDK.
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 (App Router) — always use `app/` directory, never `pages/`
+- **Framework**: Next.js 16.2.1 (App Router) — always use `app/` directory, never `pages/`
 - **Language**: TypeScript strict — no `any`, no `@ts-ignore`, no `as unknown as`
 - **Styling**: Tailwind CSS v4 — utility classes only, no custom CSS files
 - **UI**: shadcn/ui — use existing components before building custom ones

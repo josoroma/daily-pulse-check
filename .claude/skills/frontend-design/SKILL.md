@@ -32,7 +32,7 @@ Before writing any code, commit to a clear aesthetic direction for this componen
 | Components | shadcn/ui                             | Use existing primitives first — `Card`, `Table`, `Badge`, `Button`, `Dialog`, `Sheet`, `Skeleton`, `Toast`, `Alert`, `Tabs`, `Form`, `Input`, `Select`, `Separator`, `Tooltip` |
 | Charts     | Recharts                              | `AreaChart`, `PieChart`, `BarChart`, `ComposedChart`, `RadialBarChart` — SVG-based, responsive                                                                                 |
 | State      | Jotai                                 | Colocated `_atoms.ts` for interactive UI state                                                                                                                                 |
-| Framework  | Next.js 15                            | Server Components by default. `'use client'` only when needed (forms, charts, interactive elements)                                                                            |
+| Framework  | Next.js 16.2.1                        | Server Components by default. `'use client'` only when needed (forms, charts, interactive elements)                                                                            |
 | Motion     | Tailwind `animate-*` + `transition-*` | CSS-only animations. Use `framer-motion` only if already installed                                                                                                             |
 
 **CRITICAL**: All components MUST use shadcn/ui + Tailwind classes. Never generate raw HTML/CSS or introduce new CSS frameworks.

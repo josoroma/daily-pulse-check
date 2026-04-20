@@ -2381,7 +2381,7 @@ lib/
 
 | Layer            | Technology                       | Purpose                                 |
 | ---------------- | -------------------------------- | --------------------------------------- |
-| Framework        | Next.js 15 (App Router)          | Full-stack React framework              |
+| Framework        | Next.js 16.2.1 (App Router)      | Full-stack React framework              |
 | Language         | TypeScript (strict)              | Type safety                             |
 | Styling          | Tailwind CSS v4                  | Utility-first CSS                       |
 | UI Components    | shadcn/ui                        | Accessible, composable components       |
